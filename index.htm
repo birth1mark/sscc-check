@@ -1,55 +1,99 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador SSCC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSCC Logistics Tool</title>
     <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; }
-        textarea { width: 100%; height: 150px; margin-bottom: 10px; }
-        pre { background: #f4f4f4; padding: 10px; white-space: pre-wrap; word-wrap: break-word; }
-        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .card { background: white; padding: 32px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
+        h1 { margin-top: 0; font-size: 24px; letter-spacing: -0.025em; }
+        textarea { width: 100%; height: 180px; padding: 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 14px; box-sizing: border-box; transition: border 0.2s; }
+        textarea:focus { outline: none; border-color: var(--primary); ring: 2px var(--primary); }
+        .controls { display: flex; gap: 12px; margin: 20px 0; }
+        button { padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; border: none; transition: opacity 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: #64748b; color: white; }
+        button:hover { opacity: 0.9; }
+        .output-header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; }
+        pre { background: #0f172a; color: #f8fafc; padding: 20px; border-radius: 8px; overflow-x: auto; min-height: 50px; font-family: 'JetBrains Mono', monospace; }
+        .badge { font-size: 12px; background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h2>Gerador de SSCC (Check Digit)</h2>
-    <p>Cola os códigos (um por linha, ou range com espaço ou hífen):</p>
-    <textarea id="input" placeholder="Exemplo:&#10;34032685035630000&#10;34032685035630000-34032685035630005"></textarea>
-    <button onclick="processar()">Gerar Códigos</button>
-    <pre id="output"></pre>
+
+    <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h1>SSCC Identifier Generator</h1>
+            <span class="badge">Internal Tool</span>
+        </div>
+        
+        <p style="color: #64748b; margin-bottom: 24px;">Enter individual 17-digit sequences or ranges (e.g., <code>start-end</code> or <code>start end</code>).</p>
+        
+        <textarea id="input" placeholder="Paste data here..."></textarea>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="process()">Generate SSCCs</button>
+            <button class="btn-secondary" onclick="copyResults()">Copy Results</button>
+            <button class="btn-secondary" style="background: #ef4444;" onclick="clearAll()">Clear</button>
+        </div>
+
+        <div class="output-header">
+            <h3 style="margin: 0;">Output</h3>
+            <small id="count" style="color: #64748b;"></small>
+        </div>
+        <pre id="output">No data generated yet.</pre>
+    </div>
 
     <script>
         function calc(n) {
             let s = n.toString().trim().padStart(17, '0');
-            let soma = 0;
-            let rev = s.split('').reverse();
-            for (let i = 0; i < rev.length; i++) {
-                soma += parseInt(rev[i]) * (i % 2 === 0 ? 3 : 1);
+            if (s.length !== 17) return `Invalid Entry: ${s}`;
+            let sum = 0;
+            let digits = s.split('').reverse();
+            for (let i = 0; i < digits.length; i++) {
+                sum += parseInt(digits[i]) * (i % 2 === 0 ? 3 : 1);
             }
-            let check = (10 - (soma % 10)) % 10;
-            return `(00)${s}${check}`;
+            let checkDigit = (10 - (sum % 10)) % 10;
+            return `(00)${s}${checkDigit}`;
         }
 
-        function processar() {
+        function process() {
             const input = document.getElementById('input').value;
-            const linhas = input.split('\n');
-            let resultados = [];
+            const lines = input.split('\n');
+            let results = [];
 
-            linhas.forEach(linha => {
-                let l = linha.trim().replace('-', ' ');
-                if (!l) return;
-                let p = l.split(/\s+/);
+            lines.forEach(line => {
+                let cleanLine = line.trim().replace('-', ' ');
+                if (!cleanLine) return;
+                let parts = cleanLine.split(/\s+/);
 
-                if (p.length === 2) {
-                    let inicio = BigInt(p[0]);
-                    let fim = BigInt(p[1]);
-                    for (let i = inicio; i <= fim; i++) {
-                        resultados.push(calc(i));
-                    }
-                } else {
-                    resultados.push(calc(p[0]));
+                if (parts.length === 2) {
+                    try {
+                        let start = BigInt(parts[0].replace(/\D/g, ''));
+                        let end = BigInt(parts[1].replace(/\D/g, ''));
+                        for (let i = start; i <= end; i++) results.push(calc(i));
+                    } catch (e) { results.push(`Range Error: ${line}`); }
+                } else if (parts.length === 1) {
+                    results.push(calc(parts[0].replace(/\D/g, '')));
                 }
             });
-            document.getElementById('output').textContent = resultados.join('\n');
+
+            document.getElementById('output').textContent = results.join('\n');
+            document.getElementById('count').textContent = results.length + " items generated";
+        }
+
+        function copyResults() {
+            const text = document.getElementById('output').textContent;
+            navigator.clipboard.writeText(text);
+            alert("Copied to clipboard!");
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = "";
+            document.getElementById('output').textContent = "No data generated yet.";
+            document.getElementById('count').textContent = "";
         }
     </script>
 </body>

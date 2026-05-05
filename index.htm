@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador SSCC</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; }
+        textarea { width: 100%; height: 150px; margin-bottom: 10px; }
+        pre { background: #f4f4f4; padding: 10px; white-space: pre-wrap; word-wrap: break-word; }
+        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h2>Gerador de SSCC (Check Digit)</h2>
+    <p>Cola os códigos (um por linha, ou range com espaço ou hífen):</p>
+    <textarea id="input" placeholder="Exemplo:&#10;34032685035630000&#10;34032685035630000-34032685035630005"></textarea>
+    <button onclick="processar()">Gerar Códigos</button>
+    <pre id="output"></pre>
+
+    <script>
+        function calc(n) {
+            let s = n.toString().trim().padStart(17, '0');
+            let soma = 0;
+            let rev = s.split('').reverse();
+            for (let i = 0; i < rev.length; i++) {
+                soma += parseInt(rev[i]) * (i % 2 === 0 ? 3 : 1);
+            }
+            let check = (10 - (soma % 10)) % 10;
+            return `(00)${s}${check}`;
+        }
+
+        function processar() {
+            const input = document.getElementById('input').value;
+            const linhas = input.split('\n');
+            let resultados = [];
+
+            linhas.forEach(linha => {
+                let l = linha.trim().replace('-', ' ');
+                if (!l) return;
+                let p = l.split(/\s+/);
+
+                if (p.length === 2) {
+                    let inicio = BigInt(p[0]);
+                    let fim = BigInt(p[1]);
+                    for (let i = inicio; i <= fim; i++) {
+                        resultados.push(calc(i));
+                    }
+                } else {
+                    resultados.push(calc(p[0]));
+                }
+            });
+            document.getElementById('output').textContent = resultados.join('\n');
+        }
+    </script>
+</body>
+</html>

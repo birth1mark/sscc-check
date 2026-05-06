@@ -1,10 +1,7 @@
 📦 SSCC Pro Vision
 Free, open-source SSCC barcode scanner and validator — runs entirely in the browser, installs as a PWA on Android.
 🔗 Try it live →
-Show Image
-Show Image
-Show Image
-Show Image
+
 
 📸 What it does
 Feature📷 Scan GS1-128 barcodes via cameraAutomatic rear camera selection, closes on read✅ Validate 18-digit SSCCsHighlights wrong check digit in red🔢 Generate check digitsPaste a 17-digit body, get the full SSCC🔁 Expand rangesSSCC-A - SSCC-B generates every code in between🌍 Country detectionFlag emoji from GS1 company prefix📱 Install as Android appNo Play Store needed — PWA🔒 100% client-sideNo data leaves your device

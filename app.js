@@ -111,23 +111,29 @@ function plainSSCC(body17, cd) {
 // ─── Copy to clipboard ────────────────────────────────────────────────────────
 
 function copyCode(plain, btn) {
-    navigator.clipboard.writeText(plain).then(() => {
-        const orig = btn.textContent;
-        btn.textContent = '✓';
+    const checkIcon = '<i data-lucide="check" style="width:13px;height:13px;vertical-align:middle;"></i>';
+    const copyIcon  = '<i data-lucide="copy"  style="width:13px;height:13px;vertical-align:middle;"></i>';
+
+    const confirm = () => {
+        btn.innerHTML = checkIcon;
         btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1200);
-    }).catch(() => {
-        // Fallback for older browsers
+        if (window.lucide) lucide.createIcons();
+        setTimeout(() => {
+            btn.innerHTML = copyIcon;
+            btn.classList.remove('copied');
+            if (window.lucide) lucide.createIcons();
+        }, 1200);
+    };
+
+    navigator.clipboard.writeText(plain).then(confirm).catch(() => {
         const ta = document.createElement('textarea');
         ta.value = plain;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
+        ta.style.cssText = 'position:fixed;opacity:0';
         document.body.appendChild(ta);
         ta.select();
         document.execCommand('copy');
         document.body.removeChild(ta);
-        btn.textContent = '✓';
-        setTimeout(() => { btn.textContent = '⎘'; }, 1200);
+        confirm();
     });
 }
 
@@ -248,7 +254,7 @@ function render() {
                          :                            'badge-gen';
         const rowStyle = item.status === 'invalid' ? 'color:#f87171' : '';
         const copyBtn  = item.plain
-            ? `<button class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy SSCC">⎘</button>`
+            ? `<button class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy SSCC"><i data-lucide="copy" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
             : '';
 
         return `
@@ -263,6 +269,7 @@ function render() {
     }).join('');
 
     out.innerHTML = summary + rows;
+    if (window.lucide) lucide.createIcons();
 }
 
 function clearAll() {

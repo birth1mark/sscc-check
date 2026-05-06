@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSCC Pro Vision | Fast-Audit Suite</title>
+    <title>SSCC Pro Vision | Auto-Stop Suite</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
 
     <style>
         :root {
-            --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #fbbf24;
+            --primary: #3b82f6; --success: #10b981; --danger: #ef4444;
             --bg: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155;
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
@@ -22,7 +22,7 @@
         h1 { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
         h1 span { color: var(--primary); }
         
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; display: none; border: 2px solid var(--primary) !important; }
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; display: none; border: 2px solid var(--primary) !important; background: #000; }
         textarea { width: 100%; height: 160px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 25px; box-sizing: border-box; }
         
         .actions { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 35px; }
@@ -37,16 +37,11 @@
         .tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; margin-right: 10px; }
         .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
         
-        .info-panel { background: rgba(15, 23, 42, 0.5); border-radius: 12px; border: 1px solid var(--border); padding: 25px; font-size: 13px; line-height: 1.6; }
-        .info-panel h2 { font-size: 16px; color: var(--primary); margin: 0 0 15px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        
-        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 15px; margin-top: 15px; }
+        details { cursor: pointer; border-top: 1px solid var(--border); padding: 25px; margin-top: 15px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; }
         summary { font-weight: 700; color: var(--text-muted); outline: none; list-style: none; display: flex; align-items: center; justify-content: space-between; }
         summary::after { content: '＋'; font-size: 18px; color: var(--primary); }
         details[open] summary::after { content: '－'; }
-
         .changelog p { margin: 8px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 12px; color: var(--text-muted); }
-        .version { font-weight: 700; color: var(--success); font-family: 'JetBrains Mono'; margin-right: 10px; }
 
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 20px; }
@@ -58,11 +53,11 @@
     <main class="card">
         <header>
             <h1><span>SSCC</span> PRO VISION</h1>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">High-Speed Scanner v3.5</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Auto-Dismiss Suite v3.7</p>
         </header>
 
         <div id="reader"></div>
-        <textarea id="input" spellcheck="false" placeholder="Scan codes or paste seeds..."></textarea>
+        <textarea id="input" spellcheck="false" placeholder="Ready for scan or manual entry..."></textarea>
 
         <nav class="actions">
             <button class="btn-scan" id="scanBtn" onclick="toggleScanner()">Camera Scan</button>
@@ -72,23 +67,18 @@
         </nav>
 
         <div class="results" id="output">
-            <div style="color: #475569; text-align: center;">Ready for scan.</div>
+            <div style="color: #475569; text-align: center;">Terminal ready.</div>
         </div>
     </main>
 
-    <section class="info-panel">
-        <h2>Quick Guide</h2>
-        <p style="color: var(--text-muted);">The scanner will auto-stop and process results immediately after a successful read.</p>
-        
-        <details>
-            <summary>Development Changelog</summary>
-            <div class="changelog">
-                <p><span class="version">v3.5</span> <strong>Scanner Refactor:</strong> Fixed race condition where camera wouldn't close. Improved digit extraction for GS1-128 barcodes.</p>
-                <p><span class="version">v3.4</span> <strong>Auto-Dismiss:</strong> Camera closes automatically upon detection.</p>
-                <p><span class="version">v3.3</span> <strong>Visual Diagnostics:</strong> Detailed "X should be Y" messages and red-highlighted digits.</p>
-            </div>
-        </details>
-    </section>
+    <details>
+        <summary>Changelog & Documentation</summary>
+        <div class="changelog">
+            <p><span style="color: var(--success); font-weight: 700;">v3.7</span> <strong>Auto-Kill Logic:</strong> Camera now force-terminates immediately upon detection to prevent UI lock. Cleaned up redundant UI elements.</p>
+            <p><span style="color: var(--success); font-weight: 700;">v3.3</span> <strong>Strict Audit:</strong> Visual check digit error highlighting (X should be Y).</p>
+            <p><span style="color: var(--success); font-weight: 700;">v2.0</span> <strong>BigInt:</strong> Standardized 18-digit precision logic.</p>
+        </div>
+    </details>
 </div>
 
 <script>
@@ -103,53 +93,48 @@
         return (10 - (sum % 10)) % 10;
     }
 
-    async function stopScanner() {
+    function toggleScanner() {
         if (html5QrCode) {
-            try {
-                await html5QrCode.stop();
+            stopScanner();
+            return;
+        }
+
+        html5QrCode = new Html5Qrcode("reader");
+        document.getElementById('reader').style.display = 'block';
+        document.getElementById('scanBtn').innerText = "Stop Scanner";
+        document.getElementById('scanBtn').style.background = "var(--danger)";
+
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            { fps: 20, qrbox: { width: 280, height: 160 } },
+            (decodedText) => {
+                // Kill camera immediately on first successful read
+                stopScanner();
+                
+                let data = decodedText.replace(/\D/g, '');
+                let clean = data.length > 18 ? data.substring(data.length - 18) : data;
+                
+                if (clean.length >= 17) {
+                    const field = document.getElementById('input');
+                    field.value += (field.value ? '\n' : '') + clean;
+                    process(); // Run audit
+                }
+            }
+        ).catch(err => console.error("Scanner failed to start", err));
+    }
+
+    function stopScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
                 html5QrCode = null;
                 document.getElementById('reader').style.display = 'none';
                 document.getElementById('scanBtn').innerText = "Camera Scan";
-            } catch (err) {
-                console.warn("Stop failed, force cleaning UI", err);
-                document.getElementById('reader').innerHTML = "";
-            }
-        }
-    }
-
-    function toggleScanner() {
-        const readerDiv = document.getElementById('reader');
-        const btn = document.getElementById('scanBtn');
-        
-        if (!html5QrCode) {
-            html5QrCode = new Html5Qrcode("reader");
-            readerDiv.style.display = 'block';
-            btn.innerText = "Stop Scan";
-            
-            html5QrCode.start(
-                { facingMode: "environment" }, 
-                { fps: 20, qrbox: { width: 280, height: 160 } },
-                async (decodedText) => {
-                    // 1. STOP IMMEDIATELY
-                    await stopScanner();
-                    
-                    // 2. CLEAN DATA
-                    let clean = decodedText.replace(/\D/g, '');
-                    if (clean.length > 18) {
-                        // Extract last 18 digits if it's a full GS1-128 string
-                        clean = clean.substring(clean.length - 18);
-                    }
-                    
-                    // 3. UPDATE UI
-                    if (clean.length >= 17) {
-                        const inputField = document.getElementById('input');
-                        inputField.value += (inputField.value ? '\n' : '') + clean;
-                        process();
-                    }
-                }
-            ).catch(err => alert("Camera error: " + err));
-        } else {
-            stopScanner();
+                document.getElementById('scanBtn').style.background = "var(--success)";
+            }).catch(err => {
+                // Force UI clean if library hangs
+                html5QrCode = null;
+                document.getElementById('reader').style.display = 'none';
+            });
         }
     }
 
@@ -163,14 +148,14 @@
             let parts = cleanLine.split(/\s+/).filter(p => p.length > 5);
 
             if (parts.length === 2) {
-                let startRaw = parts[0].replace(/\D/g, ''), endRaw = parts[1].replace(/\D/g, '');
-                [startRaw, endRaw].forEach(val => {
+                let sRaw = parts[0].replace(/\D/g, ''), eRaw = parts[1].replace(/\D/g, '');
+                [sRaw, eRaw].forEach(val => {
                     if (val.length === 18) {
                         let b = val.substring(0, 17), p = parseInt(val[17]), e = getCD(b);
                         if (p !== e) store.push({c: `(00)${b}<span class="error-digit">${p}</span>`, r: `FAIL: ${p} should be ${e}`, status: 'invalid'});
                     }
                 });
-                let s17 = startRaw.substring(0, 17).padStart(17, '0'), e17 = endRaw.substring(0, 17).padStart(17, '0');
+                let s17 = sRaw.substring(0, 17).padStart(17, '0'), e17 = eRaw.substring(0, 17).padStart(17, '0');
                 try {
                     let s = BigInt(s17), e = BigInt(e17);
                     if (s > e) [s, e] = [e, s];
@@ -184,8 +169,8 @@
                 if (val.length === 18) {
                     let b = val.substring(0, 17), p = parseInt(val[17]), e = getCD(b);
                     let ok = p === e;
-                    let display = ok ? `(00)${b}${p}` : `(00)${b}<span class="error-digit">${p}</span>`;
-                    store.push({c: display, r: ok ? `PASS: ${countries[b.substring(1,4)] || "GLOBAL"}` : `FAIL: ${p} should be ${e}`, status: ok ? 'valid' : 'invalid'});
+                    let disp = ok ? `(00)${b}${p}` : `(00)${b}<span class="error-digit">${p}</span>`;
+                    store.push({c: disp, r: ok ? `PASS: ${countries[b.substring(1,4)] || "GLOBAL"}` : `FAIL: ${p} should be ${e}`, status: ok ? 'valid' : 'invalid'});
                 } else if (val.length === 17) {
                     store.push({c: `(00)${val}${getCD(val)}`, r: `GEN: ${countries[val.substring(1,4)] || "GLOBAL"}`, status: 'gen'});
                 }
@@ -201,7 +186,7 @@
                 <span>${i.status !== 'gen' ? `<span class="tag" style="background:${i.status === 'valid' ? 'rgba(16,185,129,0.2);color:#34d399' : 'rgba(239,68,68,0.2);color:#f87171'}">${i.status === 'valid' ? 'OK' : 'ERR'}</span>` : ''}${i.c}</span>
                 <span class="tag tag-country">${i.r}</span>
             </div>
-        `).join('') || '<div style="text-align: center; color: #475569;">No data found.</div>';
+        `).join('') || '<div style="text-align: center; color: #475569;">No audit data.</div>';
     }
 
     function exportCSV() {

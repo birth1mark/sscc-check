@@ -322,15 +322,22 @@
 
     <section class="info-panel">
         <h2>How to Use</h2>
-        <ul>
-            <li><strong>Scan</strong>: Tap START SCANNER and point the camera at the barcode. Closes automatically after a successful read — device vibrates and beeps to confirm.</li>
-            <li><strong>Manual input (17 digits)</strong>: Type or paste the 17-digit SSCC body — the check digit is calculated and appended automatically when you press AUDIT.</li>
-            <li><strong>Manual input (18 digits)</strong>: Type or paste a full 18-digit SSCC to validate it. A wrong check digit is highlighted in <span style="color:var(--danger)">red</span> and the correct value is shown.</li>
-            <li><strong>Multiple codes</strong>: Enter one code per line. Press AUDIT to validate all at once.</li>
-            <li><strong>Range</strong>: Enter two SSCCs separated by <code>-</code> to generate every code in between with check digits, e.g. <code>34001234500000001-34001234500000050</code>. Supports 17, 18 and 20-digit formats with or without AI <code>(00)</code> prefix. Max 500 codes.</li>
-            <li><strong>File upload</strong>: Click the upload area or drag and drop any EDIFACT, IDoc SAP, XML, CSV or TXT file — all SSCCs are extracted and validated automatically. 100% client-side, no data leaves your device.</li>
-            <li><strong>Copy &amp; Export</strong>: Use the copy button on each row to copy a single SSCC, or tap <strong>CSV</strong> in the summary bar to download all results.</li>
-        </ul>
+        <p style="color:var(--text-muted);font-size:12px;margin:0 0 8px 0;">
+            Scan barcodes, validate or generate SSCCs, expand ranges, or upload EDIFACT/XML/CSV files.
+        </p>
+
+        <details>
+            <summary>Show all instructions</summary>
+            <ul style="margin-top:10px;">
+                <li><strong>Scan</strong>: Tap START SCANNER and point the camera at the barcode. Closes automatically after a successful read — device vibrates and beeps to confirm.</li>
+                <li><strong>Manual input (17 digits)</strong>: Type or paste the 17-digit SSCC body — the check digit is calculated and appended automatically when you press AUDIT.</li>
+                <li><strong>Manual input (18 digits)</strong>: Type or paste a full 18-digit SSCC to validate it. A wrong check digit is highlighted in <span style="color:var(--danger)">red</span> and the correct value is shown.</li>
+                <li><strong>Multiple codes</strong>: Enter one code per line. Press AUDIT to validate all at once.</li>
+                <li><strong>Range</strong>: Enter two SSCCs separated by <code>-</code> to generate every code in between with check digits, e.g. <code>34001234500000001-34001234500000050</code>. Supports 17, 18 and 20-digit formats with or without AI <code>(00)</code> prefix. Max 500 codes.</li>
+                <li><strong>File upload</strong>: Click the upload area or drag and drop any EDIFACT, IDoc SAP, XML, CSV or TXT file — all SSCCs are extracted and validated automatically. 100% client-side, no data leaves your device.</li>
+                <li><strong>Copy &amp; Export</strong>: Use the copy button on each row to copy a single SSCC, or tap <strong>CSV</strong> in the summary bar to download all results.</li>
+            </ul>
+        </details>
 
         <details>
             <summary>Changelog</summary>

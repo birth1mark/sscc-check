@@ -3,98 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSCC Logistics Tool</title>
+    <title>SSCC Pro Vision | Strict Audit Suite</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); max-width: 900px; margin: 0 auto; padding: 40px 20px; }
-        .card { background: white; padding: 32px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
-        h1 { margin-top: 0; font-size: 24px; letter-spacing: -0.025em; }
-        textarea { width: 100%; height: 180px; padding: 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 14px; box-sizing: border-box; transition: border 0.2s; }
-        textarea:focus { outline: none; border-color: var(--primary); ring: 2px var(--primary); }
-        .controls { display: flex; gap: 12px; margin: 20px 0; }
-        button { padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; border: none; transition: opacity 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: #64748b; color: white; }
-        button:hover { opacity: 0.9; }
-        .output-header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; }
-        pre { background: #0f172a; color: #f8fafc; padding: 20px; border-radius: 8px; overflow-x: auto; min-height: 50px; font-family: 'JetBrains Mono', monospace; }
-        .badge { font-size: 12px; background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; font-weight: bold; }
+        :root {
+            --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #fbbf24;
+            --bg: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 900px; padding-bottom: 50px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid var(--border); margin-bottom: 20px; }
+        header { margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        h1 { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+        h1 span { color: var(--primary); }
+        
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; display: none; border: 2px solid var(--primary) !important; }
+        textarea { width: 100%; height: 160px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 25px; box-sizing: border-box; }
+        
+        .actions { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 35px; }
+        button { padding: 14px; border-radius: 10px; font-weight: 600; font-size: 12px; cursor: pointer; border: none; color: white; text-transform: uppercase; transition: 0.2s; }
+        .btn-scan { background: var(--success); }
+        .btn-primary { background: var(--primary); }
+        .btn-secondary { background: #334155; }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        
+        .results { background: #0f172a; border-radius: 14px; padding: 25px; border: 1px solid var(--border); max-height: 450px; overflow-y: auto; }
+        .result-row { font-family: 'JetBrains Mono', monospace; padding: 10px 0; border-bottom: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
+        .tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; margin-right: 10px; }
+        .tag-country { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+        
+        .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
+        
+        .info-panel { background: rgba(15, 23, 42, 0.5); border-radius: 12px; border: 1px solid var(--border); padding: 25px; font-size: 13px; line-height: 1.6; }
+        .info-panel h2 { font-size: 16px; color: var(--primary); margin: 0 0 15px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .info-panel h3 { font-size: 14px; color: var(--text-main); margin: 15px 0 5px 0; }
+        .info-panel ul { padding-left: 20px; color: var(--text-muted); margin: 5px 0; }
+        
+        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 15px; margin-top: 15px; }
+        summary { font-weight: 700; color: var(--text-muted); outline: none; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        summary::after { content: '＋'; font-size: 18px; color: var(--primary); }
+        details[open] summary::after { content: '－'; }
+
+        .changelog p { margin: 8px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 12px; color: var(--text-muted); }
+        .version { font-weight: 700; color: var(--success); font-family: 'JetBrains Mono'; margin-right: 10px; }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-            <h1>SSCC Identifier Generator</h1>
-            <span class="badge">Internal Tool</span>
-        </div>
-        
-        <p style="color: #64748b; margin-bottom: 24px;">Enter individual 17-digit sequences or ranges (e.g., <code>start-end</code> or <code>start end</code>).</p>
-        
-        <textarea id="input" placeholder="Paste data here..."></textarea>
-        
-        <div class="controls">
-            <button class="btn-primary" onclick="process()">Generate SSCCs</button>
-            <button class="btn-secondary" onclick="copyResults()">Copy Results</button>
-            <button class="btn-secondary" style="background: #ef4444;" onclick="clearAll()">Clear</button>
-        </div>
+<div class="container">
+    <main class="card">
+        <header>
+            <h1><span>SSCC</span> PRO VISION</h1>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Enterprise Logistics Suite v3.3</p>
+        </header>
 
-        <div class="output-header">
-            <h3 style="margin: 0;">Output</h3>
-            <small id="count" style="color: #64748b;"></small>
-        </div>
-        <pre id="output">No data generated yet.</pre>
-    </div>
+        <div id="reader"></div>
+        <textarea id="input" spellcheck="false" placeholder="Scan labels, paste codes (17/18 digits) or intervals..."></textarea>
 
-    <script>
-        function calc(n) {
-            let s = n.toString().trim().padStart(17, '0');
-            if (s.length !== 17) return `Invalid Entry: ${s}`;
-            let sum = 0;
-            let digits = s.split('').reverse();
-            for (let i = 0; i < digits.length; i++) {
-                sum += parseInt(digits[i]) * (i % 2 === 0 ? 3 : 1);
-            }
-            let checkDigit = (10 - (sum % 10)) % 10;
-            return `(00)${s}${checkDigit}`;
+        <nav class="actions">
+            <button class="btn-scan" id="scanBtn" onclick="toggleScanner()">Camera Scan</button>
+            <button class="btn-primary" onclick="process()">Run Audit</button>
+            <button class="btn-secondary" onclick="exportCSV()">Export CSV</button>
+            <button class="btn-danger" onclick="clearAll()">Reset</button>
+        </nav>
+
+        <div class="results" id="output">
+            <div style="color: #475569; text-align: center;">System ready for logistics audit.</div>
+        </div>
+    </main>
+
+    <section class="info-panel">
+        <h2>User Instructions</h2>
+        
+        <h3>1. Manual Input & Generation</h3>
+        <ul>
+            <li><strong>17 Digits:</strong> Generates the full code with the correct check digit.</li>
+            <li><strong>18 Digits:</strong> Audit Mode. Compares your input with the standard. <strong>ERR</strong> highlights the wrong digit and shows the correct one.</li>
+        </ul>
+
+        <h3>2. Ranges & Sequences</h3>
+        <ul>
+            <li>Paste two numbers (e.g., <code>START - END</code>). The engine audits seeds before generating.</li>
+        </ul>
+
+        <details>
+            <summary>Development Changelog</summary>
+            <div class="changelog">
+                <p><span class="version">v3.3</span> <strong>Visual Diagnostics:</strong> Failed check digits are now marked in red within the code string. Detail message updated to "X should be Y" for better clarity.</p>
+                <p><span class="version">v3.2</span> <strong>Documentation:</strong> Restored full usage instructions. Improved mobile layout responsiveness.</p>
+                <p><span class="version">v3.1</span> <strong>Audit Logic:</strong> Explicit PASS/FAIL status for 18-digit codes. Standardized terminal output.</p>
+                <p><span class="version">v3.0</span> <strong>Vision:</strong> Integrated barcode scanning via camera. Finalized English localization.</p>
+                <p><span class="version">v2.0</span> <strong>BigInt:</strong> Handled 18-digit precision without JavaScript rounding errors.</p>
+            </div>
+        </details>
+    </section>
+</div>
+
+<script>
+    const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸', '300': 'FRANCE 🇫🇷', '400': 'GERMANY 🇩🇪', '000': 'USA 🇺🇸', '500': 'UK 🇬🇧' };
+    let store = [];
+    let html5QrCode;
+
+    function getCD(s17) {
+        let sum = 0;
+        let d = s17.split('').reverse();
+        for (let i = 0; i < d.length; i++) sum += parseInt(d[i]) * (i % 2 === 0 ? 3 : 1);
+        return (10 - (sum % 10)) % 10;
+    }
+
+    function toggleScanner() {
+        const readerDiv = document.getElementById('reader');
+        const btn = document.getElementById('scanBtn');
+        if (!html5QrCode) {
+            html5QrCode = new Html5Qrcode("reader");
+            readerDiv.style.display = 'block';
+            btn.innerText = "Stop Scan";
+            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (text) => {
+                let clean = text.replace(/\D/g, '');
+                if (clean.length > 18) clean = clean.substring(clean.length - 18);
+                document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
+                process();
+            }).catch(err => console.error(err));
+        } else {
+            html5QrCode.stop().then(() => { html5QrCode = null; readerDiv.style.display = 'none'; btn.innerText = "Camera Scan"; });
         }
+    }
 
-        function process() {
-            const input = document.getElementById('input').value;
-            const lines = input.split('\n');
-            let results = [];
+    function process() {
+        const input = document.getElementById('input').value;
+        const lines = input.split('\n');
+        store = [];
 
-            lines.forEach(line => {
-                let cleanLine = line.trim().replace('-', ' ');
-                if (!cleanLine) return;
-                let parts = cleanLine.split(/\s+/);
+        lines.forEach(line => {
+            let cleanLine = line.trim().replace(/\s*-\s*/, ' ');
+            let parts = cleanLine.split(/\s+/).filter(p => p.length > 5);
 
-                if (parts.length === 2) {
-                    try {
-                        let start = BigInt(parts[0].replace(/\D/g, ''));
-                        let end = BigInt(parts[1].replace(/\D/g, ''));
-                        for (let i = start; i <= end; i++) results.push(calc(i));
-                    } catch (e) { results.push(`Range Error: ${line}`); }
-                } else if (parts.length === 1) {
-                    results.push(calc(parts[0].replace(/\D/g, '')));
+            if (parts.length === 2) {
+                let startRaw = parts[0].replace(/\D/g, '');
+                let endRaw = parts[1].replace(/\D/g, '');
+
+                [startRaw, endRaw].forEach(val => {
+                    if (val.length === 18) {
+                        let b = val.substring(0, 17);
+                        let p = parseInt(val[17]), e = getCD(b);
+                        if (p !== e) {
+                            let formatted = `(00)${b}<span class="error-digit">${p}</span>`;
+                            store.push({c: formatted, r: `FAIL: ${p} should be ${e}`, status: 'invalid'});
+                        }
+                    }
+                });
+
+                let s17 = startRaw.substring(0, 17).padStart(17, '0');
+                let e17 = endRaw.substring(0, 17).padStart(17, '0');
+                try {
+                    let s = BigInt(s17); let e = BigInt(e17);
+                    if (s > e) [s, e] = [e, s];
+                    for (let i = s; i <= e; i++) {
+                        let b = i.toString().padStart(17, '0');
+                        store.push({c: `(00)${b}${getCD(b)}`, r: `PASS: ${countries[b.substring(1,4)] || "GLOBAL"}`, status: 'gen'});
+                    }
+                } catch(err) {}
+            } else if (parts.length === 1) {
+                let val = parts[0].replace(/\D/g, '');
+                if (val.length === 18) {
+                    let b = val.substring(0, 17);
+                    let p = parseInt(val[17]), e = getCD(b);
+                    let ok = p === e;
+                    let display = ok ? `(00)${b}${p}` : `(00)${b}<span class="error-digit">${p}</span>`;
+                    store.push({c: display, r: ok ? `PASS: ${countries[b.substring(1,4)] || "GLOBAL"}` : `FAIL: ${p} should be ${e}`, status: ok ? 'valid' : 'invalid'});
+                } else if (val.length === 17) {
+                    store.push({c: `(00)${val}${getCD(val)}`, r: `GEN: ${countries[val.substring(1,4)] || "GLOBAL"}`, status: 'gen'});
                 }
-            });
+            }
+        });
+        render();
+    }
 
-            document.getElementById('output').textContent = results.join('\n');
-            document.getElementById('count').textContent = results.length + " items generated";
-        }
+    function render() {
+        const out = document.getElementById('output');
+        out.innerHTML = store.map(i => `
+            <div class="result-row" style="${i.status === 'invalid' ? 'color:#f87171' : ''}">
+                <span>${i.status !== 'gen' ? `<span class="tag" style="background:${i.status === 'valid' ? 'rgba(16,185,129,0.2);color:#34d399' : 'rgba(239,68,68,0.2);color:#f87171'}">${i.status === 'valid' ? 'OK' : 'ERR'}</span>` : ''}${i.c}</span>
+                <span class="tag tag-country">${i.r}</span>
+            </div>
+        `).join('') || '<div style="text-align: center; color: #475569;">No data found.</div>';
+    }
 
-        function copyResults() {
-            const text = document.getElementById('output').textContent;
-            navigator.clipboard.writeText(text);
-            alert("Copied to clipboard!");
-        }
+    function exportCSV() {
+        let csv = "SSCC,Verdict\n" + store.map(i => {
+            let cleanCode = i.c.replace(/<[^>]*>/g, ''); // Remove HTML tags for CSV
+            return `"${cleanCode}","${i.r}"`;
+        }).join("\n");
+        let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8' });
+        let a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
+        a.download = "Audit_Report.csv"; a.click();
+    }
 
-        function clearAll() {
-            document.getElementById('input').value = "";
-            document.getElementById('output').textContent = "No data generated yet.";
-            document.getElementById('count').textContent = "";
-        }
-    </script>
+    function clearAll() { document.getElementById('input').value = ""; store = []; render(); }
+</script>
 </body>
 </html>

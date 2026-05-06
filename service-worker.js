@@ -1,4 +1,4 @@
-const CACHE = 'sscc-v1';
+const CACHE = 'sscc-v2';
 const ASSETS = [
   '/sscc-check/',
   '/sscc-check/index.html',

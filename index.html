@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>SSCC Validator & Check Digit Calculator | SSCC Pro Vision</title>
+    <meta name="description" content="Free online SSCC validator and check digit calculator. Scan GS1-128 barcodes, validate 18-digit SSCC codes, generate check digits, and expand SSCC ranges instantly.">
+    <meta name="keywords" content="SSCC, SSCC validator, SSCC barcode scanner, GS1-128, check digit calculator, serial shipping container code, EDI, logistics barcode tool">
+    <meta name="author" content="SSCC Pro Vision">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://birth1mark.github.io/sscc-check/">
+    <link rel="sitemap" type="application/xml" href="sitemap.xml">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SSCC Scan">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://birth1mark.github.io/sscc-check/">
+    <meta property="og:title" content="SSCC Validator & Check Digit Calculator | SSCC Pro Vision">
+    <meta property="og:description" content="Free online SSCC validator and check digit calculator. Scan GS1-128 barcodes, validate 18-digit SSCC codes, generate check digits, and expand SSCC ranges instantly.">
+    <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SSCC Validator & Check Digit Calculator | SSCC Pro Vision">
+    <meta name="twitter:description" content="Free online SSCC validator and check digit calculator. Scan GS1-128 barcodes, validate codes and generate check digits.">
+    <meta name="twitter:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SSCC Pro Vision",
+      "url": "https://birth1mark.github.io/sscc-check/",
+      "description": "Free online SSCC barcode scanner and validator.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": [
+        "GS1-128 barcode scanning via camera",
+        "SSCC check digit validation",
+        "SSCC check digit generation",
+        "Supports AI (00) prefix barcodes",
+        "Works on mobile and desktop"
+      ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary:    #3b82f6;
+            --success:    #10b981;
+            --danger:     #ef4444;
+            --bg:         #0f172a;
+            --card-bg:    #1e293b;
+            --text-main:  #f8fafc;
+            --text-muted: #94a3b8;
+            --border:     #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0; padding: 12px;
+            display: flex; justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container { width: 100%; max-width: 500px; padding-bottom: 24px; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px; padding: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+        }
+
+        header { margin-bottom: 14px; text-align: center; }
+        h1 { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; }
+        h1 span { color: var(--primary); }
+
+        /* Scanner viewport */
+        #viewport-wrap {
+            width: 100%; height: 220px;
+            border-radius: 16px; overflow: hidden;
+            border: 2px solid var(--primary);
+            margin-bottom: 10px;
+            background: #000; position: relative; display: none;
+        }
+        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        #scan-line {
+            position: absolute; left: 10%; right: 10%; height: 2px;
+            background: rgba(59,130,246,0.8);
+            box-shadow: 0 0 8px #3b82f6, 0 0 20px #3b82f6;
+            animation: scanMove 1.8s ease-in-out infinite;
+        }
+        @keyframes scanMove { 0%, 100% { top: 25%; } 50% { top: 75%; } }
+
+        .corner { position: absolute; width: 20px; height: 20px; border-color: var(--primary); border-style: solid; }
+        .corner-tl { top: 8px;    left: 8px;  border-width: 3px 0 0 3px; }
+        .corner-tr { top: 8px;    right: 8px; border-width: 3px 3px 0 0; }
+        .corner-bl { bottom: 8px; left: 8px;  border-width: 0 0 3px 3px; }
+        .corner-br { bottom: 8px; right: 8px; border-width: 0 3px 3px 0; }
+
+        #scan-status {
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.65); color: var(--text-muted);
+            font-size: 11px; padding: 4px 12px; border-radius: 20px; white-space: nowrap;
+        }
+
+        /* Buttons */
+        .btn-stack { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+        .btn-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+        .main-btn {
+            width: 100%; padding: 13px; border-radius: 10px;
+            font-weight: 700; font-size: 13px;
+            border: none; color: white; cursor: pointer;
+            text-transform: uppercase; transition: opacity 0.2s;
+        }
+        .main-btn:active { opacity: 0.8; }
+        .btn-live  { background: var(--primary); }
+        .btn-audit { background: #334155; }
+        .btn-clear { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+
+        /* Input */
+        textarea {
+            width: 100%; height: 100px;
+            background: #0f172a; border: 1px solid var(--border); border-radius: 12px;
+            padding: 15px; color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace; font-size: 14px;
+            margin-bottom: 10px; box-sizing: border-box; resize: vertical;
+        }
+
+        /* Results */
+        .results {
+            background: #0f172a; border-radius: 10px;
+            padding: 6px; border: 1px solid var(--border);
+            max-height: 300px; overflow-y: auto;
+        }
+        .ready-msg { color: var(--text-muted); font-size: 12px; }
+
+        .result-row {
+            padding: 6px 8px; border-bottom: 1px solid #1e293b;
+            font-family: 'JetBrains Mono', monospace; font-size: 12px;
+            display: flex; justify-content: space-between; align-items: center; gap: 8px;
+        }
+        .result-row:last-child { border-bottom: none; }
+        .result-code { word-break: break-all; }
+        .result-meta { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .flag        { font-size: 16px; }
+        .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
+
+        /* SSCC part colouring */
+        .sscc-ai  { color: var(--text-muted); }
+        .sscc-ext { color: var(--primary); font-weight: 700; }
+        .sscc-ref { color: var(--text-main); }
+        .sscc-cd  { font-weight: 700; }
+        .sscc-cd.cd-valid   { color: var(--success); }
+        .sscc-cd.cd-invalid { color: var(--danger); text-decoration: underline; }
+
+        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; font-weight: 700; }
+        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-fail { background: rgba(239,68,68,0.15);  color: var(--danger);  }
+        .badge-gen  { background: rgba(59,130,246,0.15); color: var(--primary); }
+
+        /* Results summary bar */
+        .results-summary {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            padding: 6px 4px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px;
+        }
+        .btn-export {
+            margin-left: auto; background: rgba(59,130,246,0.1); color: var(--primary);
+            border: 1px solid rgba(59,130,246,0.25); border-radius: 20px;
+            font-size: 11px; font-weight: 700; padding: 2px 10px; cursor: pointer;
+            transition: background 0.15s;
+        }
+        .btn-export:hover { background: rgba(59,130,246,0.2); }
+
+        /* Copy button */
+        .btn-copy {
+            background: none; border: 1px solid var(--border); border-radius: 6px;
+            color: var(--text-muted); font-size: 12px; padding: 1px 6px; cursor: pointer;
+            transition: color 0.15s, border-color 0.15s; flex-shrink: 0;
+        }
+        .btn-copy:hover  { color: var(--primary); border-color: var(--primary); }
+        .btn-copy.copied { color: var(--success); border-color: var(--success); }
+
+        /* Info panel */
+        .info-panel {
+            margin-top: 12px;
+            background: rgba(15,23,42,0.5); border-radius: 12px;
+            border: 1px solid var(--border); padding: 16px;
+            font-size: 12px; line-height: 1.6;
+        }
+        .info-panel h2 {
+            font-size: 13px; color: var(--primary);
+            margin: 0 0 8px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px;
+        }
+        .info-panel ul { padding-left: 18px; color: var(--text-muted); margin: 0; }
+
+        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 12px; }
+        summary {
+            font-weight: 700; color: var(--text-muted);
+            list-style: none; display: flex; align-items: center; justify-content: space-between;
+        }
+        summary::after            { content: '＋'; color: var(--primary); }
+        details[open] summary::after { content: '－'; }
+
+        .changelog p { margin: 6px 0; border-left: 2px solid var(--border); padding-left: 8px; font-size: 11px; color: var(--text-muted); }
+        .version { font-weight: 700; color: var(--success); margin-right: 6px; }
+
+        ::-webkit-scrollbar       { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* UX improvements */
+
+        /* Empty state */
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 16px 0 10px;
+        }
+
+        /* Line counter badge */
+        .input-wrap { position: relative; }
+        .line-counter {
+            position: absolute; bottom: 18px; right: 10px;
+            font-size: 10px; color: var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            pointer-events: none; transition: color 0.2s;
+        }
+        .line-counter.has-content { color: var(--text-muted); }
+
+        /* AUDIT button flash */
+        @keyframes auditFlash {
+            0%   { background: var(--primary); }
+            40%  { background: #10b981; }
+            100% { background: #334155; }
+        }
+        .btn-audit.flashing { animation: auditFlash 0.4s ease forwards; }
+
+        /* Result rows fade in */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .result-row { animation: fadeInUp 0.15s ease both; }
+
+        /* Shake on no results */
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%     { transform: translateX(-6px); }
+            40%     { transform: translateX(6px); }
+            60%     { transform: translateX(-4px); }
+            80%     { transform: translateX(4px); }
+        }
+        .results.shake { animation: shake 0.35s ease; }
+
+        /* Tooltip on badges */
+        .badge[data-tip] { position: relative; cursor: default; }
+        .badge[data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+            background: #0f172a; color: var(--text-main); font-size: 10px;
+            padding: 4px 8px; border-radius: 6px; white-space: nowrap;
+            border: 1px solid var(--border); pointer-events: none; z-index: 10;
+        }
+
+        /* iOS install banner */
+        #ios-banner {
+            display: none; align-items: flex-start; gap: 10px;
+            background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-size: 12px;
+            color: var(--text-muted); line-height: 1.5;
+        }
+        #ios-banner strong { color: var(--text-main); }
+        #ios-banner-close {
+            background: none; border: none; color: var(--text-muted);
+            cursor: pointer; font-size: 16px; line-height: 1; padding: 0; flex-shrink: 0;
+        }
+
+        /* File upload */
+        .drop-zone {
+            width: 100%; box-sizing: border-box;
+            border: 1.5px dashed var(--border); border-radius: 10px;
+            padding: 10px 14px; margin-bottom: 10px;
+            color: var(--text-muted); font-size: 12px;
+            cursor: pointer; transition: border-color 0.2s, background 0.2s;
+            display: flex; align-items: center;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--primary);
+            background: rgba(59,130,246,0.05);
+            color: var(--text-main);
+        }
+        .drop-zone.drag-over { background: rgba(59,130,246,0.1); }
+
+        .file-banner {
+            display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+            font-size: 12px; margin-bottom: 10px;
+            padding: 8px 12px; border-radius: 8px;
+            background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.15);
+        }
+        .file-banner-name { font-family: "JetBrains Mono", monospace; font-weight: 700; color: var(--text-main); }
+        .file-banner-info { color: var(--text-muted); }
+
+        /* History */
+        .history-panel {
+            background: rgba(15,23,42,0.5); border-radius: 12px;
+            border: 1px solid var(--border); overflow: hidden;
+        }
+        .history-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 14px; border-bottom: 1px solid var(--border);
+        }
+        .history-title {
+            font-size: 12px; font-weight: 700; color: var(--text-muted);
+            display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .history-clear-btn {
+            background: none; border: none; color: var(--text-muted); font-size: 11px;
+            cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 2px 4px;
+            border-radius: 4px; transition: color 0.15s;
+        }
+        .history-clear-btn:hover { color: var(--danger); }
+        .history-row { cursor: pointer; transition: background 0.15s; }
+        .history-row:hover { background: rgba(59,130,246,0.05); border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <main class="card">
+        <header>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size:10px;">v5.6</small></h1>
+        </header>
+
+        <div id="viewport-wrap">
+            <video id="video" autoplay muted playsinline></video>
+            <div id="scan-line"></div>
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+            <div id="scan-status">Reading barcode…</div>
+        </div>
+
+        <div class="input-wrap">
+            <textarea id="input" placeholder="Waiting for scan or manual input..." inputmode="numeric" oninput="updateLineCounter()"></textarea>
+            <span class="line-counter" id="line-counter"></span>
+        </div>
+
+        <!-- iOS PWA install banner -->
+        <div id="ios-banner">
+            <div style="flex:1">
+                <strong>Install as app</strong><br>
+                Tap <strong>Share</strong> <span style="font-size:14px;">⎋</span> then <strong>Add to Home Screen</strong>
+            </div>
+            <button id="ios-banner-close" onclick="dismissIOSBanner()" aria-label="Dismiss">✕</button>
+        </div>
+
+        <!-- File upload -->
+        <div id="drop-zone" class="drop-zone" title="Click or drag a file to extract SSCCs">
+            <i data-lucide="upload" style="width:18px;height:18px;vertical-align:middle;margin-right:8px;opacity:0.6;"></i>
+            <span>Drop file or <u>browse</u> — EDIFACT, IDoc, XML, CSV, TXT</span>
+            <input type="file" id="file-input" accept=".txt,.xml,.edi,.idoc,.csv,.json,.dat,.xslt,.xsl,*" style="display:none;">
+        </div>
+        <div id="file-banner" class="file-banner" style="display:none;"></div>
+
+        <div class="btn-stack">
+            <button class="main-btn btn-live" id="btnToggle" onclick="toggleScanner()">START SCANNER</button>
+            <div class="btn-grid">
+                <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
+                <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
+            </div>
+        </div>
+
+        <div class="results" id="output">
+            <div class="empty-state">
+                <i data-lucide="scan-barcode" style="width:28px;height:28px;opacity:0.25;margin-bottom:8px;"></i>
+                <div style="font-size:12px;color:var(--text-muted);">Scan a barcode or enter an SSCC</div>
+                <div style="font-size:11px;color:var(--border);margin-top:4px;">e.g. 340012345000000018</div>
+            </div>
+        </div>
+    </main>
+
+    <section class="info-panel">
+        <h2>How to Use</h2>
+        <ul>
+            <li><strong>Scan</strong>: Tap START SCANNER and point the camera at the barcode. The scanner closes automatically after a successful read, vibrates, beeps and validates immediately.</li>
+            <li><strong>Manual input (17 digits)</strong>: Type or paste the 17-digit SSCC body — the check digit is calculated and appended automatically when you press AUDIT.</li>
+            <li><strong>Manual input (18 digits)</strong>: Type or paste a full 18-digit SSCC to validate it. A wrong check digit is highlighted in <span style="color:var(--danger)">red</span> and the correct value is shown.</li>
+            <li><strong>Multiple codes</strong>: Enter one code per line. Press AUDIT to validate all at once.</li>
+            <li><strong>Range</strong>: Enter two SSCCs separated by <code>-</code> to generate every code in between with check digits, e.g. <code>34001234500000001-34001234500000050</code>. Max 500 codes per range. Supports 17, 18 and 20-digit formats with or without AI <code>(00)</code> prefix.</li>
+            <li><strong>File upload</strong>: Drop or browse any EDIFACT, IDoc SAP, XML, CSV or TXT file — all SSCCs are extracted and validated automatically. Format is detected automatically. 100% client-side, no data leaves your device.</li>
+            <li><strong>Copy &amp; Export</strong>: Use the copy button <code>⎘</code> on each row to copy a single SSCC, or tap <strong>CSV</strong> in the summary bar to download all results as a spreadsheet-ready file.</li>
+        </ul>
+
+        <details>
+            <summary>Changelog</summary>
+            <div class="changelog">
+                <p><span class="version">v5.6</span> <strong>UX pass</strong>: Numeric keyboard on mobile, scroll-to-results after scan/audit, animated result rows, shake on empty results, line counter in textarea, tooltips on badges, iOS install banner.</p>
+                <p><span class="version">v5.5</span> <strong>File Upload</strong>: Upload EDIFACT, IDoc SAP, XML, CSV or any text file to extract and validate all SSCCs. Smart parser detects format automatically — 100% client-side.</p>
+                <p><span class="version">v5.4</span> <strong>Copy &amp; Export</strong>: Copy button on each result row, CSV export, and beep feedback on scan. Lucide icons throughout.</p>
+                <p><span class="version">v5.3</span> <strong>Range expansion</strong>: Enter two SSCCs separated by <code>-</code> to generate all codes in between with check digits. Supports 17, 18 and 20-digit formats, with or without AI <code>(00)</code> prefix.</p>
+                <p><span class="version">v5.2</span> <strong>Code split</strong>: JavaScript separated into <code>app.js</code> (SSCC logic) and <code>scanner.js</code> (camera) for maintainability. PWA support added — installable on Android without the Play Store.</p>
+                <p><span class="version">v5.1</span> <strong>GS1-128 AI fix</strong>: Correct extraction of the 18-digit SSCC from barcodes with Application Identifier <code>(00)</code> prefix — previously caused false validation failures. Added debounce to prevent duplicate reads.</p>
+                <p><span class="version">v5.0</span> <strong>ZXing engine</strong>: Replaced QuaggaJS with ZXing BrowserMultiFormatReader for significantly more reliable Code 128 reading in real-world conditions.</p>
+                <p><span class="version">v2.0</span> <strong>Check digit precision</strong>: Introduced <code>BigInt</code> arithmetic to safely handle 17-digit SSCC bodies without integer overflow.</p>
+            </div>
+        </details>
+    </section>
+</div>
+
+<!-- History section -->
+<section id="history-section" style="display:none; margin-top:16px;">
+    <div class="history-panel">
+        <div class="history-header">
+            <span class="history-title">
+                <i data-lucide="clock" style="width:13px;height:13px;vertical-align:middle;"></i>
+                Recent scans
+            </span>
+            <button class="history-clear-btn" onclick="historyClear()">
+                <i data-lucide="trash-2" style="width:12px;height:12px;vertical-align:middle;"></i>
+                Clear
+            </button>
+        </div>
+        <div class="results" id="history-list"></div>
+    </div>
+</section>
+
+<!-- ZXing barcode engine -->
+<script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<!-- App logic: app.js first (scanner.js calls process()) -->
+<script src="app.js"></script>
+<script src="scanner.js"></script>
+<script src="parser.js"></script>
+
+<!-- Init Lucide icons -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+</script>
+
+<!-- PWA service worker -->
+<script>
+    // Init history on load
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof renderHistory === 'function') renderHistory();
+    });
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sscc-check/service-worker.js')
+                .catch(err => console.warn('SW registration failed:', err));
+        });
+    }
+</script>
+
+</body>
+</html>

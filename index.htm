@@ -202,7 +202,7 @@
 <div class="container">
     <main class="card">
         <header>
-            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size:10px;">v5.2</small></h1>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size:10px;">v5.3</small></h1>
         </header>
 
         <div id="viewport-wrap">
@@ -243,10 +243,11 @@
         <details>
             <summary>Changelog</summary>
             <div class="changelog">
-                <p><span class="version">v5.2</span> <strong>Code split</strong>: JavaScript extracted into <code>app.js</code> and <code>scanner.js</code> for maintainability.</p>
-                <p><span class="version">v5.1</span> <strong>GS1-128 AI fix</strong>: Correct extraction of the 18-digit SSCC from barcodes that encode the Application Identifier <code>(00)</code> prefix. Added debounce to prevent duplicate reads.</p>
-                <p><span class="version">v5.0</span> <strong>ZXing engine</strong>: Replaced QuaggaJS with ZXing BrowserMultiFormatReader for significantly more reliable Code 128 reading.</p>
-                <p><span class="version">v2.0</span> <strong>Check digit precision</strong>: Introduced <code>BigInt</code> arithmetic to handle full 18-digit SSCC identifiers without integer overflow.</p>
+                <p><span class="version">v5.3</span> <strong>Range expansion</strong>: Enter two SSCCs separated by <code>-</code> to generate all codes in between with check digits. Supports 17, 18 and 20-digit formats, with or without AI <code>(00)</code> prefix.</p>
+                <p><span class="version">v5.2</span> <strong>Code split</strong>: JavaScript separated into <code>app.js</code> (SSCC logic) and <code>scanner.js</code> (camera) for maintainability. PWA support added — installable on Android without the Play Store.</p>
+                <p><span class="version">v5.1</span> <strong>GS1-128 AI fix</strong>: Correct extraction of the 18-digit SSCC from barcodes with Application Identifier <code>(00)</code> prefix — previously caused false validation failures. Added debounce to prevent duplicate reads.</p>
+                <p><span class="version">v5.0</span> <strong>ZXing engine</strong>: Replaced QuaggaJS with ZXing BrowserMultiFormatReader for significantly more reliable Code 128 reading in real-world conditions.</p>
+                <p><span class="version">v2.0</span> <strong>Check digit precision</strong>: Introduced <code>BigInt</code> arithmetic to safely handle 17-digit SSCC bodies without integer overflow.</p>
             </div>
         </details>
     </section>

@@ -50,10 +50,7 @@ function setScannerUI(active) {
     wrap.style.display   = active ? 'block' : 'none';
     btn.style.background = active ? 'var(--danger)' : 'var(--primary)';
 
-    const icon  = active ? 'x' : 'scan-line';
-    const label = active ? 'STOP SCANNER' : 'START SCANNER';
-    btn.innerHTML = `<i data-lucide="${icon}" style="width:16px;height:16px;vertical-align:middle;margin-right:7px;"></i>${label}`;
-    if (window.lucide) lucide.createIcons();
+    btn.innerText = active ? 'STOP SCANNER' : 'START SCANNER';
 }
 
 function setStatus(msg) {

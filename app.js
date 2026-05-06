@@ -1,6 +1,66 @@
 // ─── State ────────────────────────────────────────────────────────────────────
 let store = [];
 
+// ─── History ──────────────────────────────────────────────────────────────────
+const HISTORY_KEY = 'sscc_history';
+const HISTORY_MAX = 10;
+
+function historyAdd(sscc18) {
+    let h = historyLoad();
+    h = h.filter(s => s !== sscc18); // remove duplicate
+    h.unshift(sscc18);               // prepend
+    if (h.length > HISTORY_MAX) h = h.slice(0, HISTORY_MAX);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); } catch (_) {}
+    renderHistory();
+}
+
+function historyLoad() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (_) { return []; }
+}
+
+function historyClear() {
+    try { localStorage.removeItem(HISTORY_KEY); } catch (_) {}
+    renderHistory();
+}
+
+function historyLoadIntoInput(sscc18) {
+    const input = document.getElementById('input');
+    input.value = sscc18;
+    input.focus();
+    process();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderHistory() {
+    const section  = document.getElementById('history-section');
+    const list     = document.getElementById('history-list');
+    if (!section || !list) return;
+
+    const history = historyLoad();
+
+    if (!history.length) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    list.innerHTML = history.map(sscc => {
+        const body = sscc.substring(0, 17);
+        const cd   = parseInt(sscc[17]);
+        return `
+        <div class="result-row history-row" onclick="historyLoadIntoInput('${sscc}')">
+            <span class="result-code">${formatSSCC(body, cd, cd)}</span>
+            <span class="result-meta">
+                <span class="flag">${getFlag(sscc)}</span>
+                <button class="btn-copy" onclick="event.stopPropagation(); copyCode('${sscc}', this)" title="Copy">
+                    <i data-lucide="copy" style="width:13px;height:13px;vertical-align:middle;"></i>
+                </button>
+            </span>
+        </div>`;
+    }).join('');
+    if (window.lucide) lucide.createIcons();
+}
+
 // ─── GS1 Prefix → Country Flag ───────────────────────────────────────────────
 const GS1_FLAGS = [
     [[300,379],'🇫🇷'],[[380,380],'🇧🇬'],[[383,383],'🇸🇮'],[[385,385],'🇭🇷'],

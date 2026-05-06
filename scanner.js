@@ -1,41 +1,59 @@
 // ─── Scanner State ────────────────────────────────────────────────────────────
-let isScanning  = false;
-let codeReader  = null;
-let lastScan    = 0;
+let isScanning = false;
+let codeReader = null;
+let lastScan   = 0;
 
 const DEBOUNCE_MS = 2000;
 
-// ─── SSCC Extraction ─────────────────────────────────────────────────────────
+// ─── Beep (Web Audio API) ─────────────────────────────────────────────────────
 
-/**
- * Extracts the 18-digit SSCC from the raw string returned by ZXing.
- *
- * GS1-128 barcodes with AI (00) encode 20 numeric characters:
- *   "00" + 18 SSCC digits
- * ZXing returns the raw string without parentheses, e.g. "00123456789012345678".
- * Taking the last 18 would incorrectly include the "00" AI prefix and drop
- * the first 2 real SSCC digits — causing check digit failures.
- */
+let audioCtx = null;
+
+function beep() {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        const oscillator = audioCtx.createOscillator();
+        const gainNode   = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.type            = 'sine';
+        oscillator.frequency.value = 1480; // high-pitched, scanner-like
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.15);
+    } catch (_) {
+        // Audio not available — silent fail
+    }
+}
+
+// ─── SSCC Extraction ──────────────────────────────────────────────────────────
+
 function extractSSCC(raw) {
     const digits = raw.replace(/\D/g, '');
-
-    if (digits.length === 20 && digits.startsWith('00')) return digits.substring(2); // AI (00) + 18
-    if (digits.length === 18) return digits;   // bare SSCC
-    if (digits.length === 17) return digits;   // for check digit generation
-    if (digits.length > 20)   return digits.substring(digits.length - 18); // last-resort fallback
-
+    if (digits.length === 20 && digits.startsWith('00')) return digits.substring(2);
+    if (digits.length === 18) return digits;
+    if (digits.length === 17) return digits;
+    if (digits.length > 20)   return digits.substring(digits.length - 18);
     return null;
 }
 
 // ─── UI Helpers ───────────────────────────────────────────────────────────────
 
 function setScannerUI(active) {
-    const wrap   = document.getElementById('viewport-wrap');
-    const btn    = document.getElementById('btnToggle');
+    const wrap = document.getElementById('viewport-wrap');
+    const btn  = document.getElementById('btnToggle');
+    wrap.style.display   = active ? 'block' : 'none';
+    btn.style.background = active ? 'var(--danger)' : 'var(--primary)';
 
-    wrap.style.display      = active ? 'block' : 'none';
-    btn.innerText           = active ? 'STOP SCANNER' : 'START SCANNER';
-    btn.style.background    = active ? 'var(--danger)' : 'var(--primary)';
+    const icon  = active ? 'x' : 'scan-line';
+    const label = active ? 'STOP SCANNER' : 'START SCANNER';
+    btn.innerHTML = `<i data-lucide="${icon}" style="width:16px;height:16px;vertical-align:middle;margin-right:7px;"></i>${label}`;
+    if (window.lucide) lucide.createIcons();
 }
 
 function setStatus(msg) {
@@ -57,12 +75,9 @@ async function startScanner() {
     try {
         codeReader = new ZXing.BrowserMultiFormatReader();
 
-        // listVideoInputDevices is an instance method in ZXing 0.18.x (not static)
         let deviceId = null;
         try {
             const devices = await codeReader.listVideoInputDevices();
-
-            // Prefer rear/environment-facing camera
             for (const device of devices) {
                 const label = device.label.toLowerCase();
                 if (label.includes('back') || label.includes('rear') ||
@@ -71,13 +86,8 @@ async function startScanner() {
                     break;
                 }
             }
-
-            // Fallback: last device in list (usually rear on mobile)
-            if (!deviceId && devices.length > 0) {
-                deviceId = devices[devices.length - 1].deviceId;
-            }
+            if (!deviceId && devices.length > 0) deviceId = devices[devices.length - 1].deviceId;
         } catch (_) {
-            // Permissions not yet granted or API unavailable — let ZXing choose
             deviceId = null;
         }
 
@@ -87,14 +97,12 @@ async function startScanner() {
             deviceId,
             document.getElementById('video'),
             (result, err) => {
-                if (!result) return; // frame errors are normal in continuous mode
+                if (!result) return;
 
-                // Debounce: ignore rapid repeated reads of the same code
                 const now = Date.now();
                 if (now - lastScan < DEBOUNCE_MS) return;
 
                 const sscc = extractSSCC(result.getText());
-
                 if (!sscc) {
                     setStatus(`Unrecognized format (${result.getText().replace(/\D/g, '').length} digits)`);
                     return;
@@ -104,16 +112,19 @@ async function startScanner() {
 
                 const input    = document.getElementById('input');
                 const existing = input.value.trim();
-
-                // Avoid consecutive duplicate
                 if (existing.split('\n').pop() === sscc) return;
 
                 input.value = existing ? `${existing}\n${sscc}` : sscc;
 
+                // Feedback: vibration + beep
                 if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+                beep();
+
+                // Save to history (camera scans only)
+                if (typeof historyAdd === 'function') historyAdd(sscc);
 
                 stopScanner();
-                process(); // defined in app.js
+                process();
             }
         );
 
@@ -124,10 +135,7 @@ async function startScanner() {
 }
 
 function stopScanner() {
-    if (codeReader) {
-        codeReader.reset();
-        codeReader = null;
-    }
+    if (codeReader) { codeReader.reset(); codeReader = null; }
     setScannerUI(false);
     isScanning = false;
 }

@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SSCC Pro Vision | Ultimate Compatibility v4.5</title>
+    <title>SSCC Pro Vision | Recovery Suite v4.6</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    
+    <!-- Engine Industrial: QuaggaJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
     <style>
         :root {
@@ -16,42 +18,60 @@
             --bg: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155;
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 500px; }
+        .container { width: 100%; max-width: 500px; padding-bottom: 40px; }
         .card { background: var(--card-bg); border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); }
         
         header { margin-bottom: 20px; text-align: center; }
         h1 { font-size: 22px; font-weight: 700; margin: 0; text-transform: uppercase; }
         h1 span { color: var(--primary); }
 
-        #reader { 
-            width: 100% !important; 
-            border-radius: 16px; 
-            overflow: hidden; 
-            display: none; 
-            border: 2px solid var(--primary) !important;
-            background: #000;
+        #interactive.viewport {
+            width: 100%;
+            height: 250px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
             margin-bottom: 15px;
+            background: #000;
+            position: relative;
+            display: none;
         }
-        
-        /* Botões Estilo Industrial */
+        #interactive.viewport canvas, video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
         .btn-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .main-btn { width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; color: white; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        
+        .main-btn { width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; color: white; cursor: pointer; text-transform: uppercase; }
         .btn-live { background: var(--primary); }
-        .btn-file { background: var(--success); }
         .btn-audit { background: #334155; }
         .btn-clear { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
 
         textarea { width: 100%; height: 100px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; }
         
-        .results { background: #0f172a; border-radius: 12px; padding: 10px; border: 1px solid var(--border); max-height: 250px; overflow-y: auto; }
-        .result-row { padding: 10px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .results { background: #0f172a; border-radius: 12px; padding: 10px; border: 1px solid var(--border); max-height: 200px; overflow-y: auto; }
+        .result-row { padding: 8px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 12px; display: flex; justify-content: space-between; }
         .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
 
-        /* Esconder o input real de ficheiro */
-        #file-input { display: none; }
+        /* Painel de Instruções */
+        .info-panel { margin-top: 20px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; border: 1px solid var(--border); padding: 20px; font-size: 13px; line-height: 1.6; }
+        .info-panel h2 { font-size: 15px; color: var(--primary); margin: 0 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .info-panel h3 { font-size: 13px; color: var(--text-main); margin: 12px 0 4px 0; }
+        .info-panel ul { padding-left: 18px; color: var(--text-muted); margin: 0; }
 
-        details { margin-top: 15px; font-size: 11px; color: var(--text-muted); }
+        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 15px; }
+        summary { font-weight: 700; color: var(--text-muted); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        summary::after { content: '＋'; color: var(--primary); }
+        details[open] summary::after { content: '－'; }
+
+        .changelog p { margin: 6px 0; border-left: 2px solid var(--border); padding-left: 8px; font-size: 11px; color: var(--text-muted); }
+        .version { font-weight: 700; color: var(--success); margin-right: 6px; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -59,20 +79,15 @@
 <div class="container">
     <main class="card">
         <header>
-            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.5</small></h1>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.6</small></h1>
         </header>
 
-        <div id="reader"></div>
+        <div id="interactive" class="viewport"></div>
         
-        <textarea id="input" placeholder="Data terminal ready..."></textarea>
+        <textarea id="input" placeholder="Aguardando dados..."></textarea>
 
         <div class="btn-stack">
-            <button class="main-btn btn-live" id="liveBtn" onclick="toggleLiveScanner()">LIVE CAMERA SCAN</button>
-            
-            <!-- Botão de Ficheiro/Foto (O mais fiável para o teu caso) -->
-            <button class="main-btn btn-file" onclick="document.getElementById('file-input').click()">TAKE PHOTO / UPLOAD</button>
-            <input type="file" id="file-input" accept="image/*" capture="environment">
-
+            <button class="main-btn btn-live" id="btnToggle" onclick="toggleScanner()">START SCANNER</button>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
                 <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
@@ -80,18 +95,43 @@
         </div>
 
         <div class="results" id="output"></div>
+    </main>
+
+    <section class="info-panel">
+        <h2>Instruções de Uso</h2>
+        
+        <h3>1. Entrada Manual</h3>
+        <ul>
+            <li><strong>17 Dígitos:</strong> Gera automaticamente o dígito de controlo.</li>
+            <li><strong>18 Dígitos:</strong> Valida o código. Se o último dígito estiver errado, marca-o a <span style="color:var(--danger)">vermelho</span> e indica a correção.</li>
+        </ul>
+
+        <h3>2. Intervalos (Ranges)</h3>
+        <ul>
+            <li>Copia dois códigos (ex: <code>INÍCIO - FIM</code>). O motor valida ambos e gera a sequência completa entre eles.</li>
+        </ul>
+
+        <h3>3. Scanner Industrial</h3>
+        <ul>
+            <li>O botão <strong>Start Scanner</strong> utiliza o motor QuaggaJS, otimizado para ler <strong>Code 128</strong> (padrão SSCC) sem deformar a imagem em dispositivos móveis.</li>
+        </ul>
 
         <details>
-            <summary>Changelog</summary>
-            <p><strong>v4.5:</strong> Added Native Photo Fallback. If live camera fails (aspect ratio issues), use "Take Photo" to use the phone's native camera app for 100% reliable decoding.</p>
+            <summary>Log de Alterações</summary>
+            <div class="changelog">
+                <p><span class="version">v4.6</span> <strong>Engine QuaggaJS:</strong> Substituição completa para resolver erros de rácio de aspeto (imagem esticada).</p>
+                <p><span class="version">v4.5</span> <strong>Diagnóstico:</strong> Dígitos errados destacados a vermelho com mensagem "X should be Y".</p>
+                <p><span class="version">v3.0</span> <strong>Visão:</strong> Implementação da primeira versão do scanner de câmara.</p>
+                <p><span class="version">v2.0</span> <strong>Precisão:</strong> Migração para <code>BigInt</code> para evitar erros de arredondamento em 18 dígitos.</p>
+            </div>
         </details>
-    </main>
+    </section>
 </div>
 
 <script>
     const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸' };
     let store = [];
-    let html5QrCode;
+    let isScanning = false;
 
     function getCD(s17) {
         let sum = 0;
@@ -100,64 +140,49 @@
         return (10 - (sum % 10)) % 10;
     }
 
-    // SCANNER LIVE
-    async function toggleLiveScanner() {
-        const reader = document.getElementById('reader');
-        const btn = document.getElementById('liveBtn');
-
-        if (!html5QrCode) {
-            html5QrCode = new Html5Qrcode("reader");
-            reader.style.display = 'block';
-            btn.innerText = "STOP LIVE SCAN";
-            btn.style.background = "var(--danger)";
-
-            await html5QrCode.start(
-                { facingMode: "environment" }, 
-                { fps: 15, qrbox: { width: 250, height: 150 } },
-                (decodedText) => {
-                    handleSuccess(decodedText);
-                    stopLive();
-                }
-            ).catch(err => alert("Camera Error: " + err));
-        } else {
-            stopLive();
-        }
+    function toggleScanner() {
+        isScanning ? stopScanner() : startScanner();
     }
 
-    function stopLive() {
-        if (html5QrCode) {
-            html5QrCode.stop().then(() => {
-                html5QrCode = null;
-                document.getElementById('reader').style.display = 'none';
-                document.getElementById('liveBtn').innerText = "LIVE CAMERA SCAN";
-                document.getElementById('liveBtn').style.background = "var(--primary)";
-            });
-        }
+    function startScanner() {
+        const viewport = document.getElementById('interactive');
+        const btn = document.getElementById('btnToggle');
+        viewport.style.display = 'block';
+        btn.innerText = "STOP SCANNER";
+        btn.style.background = "var(--danger)";
+        isScanning = true;
+
+        Quagga.init({
+            inputStream : {
+                name : "Live",
+                type : "LiveStream",
+                target: viewport,
+                constraints: { facingMode: "environment" },
+            },
+            decoder : { readers : ["code_128_reader"] }
+        }, function(err) {
+            if (err) { alert("Erro na câmara: " + err); return; }
+            Quagga.start();
+        });
+
+        Quagga.onDetected(function(result) {
+            let clean = result.codeResult.code.replace(/\D/g, '');
+            if (clean.length >= 17) {
+                if (clean.length > 18) clean = clean.substring(clean.length - 18);
+                document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
+                if (navigator.vibrate) navigator.vibrate(100);
+                stopScanner();
+                process();
+            }
+        });
     }
 
-    // SCAN POR FICHEIRO / FOTOGRAFIA (FALLBACK)
-    document.getElementById('file-input').addEventListener('change', e => {
-        if (e.target.files.length === 0) return;
-        const file = e.target.files[0];
-        const scanner = new Html5Qrcode("reader"); // Usamos o container escondido para processar
-        
-        scanner.scanFile(file, true)
-            .then(decodedText => {
-                handleSuccess(decodedText);
-            })
-            .catch(err => {
-                alert("Could not detect barcode. Please ensure the photo is clear and well-lit.");
-            });
-    });
-
-    function handleSuccess(text) {
-        let clean = text.replace(/\D/g, '');
-        if (clean.length >= 17) {
-            if (clean.length > 18) clean = clean.substring(clean.length - 18);
-            document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
-            if (navigator.vibrate) navigator.vibrate(100);
-            process();
-        }
+    function stopScanner() {
+        Quagga.stop();
+        document.getElementById('interactive').style.display = 'none';
+        document.getElementById('btnToggle').innerText = "START SCANNER";
+        document.getElementById('btnToggle').style.background = "var(--primary)";
+        isScanning = false;
     }
 
     function process() {
@@ -178,7 +203,7 @@
 
     function render() {
         const out = document.getElementById('output');
-        out.innerHTML = store.map(i => `<div class="result-row" style="${i.status === 'invalid' ? 'color:#f87171' : ''}"><span>${i.c}</span><span style="font-size:10px; opacity:0.7">${i.r}</span></div>`).join('') || "Ready.";
+        out.innerHTML = store.map(i => `<div class="result-row" style="${i.status === 'invalid' ? 'color:#f87171' : ''}"><span>${i.c}</span><span style="font-size:10px; opacity:0.7">${i.r}</span></div>`).join('') || "Pronto.";
     }
 
     function clearAll() { document.getElementById('input').value = ""; store = []; render(); }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SSCC Pro Vision | Recovery Suite v4.6</title>
+    <title>SSCC Pro Vision | v4.7</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,7 +45,7 @@
         }
 
         .btn-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .main-btn { width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; color: white; cursor: pointer; text-transform: uppercase; }
+        .main-btn { width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; color: white; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
         .btn-live { background: var(--primary); }
         .btn-audit { background: #334155; }
         .btn-clear { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
@@ -56,10 +56,8 @@
         .result-row { padding: 8px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 12px; display: flex; justify-content: space-between; }
         .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
 
-        /* Painel de Instruções */
         .info-panel { margin-top: 20px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; border: 1px solid var(--border); padding: 20px; font-size: 13px; line-height: 1.6; }
         .info-panel h2 { font-size: 15px; color: var(--primary); margin: 0 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .info-panel h3 { font-size: 13px; color: var(--text-main); margin: 12px 0 4px 0; }
         .info-panel ul { padding-left: 18px; color: var(--text-muted); margin: 0; }
 
         details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 15px; }
@@ -79,12 +77,12 @@
 <div class="container">
     <main class="card">
         <header>
-            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.6</small></h1>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.7</small></h1>
         </header>
 
         <div id="interactive" class="viewport"></div>
         
-        <textarea id="input" placeholder="Aguardando dados..."></textarea>
+        <textarea id="input" placeholder="Aguardando digitalização ou entrada manual..."></textarea>
 
         <div class="btn-stack">
             <button class="main-btn btn-live" id="btnToggle" onclick="toggleScanner()">START SCANNER</button>
@@ -99,30 +97,18 @@
 
     <section class="info-panel">
         <h2>Instruções de Uso</h2>
-        
-        <h3>1. Entrada Manual</h3>
         <ul>
-            <li><strong>17 Dígitos:</strong> Gera automaticamente o dígito de controlo.</li>
-            <li><strong>18 Dígitos:</strong> Valida o código. Se o último dígito estiver errado, marca-o a <span style="color:var(--danger)">vermelho</span> e indica a correção.</li>
-        </ul>
-
-        <h3>2. Intervalos (Ranges)</h3>
-        <ul>
-            <li>Copia dois códigos (ex: <code>INÍCIO - FIM</code>). O motor valida ambos e gera a sequência completa entre eles.</li>
-        </ul>
-
-        <h3>3. Scanner Industrial</h3>
-        <ul>
-            <li>O botão <strong>Start Scanner</strong> utiliza o motor QuaggaJS, otimizado para ler <strong>Code 128</strong> (padrão SSCC) sem deformar a imagem em dispositivos móveis.</li>
+            <li><strong>Digitalização</strong>: Clique em START SCANNER e aponte para o código de barras. O sistema fecha a câmara automaticamente após a leitura.</li>
+            <li><strong>Entrada de 17 Dígitos</strong>: O sistema calcula e gera o dígito de controlo final.</li>
+            <li><strong>Entrada de 18 Dígitos</strong>: Valida o código existente. Se houver erro, destaca o dígito a <span style="color:var(--danger)">vermelho</span> e indica a correção.</li>
         </ul>
 
         <details>
             <summary>Log de Alterações</summary>
             <div class="changelog">
-                <p><span class="version">v4.6</span> <strong>Engine QuaggaJS:</strong> Substituição completa para resolver erros de rácio de aspeto (imagem esticada).</p>
-                <p><span class="version">v4.5</span> <strong>Diagnóstico:</strong> Dígitos errados destacados a vermelho com mensagem "X should be Y".</p>
-                <p><span class="version">v3.0</span> <strong>Visão:</strong> Implementação da primeira versão do scanner de câmara.</p>
-                <p><span class="version">v2.0</span> <strong>Precisão:</strong> Migração para <code>BigInt</code> para evitar erros de arredondamento em 18 dígitos.</p>
+                <p><span class="version">v4.7</span> <strong>UI Cleanup</strong>: Removido o botão de captura manual. Foco total no scanner automático QuaggaJS.</p>
+                <p><span class="version">v4.6</span> <strong>Engine QuaggaJS</strong>: Implementação para resolver distorções de imagem.</p>
+                <p><span class="version">v2.0</span> <strong>Precisão</strong>: Introdução de <code>BigInt</code> para identificadores de 18 dígitos.</p>
             </div>
         </details>
     </section>

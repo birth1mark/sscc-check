@@ -129,6 +129,36 @@ function expandRange(bodyA, bodyB) {
     return results;
 }
 
+// ─── SSCC Formatter ──────────────────────────────────────────────────────────
+
+/**
+ * Returns an HTML string with each SSCC part in its own colour:
+ *   (00)  — muted
+ *   E     — extension digit (blue/primary)
+ *   XXXX… — 16-digit body, GCP + reference (normal)
+ *   C     — check digit (green if valid, red if invalid)
+ *
+ * @param {string} body17    17-digit SSCC body (no check digit)
+ * @param {number} cd        expected check digit
+ * @param {number|null} provided  provided check digit (null for GEN)
+ */
+function formatSSCC(body17, cd, provided = null) {
+    const ext      = body17[0];           // extension digit (1)
+    const ref      = body17.substring(1); // GCP + reference (16 digits)
+    const isGen    = provided === null;
+    const isValid  = isGen || provided === cd;
+    const cdDigit  = isGen ? cd : provided;
+
+    const cdClass  = isValid
+        ? 'cd-valid'
+        : 'cd-invalid';
+
+    return `<span class="sscc-ai">(00)</span>` +
+           `<span class="sscc-ext">${ext}</span>` +
+           `<span class="sscc-ref">${ref}</span>` +
+           `<span class="sscc-cd ${cdClass}">${cdDigit}</span>`;
+}
+
 // ─── UI Actions ───────────────────────────────────────────────────────────────
 
 /**
@@ -159,7 +189,7 @@ function process() {
             expanded.forEach(body => {
                 const cd   = getCD(body);
                 const full = body + cd;
-                store.push({ code: `(00)${body}${cd}`, label: 'GEN', status: 'gen', flag: getFlag(full) });
+                store.push({ code: formatSSCC(body, cd, null), label: 'GEN', status: 'gen', flag: getFlag(full) });
             });
             return;
         }
@@ -175,7 +205,7 @@ function process() {
             const flag     = getFlag(body + cd);
 
             store.push({
-                code:   ok ? `(00)${body}${provided}` : `(00)${body}<span class="error-digit">${provided}</span>`,
+                code:   formatSSCC(body, cd, provided),
                 label:  ok ? 'PASS' : `FAIL: expected ${cd}`,
                 status: ok ? 'valid' : 'invalid',
                 flag,
@@ -184,7 +214,7 @@ function process() {
         } else if (val.length === 17) {
             const cd   = getCD(val);
             const flag = getFlag(val + cd);
-            store.push({ code: `(00)${val}${cd}`, label: 'GEN', status: 'gen', flag });
+            store.push({ code: formatSSCC(val, cd, null), label: 'GEN', status: 'gen', flag });
         }
     });
 

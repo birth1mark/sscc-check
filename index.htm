@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSCC Pro Vision | Final Scan Suite</title>
+    <title>SSCC Pro Vision | Industrial Audit v4.0</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    
+    <!-- Using QuaggaJS for better industrial barcode support -->
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
 
     <style>
         :root {
@@ -17,15 +19,18 @@
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
         .container { width: 100%; max-width: 900px; padding-bottom: 50px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid var(--border); margin-bottom: 20px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid var(--border); margin-bottom: 20px; position: relative; }
+        
         header { margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
         h1 { font-size: 28px; font-weight: 700; margin: 0; }
         h1 span { color: var(--primary); }
-        
-        /* Scanner UI */
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; display: none; border: 2px solid var(--primary) !important; background: #000; min-height: 250px; }
-        
-        textarea { width: 100%; height: 160px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 25px; box-sizing: border-box; }
+
+        /* Scanner Overlay */
+        #scanner-container { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; display: none; border: 2px solid var(--primary); position: relative; background: #000; }
+        #scanner-container video { width: 100%; height: auto; vertical-align: top; }
+        .laser { position: absolute; top: 50%; left: 10%; width: 80%; height: 2px; background-color: rgba(239, 68, 68, 0.7); box-shadow: 0 0 8px rgba(239, 68, 68, 0.8); z-index: 10; transform: translateY(-50%); pointer-events: none; }
+
+        textarea { width: 100%; height: 140px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 25px; box-sizing: border-box; }
         
         .actions { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 35px; }
         button { padding: 14px; border-radius: 10px; font-weight: 600; font-size: 12px; cursor: pointer; border: none; color: white; text-transform: uppercase; transition: 0.2s; }
@@ -39,12 +44,9 @@
         .tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; margin-right: 10px; }
         .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
         
-        details { cursor: pointer; border-top: 1px solid var(--border); padding: 25px; margin-top: 15px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; }
+        details { cursor: pointer; border-top: 1px solid var(--border); padding: 20px; margin-top: 15px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; }
         summary { font-weight: 700; color: var(--text-muted); outline: none; list-style: none; display: flex; align-items: center; justify-content: space-between; }
-        summary::after { content: '＋'; }
-        details[open] summary::after { content: '－'; }
-        .changelog p { margin: 8px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 12px; color: var(--text-muted); }
-
+        
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 20px; }
     </style>
@@ -55,29 +57,32 @@
     <main class="card">
         <header>
             <h1><span>SSCC</span> PRO VISION</h1>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Strict Compliance Engine v3.8</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Industrial Scanner v4.0</p>
         </header>
 
-        <div id="reader"></div>
-        <textarea id="input" spellcheck="false" placeholder="Scan label or paste data..."></textarea>
+        <div id="scanner-container">
+            <div class="laser"></div>
+        </div>
+
+        <textarea id="input" placeholder="Ready for data input..."></textarea>
 
         <nav class="actions">
-            <button class="btn-scan" id="scanBtn" onclick="toggleScanner()">Camera Scan</button>
+            <button class="btn-scan" id="scanBtn" onclick="toggleScanner()">Start Scan</button>
             <button class="btn-primary" onclick="process()">Run Audit</button>
-            <button class="btn-secondary" onclick="exportCSV()">Export CSV</button>
+            <button class="btn-secondary" onclick="exportCSV()">Export</button>
             <button class="btn-danger" onclick="clearAll()">Reset</button>
         </nav>
 
         <div class="results" id="output">
-            <div style="color: #475569; text-align: center;">Awaiting logistics data.</div>
+            <div style="color: #475569; text-align: center;">Waiting...</div>
         </div>
     </main>
 
     <details>
-        <summary>System Logs & Info</summary>
-        <div class="changelog">
-            <p><span style="color: var(--success); font-weight: 700;">v3.8</span> <strong>Scanner Overhaul:</strong> Removed scan-box constraints for better Barcode detection. Added forced auto-kill on successful read.</p>
-            <p><span style="color: var(--success); font-weight: 700;">v3.7</span> <strong>Auto-Dismiss:</strong> Camera terminates immediately upon detection.</p>
+        <summary>Industrial Log & Instructions</summary>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">
+            <p><strong>v4.0:</strong> Switched to QuaggaJS for enhanced GS1-128 barcode detection. Added visual alignment laser.</p>
+            <p><strong>Usage:</strong> Align the barcode with the red line. It will auto-close and audit.</p>
         </div>
     </details>
 </div>
@@ -85,7 +90,7 @@
 <script>
     const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸', '300': 'FRANCE 🇫🇷', '400': 'GERMANY 🇩🇪' };
     let store = [];
-    let scanner = null;
+    let isScanning = false;
 
     function getCD(s17) {
         let sum = 0;
@@ -94,77 +99,70 @@
         return (10 - (sum % 10)) % 10;
     }
 
-    async function toggleScanner() {
-        const btn = document.getElementById('scanBtn');
-        const readerDiv = document.getElementById('reader');
-
-        if (scanner) {
-            await stopScanner();
+    function toggleScanner() {
+        if (isScanning) {
+            stopQuagga();
             return;
         }
+        startQuagga();
+    }
 
-        readerDiv.style.display = 'block';
-        btn.innerText = "Stop Scanner";
-        btn.style.background = "var(--danger)";
+    function startQuagga() {
+        const container = document.getElementById('scanner-container');
+        container.style.display = 'block';
+        document.getElementById('scanBtn').innerText = "Stop Scan";
+        document.getElementById('scanBtn').style.background = "var(--danger)";
+        isScanning = true;
 
-        scanner = new Html5Qrcode("reader");
-        
-        const config = { 
-            fps: 20, 
-            aspectRatio: 1.777778 // Wide aspect ratio for barcodes
-        };
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: container,
+                constraints: { facingMode: "environment" }
+            },
+            decoder: {
+                readers: ["code_128_reader"] // SSCC standard
+            },
+            locate: true
+        }, function(err) {
+            if (err) { alert(err); return; }
+            Quagga.start();
+        });
 
-        scanner.start(
-            { facingMode: "environment" }, 
-            config,
-            async (text) => {
-                // STOP IMMEDIATELY
-                await stopScanner();
-                
-                let clean = text.replace(/\D/g, '');
-                if (clean.length > 18) clean = clean.substring(clean.length - 18);
-                
-                if (clean.length >= 17) {
-                    const field = document.getElementById('input');
-                    field.value += (field.value ? '\n' : '') + clean;
-                    process();
-                }
+        Quagga.onDetected((data) => {
+            let code = data.codeResult.code.replace(/\D/g, '');
+            if (code.length >= 17) {
+                if (code.length > 18) code = code.substring(code.length - 18);
+                const field = document.getElementById('input');
+                field.value += (field.value ? '\n' : '') + code;
+                stopQuagga();
+                process();
             }
-        ).catch(err => {
-            alert("Camera Access Error: Ensure you are on HTTPS and granted permissions.");
-            stopScanner();
         });
     }
 
-    async function stopScanner() {
-        if (scanner) {
-            try {
-                await scanner.stop();
-            } catch (e) {
-                console.warn(e);
-            }
-            scanner = null;
-        }
-        document.getElementById('reader').style.display = 'none';
-        document.getElementById('scanBtn').innerText = "Camera Scan";
+    function stopQuagga() {
+        Quagga.stop();
+        document.getElementById('scanner-container').style.display = 'none';
+        document.getElementById('scanBtn').innerText = "Start Scan";
         document.getElementById('scanBtn').style.background = "var(--success)";
+        isScanning = false;
     }
 
     function process() {
-        const input = document.getElementById('input').value;
-        const lines = input.split('\n');
+        const lines = document.getElementById('input').value.split('\n');
         store = [];
-
         lines.forEach(line => {
-            let cleanLine = line.trim().replace(/\s*-\s*/, ' ');
-            let parts = cleanLine.split(/\s+/).filter(p => p.length > 5);
+            let clean = line.trim().replace(/\s*-\s*/, ' ');
+            let parts = clean.split(/\s+/).filter(p => p.length > 5);
 
             if (parts.length === 2) {
                 let sRaw = parts[0].replace(/\D/g, ''), eRaw = parts[1].replace(/\D/g, '');
                 [sRaw, eRaw].forEach(val => {
                     if (val.length === 18) {
                         let b = val.substring(0, 17), p = parseInt(val[17]), e = getCD(b);
-                        if (p !== e) store.push({c: `(00)${b}<span class="error-digit">${p}</span>`, r: `FAIL: ${p} should be ${e}`, status: 'invalid'});
+                        if (p !== e) store.push({c: `(00)${b}<span class="error-digit">${p}</span>`, r: `FAIL: ${p} vs ${e}`, status: 'invalid'});
                     }
                 });
                 let s17 = sRaw.substring(0, 17).padStart(17, '0'), e17 = eRaw.substring(0, 17).padStart(17, '0');
@@ -182,7 +180,7 @@
                     let b = val.substring(0, 17), p = parseInt(val[17]), e = getCD(b);
                     let ok = p === e;
                     let disp = ok ? `(00)${b}${p}` : `(00)${b}<span class="error-digit">${p}</span>`;
-                    store.push({c: disp, r: ok ? `PASS: ${countries[b.substring(1,4)] || "GLOBAL"}` : `FAIL: ${p} should be ${e}`, status: ok ? 'valid' : 'invalid'});
+                    store.push({c: disp, r: ok ? `PASS: ${countries[b.substring(1,4)] || "GLOBAL"}` : `FAIL: ${p} vs ${e}`, status: ok ? 'valid' : 'invalid'});
                 } else if (val.length === 17) {
                     store.push({c: `(00)${val}${getCD(val)}`, r: `GEN: ${countries[val.substring(1,4)] || "GLOBAL"}`, status: 'gen'});
                 }
@@ -198,14 +196,14 @@
                 <span>${i.status !== 'gen' ? `<span class="tag" style="background:${i.status === 'valid' ? 'rgba(16,185,129,0.2);color:#34d399' : 'rgba(239,68,68,0.2);color:#f87171'}">${i.status === 'valid' ? 'OK' : 'ERR'}</span>` : ''}${i.c}</span>
                 <span class="tag tag-country">${i.r}</span>
             </div>
-        `).join('') || '<div style="text-align: center; color: #475569;">No results yet.</div>';
+        `).join('') || '<div style="text-align: center; color: #475569;">Empty list.</div>';
     }
 
     function exportCSV() {
         let csv = "SSCC,Verdict\n" + store.map(i => `"${i.c.replace(/<[^>]*>/g, '')}","${i.r}"`).join("\n");
         let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8' });
         let a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
-        a.download = "SSCC_Audit.csv"; a.click();
+        a.download = "Audit_Report.csv"; a.click();
     }
 
     function clearAll() { document.getElementById('input').value = ""; store = []; render(); }

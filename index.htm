@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSCC Pro Vision | Auto-Audit Suite</title>
+    <title>SSCC Pro Vision | Fast-Audit Suite</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,11 +58,11 @@
     <main class="card">
         <header>
             <h1><span>SSCC</span> PRO VISION</h1>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Auto-Dismiss Scanner v3.4</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">High-Speed Scanner v3.5</p>
         </header>
 
         <div id="reader"></div>
-        <textarea id="input" spellcheck="false" placeholder="Paste seeds or use Camera Scan..."></textarea>
+        <textarea id="input" spellcheck="false" placeholder="Scan codes or paste seeds..."></textarea>
 
         <nav class="actions">
             <button class="btn-scan" id="scanBtn" onclick="toggleScanner()">Camera Scan</button>
@@ -72,28 +72,27 @@
         </nav>
 
         <div class="results" id="output">
-            <div style="color: #475569; text-align: center;">Ready for audit scan.</div>
+            <div style="color: #475569; text-align: center;">Ready for scan.</div>
         </div>
     </main>
 
     <section class="info-panel">
         <h2>Quick Guide</h2>
-        <p style="color: var(--text-muted);">Scanning a barcode will automatically process the data and close the camera for maximum efficiency.</p>
+        <p style="color: var(--text-muted);">The scanner will auto-stop and process results immediately after a successful read.</p>
         
         <details>
             <summary>Development Changelog</summary>
             <div class="changelog">
-                <p><span class="version">v3.4</span> <strong>Auto-Dismiss:</strong> Scanner now closes automatically upon successful barcode detection. Added trigger to process results immediately.</p>
-                <p><span class="version">v3.3</span> <strong>Strict Audit:</strong> Incorrect check digits are highlighted in red. Detail message shows "X should be Y".</p>
-                <p><span class="version">v3.2</span> <strong>Documentation:</strong> Full usage manual restored below main card.</p>
-                <p><span class="version">v3.1</span> <strong>Validation:</strong> Explicit PASS/FAIL status for 18-digit codes.</p>
+                <p><span class="version">v3.5</span> <strong>Scanner Refactor:</strong> Fixed race condition where camera wouldn't close. Improved digit extraction for GS1-128 barcodes.</p>
+                <p><span class="version">v3.4</span> <strong>Auto-Dismiss:</strong> Camera closes automatically upon detection.</p>
+                <p><span class="version">v3.3</span> <strong>Visual Diagnostics:</strong> Detailed "X should be Y" messages and red-highlighted digits.</p>
             </div>
         </details>
     </section>
 </div>
 
 <script>
-    const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸', '300': 'FRANCE 🇫🇷', '400': 'GERMANY 🇩🇪' };
+    const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸', '300': 'FRANCE 🇫🇷', '400': 'GERMANY 🇩🇪', '000': 'USA 🇺🇸' };
     let store = [];
     let html5QrCode;
 
@@ -104,33 +103,51 @@
         return (10 - (sum % 10)) % 10;
     }
 
-    function stopScanner() {
+    async function stopScanner() {
         if (html5QrCode) {
-            html5QrCode.stop().then(() => {
+            try {
+                await html5QrCode.stop();
                 html5QrCode = null;
                 document.getElementById('reader').style.display = 'none';
                 document.getElementById('scanBtn').innerText = "Camera Scan";
-            }).catch(err => console.warn(err));
+            } catch (err) {
+                console.warn("Stop failed, force cleaning UI", err);
+                document.getElementById('reader').innerHTML = "";
+            }
         }
     }
 
     function toggleScanner() {
         const readerDiv = document.getElementById('reader');
         const btn = document.getElementById('scanBtn');
+        
         if (!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
             readerDiv.style.display = 'block';
             btn.innerText = "Stop Scan";
-            html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: 250 }, (text) => {
-                let clean = text.replace(/\D/g, '');
-                // Basic SSCC check: usually ends with 17 or 18 digits
-                if (clean.length >= 17) {
-                    if (clean.length > 18) clean = clean.substring(clean.length - 18);
-                    document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
-                    stopScanner(); // AUTO-CLOSE
-                    process();     // AUTO-PROCESS
+            
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 20, qrbox: { width: 280, height: 160 } },
+                async (decodedText) => {
+                    // 1. STOP IMMEDIATELY
+                    await stopScanner();
+                    
+                    // 2. CLEAN DATA
+                    let clean = decodedText.replace(/\D/g, '');
+                    if (clean.length > 18) {
+                        // Extract last 18 digits if it's a full GS1-128 string
+                        clean = clean.substring(clean.length - 18);
+                    }
+                    
+                    // 3. UPDATE UI
+                    if (clean.length >= 17) {
+                        const inputField = document.getElementById('input');
+                        inputField.value += (inputField.value ? '\n' : '') + clean;
+                        process();
+                    }
                 }
-            }).catch(err => console.error(err));
+            ).catch(err => alert("Camera error: " + err));
         } else {
             stopScanner();
         }

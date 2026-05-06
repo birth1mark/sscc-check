@@ -122,7 +122,6 @@ async function startScanner() {
 
                 stopScanner();
                 process();
-                scrollToResults();
             }
         );
 

@@ -1,0 +1,307 @@
+// ─── File Parser ──────────────────────────────────────────────────────────────
+// Extracts and validates SSCCs from uploaded files.
+// Supports: EDIFACT, IDoc SAP, XML, CSV, TXT (generic fallback)
+// Everything runs client-side — no data leaves the browser.
+
+// ─── Format Detection ─────────────────────────────────────────────────────────
+
+function detectFormat(text) {
+    const t = text.trimStart();
+    if (/^UNA|^UNB\+/.test(t))                          return 'edifact';
+    if (/<\?xml|<ORDERS|<DESADV|<IDOC|<EDI_DC/i.test(t)) return 'xml';
+    if (/^[A-Z]{3}\+/.test(t))                           return 'edifact'; // no UNA header
+    return 'generic'; // CSV, TXT, JSON, anything else
+}
+
+// ─── EDIFACT Parser ───────────────────────────────────────────────────────────
+// SSCC appears in these segments:
+//   GIN+BJ+<SSCC>         — Goods Identity Number, qualifier BJ = SSCC
+//   PAC+++<count>:<type>+<SSCC> — Package level (less common)
+//   RFF+SI:<SSCC>         — Reference, qualifier SI = Shipment ID (sometimes SSCC)
+//   BGM+<type>+<SSCC>     — some implementations put SSCC in BGM
+
+function parseEDIFACT(text) {
+    const found = [];
+
+    // Normalise: remove line breaks inside segments, split on segment terminator
+    // Handle custom delimiters from UNA if present
+    let compSep  = ':';
+    let elemSep  = '+';
+    let segTerm  = "'";
+
+    const unaMatch = text.match(/^UNA(.{6})/);
+    if (unaMatch) {
+        compSep = unaMatch[1][0];
+        elemSep = unaMatch[1][1];
+        segTerm = unaMatch[1][5];
+    }
+
+    // Split into segments
+    const segments = text
+        .replace(/\r?\n/g, '')
+        .split(segTerm)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    segments.forEach((seg, idx) => {
+        const elements = seg.split(elemSep);
+        const tag      = elements[0];
+
+        // GIN+BJ:<SSCC> — primary location for SSCC in DESADV/IFTMIN
+        if (tag === 'GIN') {
+            elements.slice(1).forEach(el => {
+                const parts = el.split(compSep);
+                // qualifier BJ = SSCC
+                if (parts[0] === 'BJ' && parts[1]) {
+                    tryAddSSCC(parts[1], `GIN+BJ (segment ${idx + 1})`, found);
+                } else if (parts.length === 1) {
+                    // Some implementations omit qualifier
+                    tryAddSSCC(parts[0], `GIN (segment ${idx + 1})`, found);
+                }
+            });
+        }
+
+        // RFF+SI:<SSCC>
+        if (tag === 'RFF') {
+            elements.slice(1).forEach(el => {
+                const parts = el.split(compSep);
+                if (parts[0] === 'SI' && parts[1]) {
+                    tryAddSSCC(parts[1], `RFF+SI (segment ${idx + 1})`, found);
+                }
+                if (parts[0] === 'AAK' && parts[1]) {
+                    tryAddSSCC(parts[1], `RFF+AAK (segment ${idx + 1})`, found);
+                }
+            });
+        }
+
+        // PAC — package segment, SSCC sometimes in element 4 or 5
+        if (tag === 'PAC') {
+            elements.slice(1).forEach(el => {
+                const parts = el.split(compSep);
+                parts.forEach(p => tryAddSSCC(p, `PAC (segment ${idx + 1})`, found));
+            });
+        }
+
+        // BGM — some non-standard implementations
+        if (tag === 'BGM') {
+            elements.slice(1).forEach(el => {
+                tryAddSSCC(el.split(compSep)[0], `BGM (segment ${idx + 1})`, found);
+            });
+        }
+    });
+
+    return found;
+}
+
+// ─── XML / IDoc Parser ────────────────────────────────────────────────────────
+// Looks for SSCC values in common XML tags/attributes.
+// IDoc: E1HANDLING_UNIT > EXIDV, VHILM_KU, EXIDV2
+// Generic XML: any tag whose name contains "sscc", "serialship", "nve", "gin"
+
+function parseXML(text) {
+    const found = [];
+
+    // Known IDoc / XML field names that carry SSCCs
+    const knownTags = [
+        'EXIDV', 'EXIDV2', 'VHILM_KU',           // SAP IDoc
+        'SSCC', 'NVE', 'GIN', 'SERIAL_SHIP',      // generic
+        'ShipmentContainerId', 'ContainerId',       // some WMS
+        'PackageId', 'PalletId', 'HandlingUnitId',  // generic
+    ];
+
+    knownTags.forEach(tag => {
+        const re = new RegExp(`<${tag}[^>]*>([^<]+)</${tag}>`, 'gi');
+        let m;
+        while ((m = re.exec(text)) !== null) {
+            tryAddSSCC(m[1].trim(), `<${tag}>`, found);
+        }
+    });
+
+    // Also scan all tag content with regex as fallback
+    const allContent = text.replace(/<[^>]+>/g, ' ');
+    extractGeneric(allContent, 'XML content', found);
+
+    return found;
+}
+
+// ─── Generic Parser ───────────────────────────────────────────────────────────
+// Regex scan for anything that looks like an SSCC:
+//   - (00) followed by 18 digits
+//   - 00 followed by 18 digits (20 total)
+//   - standalone 18-digit number
+//   - standalone 17-digit number (body only)
+
+function parseGeneric(text) {
+    const found = [];
+    extractGeneric(text, 'file content', found);
+    return found;
+}
+
+function extractGeneric(text, source, found) {
+    // (00)XXXXXXXXXXXXXXXXXX — explicit AI notation
+    const reAI = /\(00\)(\d{18})/g;
+    let m;
+    while ((m = reAI.exec(text)) !== null) {
+        tryAddSSCC(m[1], source, found);
+    }
+
+    // 00XXXXXXXXXXXXXXXXXX — 20-digit with leading 00
+    const re20 = /\b(00\d{18})\b/g;
+    while ((m = re20.exec(text)) !== null) {
+        tryAddSSCC(m[1], source, found);
+    }
+
+    // Standalone 18-digit numbers (not preceded by more digits)
+    const re18 = /(?<!\d)(\d{18})(?!\d)/g;
+    while ((m = re18.exec(text)) !== null) {
+        // Skip if it's actually a 20-digit match we already caught
+        tryAddSSCC(m[1], source, found);
+    }
+}
+
+// ─── SSCC Candidate Validator ────────────────────────────────────────────────
+
+function tryAddSSCC(raw, source, found) {
+    if (!raw) return;
+    const digits = raw.replace(/\D/g, '');
+
+    let body18; // 18-digit SSCC
+
+    if (digits.length === 20 && digits.startsWith('00')) {
+        body18 = digits.substring(2);
+    } else if (digits.length === 18) {
+        body18 = digits;
+    } else if (digits.length === 17) {
+        // Body only — generate CD and treat as GEN
+        const cd   = getCD(digits);
+        const full = digits + cd;
+        if (!found.some(f => f.plain === `00${full}`)) {
+            found.push({
+                code:   formatSSCC(digits, cd, null),
+                label:  'GEN',
+                status: 'gen',
+                flag:   getFlag(full),
+                plain:  `00${full}`,
+                source,
+            });
+        }
+        return;
+    } else {
+        return; // not an SSCC
+    }
+
+    // Validate check digit
+    const body     = body18.substring(0, 17);
+    const provided = parseInt(body18[17]);
+    const expected = getCD(body);
+    const ok       = provided === expected;
+
+    // Deduplicate by plain value
+    const plain = `00${body18}`;
+    if (found.some(f => f.plain === plain)) return;
+
+    found.push({
+        code:   formatSSCC(body, expected, provided),
+        label:  ok ? 'PASS' : `FAIL: expected ${expected}`,
+        status: ok ? 'valid' : 'invalid',
+        flag:   getFlag(body18),
+        plain,
+        source,
+    });
+}
+
+// ─── Main Entry Point ─────────────────────────────────────────────────────────
+
+function parseFile(text, filename) {
+    const fmt = detectFormat(text);
+
+    let results;
+    switch (fmt) {
+        case 'edifact': results = parseEDIFACT(text); break;
+        case 'xml':     results = parseXML(text);     break;
+        default:        results = parseGeneric(text);  break;
+    }
+
+    // If structured parsers found nothing, fallback to generic scan
+    if (results.length === 0 && fmt !== 'generic') {
+        results = parseGeneric(text);
+    }
+
+    return { format: fmt, results };
+}
+
+// ─── File Upload UI ───────────────────────────────────────────────────────────
+
+function initFileUpload() {
+    const zone = document.getElementById('drop-zone');
+    const input = document.getElementById('file-input');
+    if (!zone || !input) return;
+
+    // Click to open file picker
+    zone.addEventListener('click', () => input.click());
+
+    // File picker change
+    input.addEventListener('change', e => {
+        if (e.target.files[0]) handleFile(e.target.files[0]);
+        input.value = ''; // reset so same file can be re-uploaded
+    });
+
+    // Drag & drop
+    zone.addEventListener('dragover', e => {
+        e.preventDefault();
+        zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+}
+
+function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+        const text = e.target.result;
+        const { format, results } = parseFile(text, file.name);
+
+        if (!results.length) {
+            showFileResult(file.name, format, []);
+            return;
+        }
+
+        // Push into global store and render
+        store = results;
+        showFileResult(file.name, format, results);
+        render();
+    };
+    reader.readAsText(file, 'UTF-8');
+}
+
+function showFileResult(filename, format, results) {
+    const banner = document.getElementById('file-banner');
+    if (!banner) return;
+
+    const fmtLabel = { edifact: 'EDIFACT', xml: 'XML / IDoc', generic: 'Generic' }[format] || format;
+    const count    = results.length;
+
+    if (!count) {
+        banner.innerHTML = `<span class="file-banner-name">📄 ${filename}</span>
+            <span class="file-banner-info" style="color:var(--danger)">No SSCCs found (${fmtLabel})</span>`;
+    } else {
+        const valid   = results.filter(r => r.status === 'valid').length;
+        const invalid = results.filter(r => r.status === 'invalid').length;
+        const gen     = results.filter(r => r.status === 'gen').length;
+        banner.innerHTML = `<span class="file-banner-name">📄 ${filename}</span>
+            <span class="file-banner-info">${fmtLabel} · ${count} SSCC${count !== 1 ? 's' : ''} found
+                ${valid   ? `· <span style="color:var(--success)">${valid} valid</span>`   : ''}
+                ${invalid ? `· <span style="color:var(--danger)">${invalid} invalid</span>` : ''}
+                ${gen     ? `· <span style="color:var(--primary)">${gen} generated</span>`  : ''}
+            </span>`;
+    }
+
+    banner.style.display = 'flex';
+}
+
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', initFileUpload);

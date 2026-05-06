@@ -1,22 +1,6 @@
 // ─── State ────────────────────────────────────────────────────────────────────
 let store = [];
 
-// ─── Line Counter ────────────────────────────────────────────────────────────
-function updateLineCounter() {
-    const input   = document.getElementById('input');
-    const counter = document.getElementById('line-counter');
-    if (!counter) return;
-    const lines = input.value.split('
-').filter(l => l.trim().replace(/\D/g,'').length >= 17);
-    if (!lines.length) {
-        counter.textContent = '';
-        counter.classList.remove('has-content');
-    } else {
-        counter.textContent = `${lines.length} code${lines.length !== 1 ? 's' : ''}`;
-        counter.classList.add('has-content');
-    }
-}
-
 // ─── History ──────────────────────────────────────────────────────────────────
 const HISTORY_KEY = 'sscc_history';
 const HISTORY_MAX = 10;
@@ -238,8 +222,6 @@ function exportCSV() {
 // ─── Process ──────────────────────────────────────────────────────────────────
 
 function process() {
-    flashAuditBtn();
-    updateLineCounter();
     const lines = document.getElementById('input').value.split('\n');
     store = [];
 
@@ -326,25 +308,21 @@ function render() {
     if (total > 1) summary += `<button class="btn-export" onclick="exportCSV()">⬇ CSV</button>`;
     summary += `</div>`;
 
-    const tooltips = { valid: 'Check digit correct', invalid: 'Check digit wrong', gen: 'Check digit generated' };
-
     const rows = store.map((item, idx) => {
         const badgeClass = item.status === 'valid'   ? 'badge-pass'
                          : item.status === 'invalid' ? 'badge-fail'
                          :                            'badge-gen';
-        const rowStyle   = item.status === 'invalid' ? 'color:#f87171' : '';
-        const tip        = tooltips[item.status] || '';
-        const delay      = Math.min(idx * 30, 300); // stagger up to 300ms
-        const copyBtn    = item.plain
+        const rowStyle = item.status === 'invalid' ? 'color:#f87171' : '';
+        const copyBtn  = item.plain
             ? `<button class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy SSCC"><i data-lucide="copy" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
             : '';
 
         return `
-        <div class="result-row" style="${rowStyle}; animation-delay:${delay}ms">
+        <div class="result-row" style="${rowStyle}">
             <span class="result-code">${item.code}</span>
             <span class="result-meta">
                 <span class="flag">${item.flag || ''}</span>
-                <span class="badge ${badgeClass}" data-tip="${tip}">${item.label}</span>
+                <span class="badge ${badgeClass}">${item.label}</span>
                 ${copyBtn}
             </span>
         </div>`;
@@ -352,7 +330,6 @@ function render() {
 
     out.innerHTML = summary + rows;
     if (window.lucide) lucide.createIcons();
-    scrollToResults();
 }
 
 function clearAll() {

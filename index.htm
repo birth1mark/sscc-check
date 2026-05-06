@@ -123,13 +123,20 @@
         status.textContent='Starting camera…';
         try {
             codeReader=new ZXing.BrowserMultiFormatReader();
-            const devices=await ZXing.BrowserMultiFormatReader.listVideoInputDevices();
+
+            // listVideoInputDevices is instance method in 0.18.x
             let devId=null;
-            for(const d of devices){
-                const l=d.label.toLowerCase();
-                if(l.includes('back')||l.includes('rear')||l.includes('environment')||l.includes('traseira')){devId=d.deviceId;break;}
+            try {
+                const devices=await codeReader.listVideoInputDevices();
+                for(const d of devices){
+                    const l=d.label.toLowerCase();
+                    if(l.includes('back')||l.includes('rear')||l.includes('environment')||l.includes('traseira')){devId=d.deviceId;break;}
+                }
+                if(!devId && devices.length>0) devId=devices[devices.length-1].deviceId;
+            } catch(_){
+                // fallback: let ZXing pick the default device
+                devId=null;
             }
-            if(!devId && devices.length>0) devId=devices[devices.length-1].deviceId;
             status.textContent='Reading barcode…';
             await codeReader.decodeFromVideoDevice(devId, document.getElementById('video'), (result,err)=>{
                 if(!result) return;

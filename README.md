@@ -45,7 +45,10 @@ GS1 General Specifications — check digit algorithm and prefix table
 
 
 📝 Changelog
-VersionHighlightsv5.3Range expansion — generate all SSCCs between two codesv5.2JS split into app.js / scanner.js, PWA supportv5.1Fix GS1-128 AI (00) prefix extraction, debouncev5.0Replaced QuaggaJS with ZXing for reliable scanningv2.0BigInt arithmetic for 18-digit precision
+VersionHighlightsv5.3Range expansion — generate all SSCCs between two codesv5.2JS split into app.js / scanner.js, PWA support
+v5.1Fix GS1-128 AI (00) prefix extraction, debouncev
+5.0Replaced QuaggaJS with ZXing for reliable scanning
+v2.0BigInt arithmetic for 18-digit precision
 
 📄 License
 MIT — free to use, modify and distribute.

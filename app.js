@@ -36,10 +36,6 @@ const GS1_FLAGS = [
     [[978,979],'🌐'],[[980,980],'🌐'],[[981,984],'🌐'],[[990,999],'🌐'],
 ];
 
-/**
- * Returns the country flag emoji for a given 18-digit SSCC.
- * GS1 prefix = digits 1–3 of the SSCC (after the 1-digit extension).
- */
 function getFlag(sscc18) {
     const prefix = parseInt(sscc18.substring(1, 4));
     for (const [[lo, hi], flag] of GS1_FLAGS) {
@@ -48,9 +44,6 @@ function getFlag(sscc18) {
     return '';
 }
 
-/**
- * Calculates the GS1 check digit for a 17-digit body string.
- */
 function getCD(s17) {
     let sum = 0;
     const digits = s17.split('').reverse();
@@ -60,19 +53,11 @@ function getCD(s17) {
     return (10 - (sum % 10)) % 10;
 }
 
-/**
- * Normalises any SSCC-like input to a 17-digit body string, or null if invalid.
- * Accepts:
- *   - 17 digits  → body as-is
- *   - 18 digits  → strip check digit
- *   - 19 digits  → strip leading '0' padding + check digit (rare)
- *   - 20 digits starting with '00' → AI (00) prefix, take digits 2-18 (17-digit body)
- */
 function toBody(raw) {
     const d = raw.replace(/\D/g, '');
     if (d.length === 17) return d;
     if (d.length === 18) return d.substring(0, 17);
-    if (d.length === 20 && d.startsWith('00')) return d.substring(2, 19); // AI(00) + 17 body
+    if (d.length === 20 && d.startsWith('00')) return d.substring(2, 19);
     return null;
 }
 
@@ -80,78 +65,37 @@ function toBody(raw) {
 
 const MAX_RANGE = 500;
 
-/**
- * Detects if a line is a range expression and returns [bodyA, bodyB] or null.
- *
- * Supports all realistic input formats:
- *   17 digits:  34001234500000001-34001234500000050
- *   18 digits:  340012345000000018-340012345000000050
- *   20 digits:  00340012345000000018-00340012345000000050
- *   With AI:    (00)340012345000000018-(00)340012345000000050
- *   With spaces: 34001234500000001 - 34001234500000050
- *
- * Strategy: split on the '-' that separates two SSCC-like tokens.
- * An SSCC token is an optional "(00)" prefix followed by 17–18 digits.
- */
 function parseRangeLine(line) {
-    // Match: optional (00) + 17-20 digits, separator '-', optional (00) + 17-20 digits
     const m = line.trim().match(
         /^(\(?00\)?\s*)?(\d{17,20})\s*-\s*(\(?00\)?\s*)?(\d{17,20})$/
     );
     if (!m) return null;
-
     const bodyA = toBody(m[2]);
     const bodyB = toBody(m[4]);
-
     if (!bodyA || !bodyB) return null;
     return [bodyA, bodyB];
 }
 
-/**
- * Expands a range into an array of 17-digit body strings.
- * Returns array of strings, or { error: string } on failure.
- */
 function expandRange(bodyA, bodyB) {
     const start = BigInt(bodyA);
     const end   = BigInt(bodyB);
-
-    if (end < start) return { error: `Range end is before start.` };
-
+    if (end < start) return { error: 'Range end is before start.' };
     const count = end - start + 1n;
-    if (count > BigInt(MAX_RANGE)) {
-        return { error: `Range too large: ${count} codes (max ${MAX_RANGE}).` };
-    }
-
+    if (count > BigInt(MAX_RANGE)) return { error: `Range too large: ${count} codes (max ${MAX_RANGE}).` };
     const results = [];
-    for (let n = start; n <= end; n++) {
-        results.push(n.toString().padStart(17, '0'));
-    }
+    for (let n = start; n <= end; n++) results.push(n.toString().padStart(17, '0'));
     return results;
 }
 
-// ─── SSCC Formatter ──────────────────────────────────────────────────────────
+// ─── SSCC Formatter ───────────────────────────────────────────────────────────
 
-/**
- * Returns an HTML string with each SSCC part in its own colour:
- *   (00)  — muted
- *   E     — extension digit (blue/primary)
- *   XXXX… — 16-digit body, GCP + reference (normal)
- *   C     — check digit (green if valid, red if invalid)
- *
- * @param {string} body17    17-digit SSCC body (no check digit)
- * @param {number} cd        expected check digit
- * @param {number|null} provided  provided check digit (null for GEN)
- */
 function formatSSCC(body17, cd, provided = null) {
-    const ext      = body17[0];           // extension digit (1)
-    const ref      = body17.substring(1); // GCP + reference (16 digits)
-    const isGen    = provided === null;
-    const isValid  = isGen || provided === cd;
-    const cdDigit  = isGen ? cd : provided;
-
-    const cdClass  = isValid
-        ? 'cd-valid'
-        : 'cd-invalid';
+    const ext     = body17[0];
+    const ref     = body17.substring(1);
+    const isGen   = provided === null;
+    const isValid = isGen || provided === cd;
+    const cdDigit = isGen ? cd : provided;
+    const cdClass = isValid ? 'cd-valid' : 'cd-invalid';
 
     return `<span class="sscc-ai">(00)</span>` +
            `<span class="sscc-ext">${ext}</span>` +
@@ -159,14 +103,58 @@ function formatSSCC(body17, cd, provided = null) {
            `<span class="sscc-cd ${cdClass}">${cdDigit}</span>`;
 }
 
-// ─── UI Actions ───────────────────────────────────────────────────────────────
+/** Returns the plain 18-digit SSCC string for clipboard/CSV */
+function plainSSCC(body17, cd) {
+    return `00${body17}${cd}`;
+}
 
-/**
- * Processes all lines in the textarea.
- * - "SSCC - SSCC" range → expand and generate CDs for all
- * - 18 digits → validate check digit
- * - 17 digits → generate check digit
- */
+// ─── Copy to clipboard ────────────────────────────────────────────────────────
+
+function copyCode(plain, btn) {
+    navigator.clipboard.writeText(plain).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✓';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1200);
+    }).catch(() => {
+        // Fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = plain;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = '✓';
+        setTimeout(() => { btn.textContent = '⎘'; }, 1200);
+    });
+}
+
+// ─── Export CSV ───────────────────────────────────────────────────────────────
+
+function exportCSV() {
+    if (!store.length) return;
+
+    const rows = ['SSCC,Status,Country'];
+    store.forEach(item => {
+        if (item.plain) {
+            const country = item.flag || '';
+            rows.push(`${item.plain},${item.label},${country}`);
+        }
+    });
+
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `sscc_export_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ─── Process ──────────────────────────────────────────────────────────────────
+
 function process() {
     const lines = document.getElementById('input').value.split('\n');
     store = [];
@@ -175,26 +163,30 @@ function process() {
         const trimmed = line.trim();
         if (!trimmed) return;
 
-        // ── Range? ───────────────────────────────────────────────────────────
+        // Range?
         const rangeParts = parseRangeLine(trimmed);
         if (rangeParts) {
             const [bodyA, bodyB] = rangeParts;
             const expanded = expandRange(bodyA, bodyB);
-
             if (expanded.error) {
-                store.push({ code: expanded.error, label: 'ERR', status: 'invalid', flag: '' });
+                store.push({ code: expanded.error, label: 'ERR', status: 'invalid', flag: '', plain: null });
                 return;
             }
-
             expanded.forEach(body => {
                 const cd   = getCD(body);
                 const full = body + cd;
-                store.push({ code: formatSSCC(body, cd, null), label: 'GEN', status: 'gen', flag: getFlag(full) });
+                store.push({
+                    code:  formatSSCC(body, cd, null),
+                    label: 'GEN',
+                    status:'gen',
+                    flag:  getFlag(full),
+                    plain: plainSSCC(body, cd),
+                });
             });
             return;
         }
 
-        // ── Single code ──────────────────────────────────────────────────────
+        // Single code
         const val = trimmed.replace(/\D/g, '');
 
         if (val.length === 18 || (val.length === 20 && val.startsWith('00'))) {
@@ -203,25 +195,32 @@ function process() {
             const provided = parseInt(val.length === 18 ? val[17] : val[19]);
             const ok       = provided === cd;
             const flag     = getFlag(body + cd);
-
             store.push({
                 code:   formatSSCC(body, cd, provided),
                 label:  ok ? 'PASS' : `FAIL: expected ${cd}`,
                 status: ok ? 'valid' : 'invalid',
                 flag,
+                plain:  plainSSCC(body, cd),
             });
 
         } else if (val.length === 17) {
             const cd   = getCD(val);
             const flag = getFlag(val + cd);
-            store.push({ code: formatSSCC(val, cd, null), label: 'GEN', status: 'gen', flag });
+            store.push({
+                code:  formatSSCC(val, cd, null),
+                label: 'GEN',
+                status:'gen',
+                flag,
+                plain: plainSSCC(val, cd),
+            });
         }
     });
 
     render();
 }
 
-/** Renders the result rows into #output. */
+// ─── Render ───────────────────────────────────────────────────────────────────
+
 function render() {
     const out = document.getElementById('output');
 
@@ -230,11 +229,27 @@ function render() {
         return;
     }
 
-    out.innerHTML = store.map(item => {
+    // Summary line
+    const valid   = store.filter(i => i.status === 'valid').length;
+    const invalid = store.filter(i => i.status === 'invalid').length;
+    const gen     = store.filter(i => i.status === 'gen').length;
+    const total   = store.filter(i => i.plain).length;
+
+    let summary = `<div class="results-summary">`;
+    if (gen)     summary += `<span class="badge badge-gen">${gen} GEN</span>`;
+    if (valid)   summary += `<span class="badge badge-pass">${valid} PASS</span>`;
+    if (invalid) summary += `<span class="badge badge-fail">${invalid} FAIL</span>`;
+    if (total > 1) summary += `<button class="btn-export" onclick="exportCSV()">⬇ CSV</button>`;
+    summary += `</div>`;
+
+    const rows = store.map((item, idx) => {
         const badgeClass = item.status === 'valid'   ? 'badge-pass'
                          : item.status === 'invalid' ? 'badge-fail'
                          :                            'badge-gen';
         const rowStyle = item.status === 'invalid' ? 'color:#f87171' : '';
+        const copyBtn  = item.plain
+            ? `<button class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy SSCC">⎘</button>`
+            : '';
 
         return `
         <div class="result-row" style="${rowStyle}">
@@ -242,12 +257,14 @@ function render() {
             <span class="result-meta">
                 <span class="flag">${item.flag || ''}</span>
                 <span class="badge ${badgeClass}">${item.label}</span>
+                ${copyBtn}
             </span>
         </div>`;
     }).join('');
+
+    out.innerHTML = summary + rows;
 }
 
-/** Clears the textarea and results. */
 function clearAll() {
     document.getElementById('input').value = '';
     store = [];

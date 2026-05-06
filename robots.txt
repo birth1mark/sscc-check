@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://birth1mark.github.io/sscc-check/sitemap.xml

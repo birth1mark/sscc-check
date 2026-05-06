@@ -304,7 +304,30 @@ function initFileUpload() {
     });
 }
 
+const BINARY_EXTENSIONS = new Set([
+    'jpg','jpeg','png','gif','bmp','webp','ico','tiff','tif',
+    'mp4','avi','mov','mkv','wmv','flv','webm',
+    'mp3','wav','aac','ogg','flac','m4a',
+    'doc','xls','ppt',
+    'exe','dll','so','bin','dmg','apk','class',
+    'zip','rar','7z','tar','gz','bz2',
+    'pdf',
+    'db','sqlite','mdb','accdb',
+    'ttf','otf','woff','woff2',
+]);
+
 function handleFile(file) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (BINARY_EXTENSIONS.has(ext)) {
+        const banner = document.getElementById('file-banner');
+        if (banner) {
+            banner.innerHTML = `<span class="file-banner-name">📄 ${file.name}</span>
+                <span class="file-banner-info" style="color:var(--danger)">Binary format not supported — use EDIFACT, XML, CSV or TXT</span>`;
+            banner.style.display = 'flex';
+        }
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = e => {
         const text = e.target.result;
@@ -315,7 +338,6 @@ function handleFile(file) {
             return;
         }
 
-        // Push into global store and render
         store = results;
         showFileResult(file.name, format, results);
         render();

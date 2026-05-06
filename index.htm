@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SSCC Pro Vision | Industrial Scanner v4.2</title>
+    <title>SSCC Pro Vision | Manual Capture v4.3</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,41 +15,55 @@
             --primary: #3b82f6; --success: #10b981; --danger: #ef4444;
             --bg: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155;
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: env(safe-area-inset-top) 15px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
-        .container { width: 100%; max-width: 600px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); margin-top: 20px; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 500px; }
+        .card { background: var(--card-bg); border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); }
         
-        header { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-        h1 { font-size: 24px; font-weight: 700; margin: 0; }
+        header { margin-bottom: 20px; text-align: center; }
+        h1 { font-size: 22px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
         h1 span { color: var(--primary); }
 
-        /* SCANNER FIX - Full Width Responsive */
+        /* Scanner Area */
         #reader { 
             width: 100% !important; 
-            border-radius: 12px; 
+            border-radius: 16px; 
             overflow: hidden; 
             display: none; 
             border: 2px solid var(--primary) !important;
             background: #000;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         #reader video { width: 100% !important; height: auto !important; object-fit: contain !important; }
         
-        textarea { width: 100%; height: 120px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 20px; box-sizing: border-box; }
+        /* Capture Trigger Button (Overlay style feeling) */
+        #captureBtn {
+            display: none;
+            width: 100%;
+            padding: 18px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            cursor: pointer;
+        }
+
+        textarea { width: 100%; height: 100px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; }
         
-        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        button { padding: 15px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; border: none; color: white; text-transform: uppercase; transition: 0.2s; }
-        .btn-scan { background: var(--success); grid-column: span 2; font-size: 14px; }
-        .btn-primary { background: var(--primary); }
-        .btn-danger { background: #334155; color: #94a3b8; }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .main-btn { padding: 15px; border-radius: 12px; font-weight: 700; font-size: 12px; border: none; color: white; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .btn-open { background: var(--primary); grid-column: span 2; font-size: 14px; margin-bottom: 5px; }
+        .btn-audit { background: #334155; }
+        .btn-clear { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
         
-        .results { background: #0f172a; border-radius: 12px; padding: 15px; border: 1px solid var(--border); max-height: 300px; overflow-y: auto; }
-        .result-row { font-family: 'JetBrains Mono', monospace; padding: 12px 0; border-bottom: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
-        .tag { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-right: 8px; }
+        .results { margin-top: 20px; background: #0f172a; border-radius: 12px; padding: 10px; border: 1px solid var(--border); max-height: 250px; overflow-y: auto; }
+        .result-row { padding: 10px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; }
         .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
-        
-        details { cursor: pointer; margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; }
-        summary { font-weight: 600; font-size: 13px; color: var(--text-muted); }
+
+        details { margin-top: 15px; font-size: 11px; color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -57,29 +71,27 @@
 <div class="container">
     <main class="card">
         <header>
-            <h1><span>SSCC</span> PRO <small style="font-size: 12px; vertical-align: middle; opacity: 0.6;">v4.2</small></h1>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.3</small></h1>
         </header>
 
         <div id="reader"></div>
         
-        <textarea id="input" placeholder="Codes appear here after scan..."></textarea>
+        <!-- O BOTÃO DE CAPTURA MANUAL -->
+        <button id="captureBtn" onclick="captureNow()">CLICK TO SCAN NOW</button>
+        
+        <textarea id="input" placeholder="Captured codes will appear here..."></textarea>
 
         <nav class="actions">
-            <button class="btn-scan" id="scanBtn" onclick="toggleScanner()">Open Scanner</button>
-            <button class="btn-primary" onclick="process()">Audit List</button>
-            <button class="btn-danger" onclick="clearAll()">Clear</button>
+            <button class="main-btn btn-open" id="toggleBtn" onclick="toggleCamera()">OPEN CAMERA</button>
+            <button class="main-btn btn-audit" onclick="process()">RUN AUDIT</button>
+            <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
         </nav>
 
-        <div class="results" id="output">
-            <div style="text-align: center; color: #475569; font-size: 13px;">Terminal active.</div>
-        </div>
+        <div class="results" id="output"></div>
 
         <details>
             <summary>Changelog</summary>
-            <div style="font-size: 11px; color: var(--text-muted); padding-top: 10px;">
-                <p><strong>v4.2:</strong> Optimized mobile viewport. Fixed aspect ratio bug (from image 1000054829.png). Fixed auto-dismiss scanner logic.</p>
-                <p><strong>v4.1:</strong> Added 18-digit audit highlighting and BigInt support.</p>
-            </div>
+            <p><strong>v4.3:</strong> Added manual capture button to fix aspect ratio issues on specific mobile sensors. Improved scanner dismissal logic.</p>
         </details>
     </main>
 </div>
@@ -88,6 +100,7 @@
     const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸' };
     let store = [];
     let html5QrCode;
+    let lastResult = "";
 
     function getCD(s17) {
         let sum = 0;
@@ -96,57 +109,54 @@
         return (10 - (sum % 10)) % 10;
     }
 
-    async function stopScanner() {
-        if (html5QrCode && html5QrCode.isScanning) {
-            try {
-                await html5QrCode.stop();
-                html5QrCode = null;
-                document.getElementById('reader').style.display = 'none';
-                document.getElementById('scanBtn').innerText = "Open Scanner";
-                document.getElementById('scanBtn').style.background = "var(--success)";
-            } catch (err) { console.warn("Stop failed", err); }
-        }
-    }
-
-    async function toggleScanner() {
-        const readerDiv = document.getElementById('reader');
-        const btn = document.getElementById('scanBtn');
+    async function toggleCamera() {
+        const reader = document.getElementById('reader');
+        const capBtn = document.getElementById('captureBtn');
+        const togBtn = document.getElementById('toggleBtn');
 
         if (!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
-            readerDiv.style.display = 'block';
-            btn.innerText = "Close Scanner";
-            btn.style.background = "var(--danger)";
+            reader.style.display = 'block';
+            capBtn.style.display = 'block';
+            togBtn.innerText = "CLOSE CAMERA";
+            togBtn.style.background = "var(--danger)";
 
-            const config = { 
-                fps: 20, 
-                qrbox: (viewWidth, viewHeight) => {
-                    return { width: viewWidth * 0.8, height: viewHeight * 0.4 };
-                }
-            };
-
-            html5QrCode.start(
+            await html5QrCode.start(
                 { facingMode: "environment" }, 
-                config, 
-                (text) => {
-                    let clean = text.replace(/\D/g, '');
-                    if (clean.length >= 17) {
-                        if (clean.length > 18) clean = clean.substring(clean.length - 18);
-                        document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
-                        
-                        // Haptic feedback if supported
-                        if (navigator.vibrate) navigator.vibrate(100);
-                        
-                        stopScanner(); // AUTO-CLOSE
-                        process();     // AUTO-PROCESS
-                    }
-                }
-            ).catch(err => {
-                alert("Camera access denied or error: " + err);
-                stopScanner();
-            });
+                { fps: 20, qrbox: { width: 250, height: 150 } },
+                (text) => { lastResult = text; } // Just store, don't close yet
+            );
         } else {
-            await stopScanner();
+            closeCamera();
+        }
+    }
+
+    function captureNow() {
+        if (lastResult) {
+            let clean = lastResult.replace(/\D/g, '');
+            if (clean.length >= 17) {
+                if (clean.length > 18) clean = clean.substring(clean.length - 18);
+                document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
+                if (navigator.vibrate) navigator.vibrate(50);
+                closeCamera();
+                process();
+            } else {
+                alert("Align the barcode better and try again.");
+            }
+        } else {
+            alert("No barcode detected yet. Center the image.");
+        }
+    }
+
+    async function closeCamera() {
+        if (html5QrCode) {
+            await html5QrCode.stop();
+            html5QrCode = null;
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('captureBtn').style.display = 'none';
+            document.getElementById('toggleBtn').innerText = "OPEN CAMERA";
+            document.getElementById('toggleBtn').style.background = "var(--primary)";
+            lastResult = "";
         }
     }
 
@@ -168,12 +178,7 @@
 
     function render() {
         const out = document.getElementById('output');
-        out.innerHTML = store.map(i => `
-            <div class="result-row" style="${i.status === 'invalid' ? 'color:#f87171' : ''}">
-                <span>${i.status !== 'gen' ? `<span class="tag" style="background:${i.status === 'valid' ? 'rgba(16,185,129,0.2);color:#34d399' : 'rgba(239,68,68,0.2);color:#f87171'}">${i.status === 'valid' ? 'OK' : 'ERR'}</span>` : ''}${i.c}</span>
-                <span class="tag tag-country">${i.r}</span>
-            </div>
-        `).join('') || '<div style="text-align: center; color: #475569;">History empty.</div>';
+        out.innerHTML = store.map(i => `<div class="result-row" style="${i.status === 'invalid' ? 'color:#f87171' : ''}"><span>${i.c}</span><span style="font-size:10px; opacity:0.7">${i.r}</span></div>`).join('') || "Ready.";
     }
 
     function clearAll() { document.getElementById('input').value = ""; store = []; render(); }

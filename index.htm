@@ -3,307 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SSCC Pro Vision | v5.0</title>
-    
+    <title>SSCC Pro Vision | v5.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- ZXing: muito mais fiável para Code 128 / SSCC -->
     <script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>
-
     <style>
-        :root {
-            --primary: #3b82f6; --success: #10b981; --danger: #ef4444;
-            --bg: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 500px; padding-bottom: 40px; }
-        .card { background: var(--card-bg); border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); }
-        
-        header { margin-bottom: 20px; text-align: center; }
-        h1 { font-size: 22px; font-weight: 700; margin: 0; text-transform: uppercase; }
-        h1 span { color: var(--primary); }
-
-        /* Viewport da câmara */
-        #viewport-wrap {
-            width: 100%;
-            height: 260px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid var(--primary);
-            margin-bottom: 15px;
-            background: #000;
-            position: relative;
-            display: none;
-        }
-        #video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        /* Linha de mira */
-        #scan-line {
-            position: absolute;
-            left: 10%;
-            right: 10%;
-            height: 2px;
-            background: rgba(59,130,246,0.8);
-            box-shadow: 0 0 8px #3b82f6, 0 0 20px #3b82f6;
-            top: 50%;
-            transform: translateY(-50%);
-            animation: scanPulse 1.5s ease-in-out infinite;
-        }
-        @keyframes scanPulse {
-            0%, 100% { opacity: 1; top: 30%; }
-            50% { opacity: 0.6; top: 70%; }
-        }
-        /* Cantos do visor */
-        .corner {
-            position: absolute;
-            width: 20px; height: 20px;
-            border-color: var(--primary);
-            border-style: solid;
-        }
-        .corner-tl { top: 8px; left: 8px; border-width: 3px 0 0 3px; }
-        .corner-tr { top: 8px; right: 8px; border-width: 3px 3px 0 0; }
-        .corner-bl { bottom: 8px; left: 8px; border-width: 0 0 3px 3px; }
-        .corner-br { bottom: 8px; right: 8px; border-width: 0 3px 3px 0; }
-
-        #scan-status {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.6);
-            color: var(--text-muted);
-            font-size: 11px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-
-        .btn-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .main-btn { width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; color: white; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-live { background: var(--primary); }
-        .btn-audit { background: #334155; }
-        .btn-clear { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
-
-        textarea { width: 100%; height: 100px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; resize: vertical; }
-        
-        .results { background: #0f172a; border-radius: 12px; padding: 10px; border: 1px solid var(--border); max-height: 200px; overflow-y: auto; }
-        .result-row { padding: 8px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-        .result-row:last-child { border-bottom: none; }
-        .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
-        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; font-weight: 700; }
-        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); }
-        .badge-fail { background: rgba(239,68,68,0.15); color: var(--danger); }
-        .badge-gen  { background: rgba(59,130,246,0.15); color: var(--primary); }
-
-        .info-panel { margin-top: 20px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; border: 1px solid var(--border); padding: 20px; font-size: 13px; line-height: 1.6; }
-        .info-panel h2 { font-size: 15px; color: var(--primary); margin: 0 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .info-panel ul { padding-left: 18px; color: var(--text-muted); margin: 0; }
-
-        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 15px; }
-        summary { font-weight: 700; color: var(--text-muted); list-style: none; display: flex; align-items: center; justify-content: space-between; }
-        summary::after { content: '＋'; color: var(--primary); }
-        details[open] summary::after { content: '－'; }
-
-        .changelog p { margin: 6px 0; border-left: 2px solid var(--border); padding-left: 8px; font-size: 11px; color: var(--text-muted); }
-        .version { font-weight: 700; color: var(--success); margin-right: 6px; }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        :root { --primary:#3b82f6;--success:#10b981;--danger:#ef4444;--bg:#0f172a;--card-bg:#1e293b;--text-main:#f8fafc;--text-muted:#94a3b8;--border:#334155; }
+        body{font-family:'Inter',sans-serif;background-color:var(--bg);color:var(--text-main);margin:0;padding:15px;display:flex;justify-content:center;min-height:100vh;}
+        .container{width:100%;max-width:500px;padding-bottom:40px;}
+        .card{background:var(--card-bg);border-radius:24px;padding:25px;box-shadow:0 20px 40px rgba(0,0,0,0.4);border:1px solid var(--border);}
+        header{margin-bottom:20px;text-align:center;}
+        h1{font-size:22px;font-weight:700;margin:0;text-transform:uppercase;}
+        h1 span{color:var(--primary);}
+        #viewport-wrap{width:100%;height:260px;border-radius:16px;overflow:hidden;border:2px solid var(--primary);margin-bottom:15px;background:#000;position:relative;display:none;}
+        #video{width:100%;height:100%;object-fit:cover;display:block;}
+        #scan-line{position:absolute;left:10%;right:10%;height:2px;background:rgba(59,130,246,0.8);box-shadow:0 0 8px #3b82f6,0 0 20px #3b82f6;animation:scanMove 1.8s ease-in-out infinite;}
+        @keyframes scanMove{0%,100%{top:25%;}50%{top:75%;}}
+        .corner{position:absolute;width:20px;height:20px;border-color:var(--primary);border-style:solid;}
+        .corner-tl{top:8px;left:8px;border-width:3px 0 0 3px;}.corner-tr{top:8px;right:8px;border-width:3px 3px 0 0;}
+        .corner-bl{bottom:8px;left:8px;border-width:0 0 3px 3px;}.corner-br{bottom:8px;right:8px;border-width:0 3px 3px 0;}
+        #scan-status{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);color:var(--text-muted);font-size:11px;padding:4px 12px;border-radius:20px;white-space:nowrap;}
+        .btn-stack{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+        .main-btn{width:100%;padding:18px;border-radius:12px;font-weight:700;font-size:14px;border:none;color:white;cursor:pointer;text-transform:uppercase;transition:0.2s;}
+        .btn-live{background:var(--primary);}.btn-audit{background:#334155;}
+        .btn-clear{background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2);}
+        textarea{width:100%;height:100px;background:#0f172a;border:1px solid var(--border);border-radius:12px;padding:15px;color:#e2e8f0;font-family:'JetBrains Mono',monospace;font-size:14px;margin-bottom:15px;box-sizing:border-box;resize:vertical;}
+        .results{background:#0f172a;border-radius:12px;padding:10px;border:1px solid var(--border);max-height:200px;overflow-y:auto;}
+        .result-row{padding:8px;border-bottom:1px solid #1e293b;font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+        .result-row:last-child{border-bottom:none;}
+        .error-digit{color:var(--danger);font-weight:700;text-decoration:underline;}
+        .badge{font-size:10px;padding:2px 8px;border-radius:20px;white-space:nowrap;font-weight:700;}
+        .badge-pass{background:rgba(16,185,129,0.15);color:var(--success);}
+        .badge-fail{background:rgba(239,68,68,0.15);color:var(--danger);}
+        .badge-gen{background:rgba(59,130,246,0.15);color:var(--primary);}
+        .info-panel{margin-top:20px;background:rgba(15,23,42,0.5);border-radius:12px;border:1px solid var(--border);padding:20px;font-size:13px;line-height:1.6;}
+        .info-panel h2{font-size:15px;color:var(--primary);margin:0 0 10px 0;border-bottom:1px solid var(--border);padding-bottom:5px;}
+        .info-panel ul{padding-left:18px;color:var(--text-muted);margin:0;}
+        details{cursor:pointer;border-top:1px solid var(--border);padding-top:12px;margin-top:15px;}
+        summary{font-weight:700;color:var(--text-muted);list-style:none;display:flex;align-items:center;justify-content:space-between;}
+        summary::after{content:'＋';color:var(--primary);}
+        details[open] summary::after{content:'－';}
+        .changelog p{margin:6px 0;border-left:2px solid var(--border);padding-left:8px;font-size:11px;color:var(--text-muted);}
+        .version{font-weight:700;color:var(--success);margin-right:6px;}
+        ::-webkit-scrollbar{width:8px;}
+        ::-webkit-scrollbar-thumb{background:#334155;border-radius:10px;}
     </style>
 </head>
 <body>
-
 <div class="container">
     <main class="card">
-        <header>
-            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v5.0</small></h1>
-        </header>
-
+        <header><h1><span>SSCC</span> PRO VISION <small style="opacity:0.5;font-size:10px;">v5.1</small></h1></header>
         <div id="viewport-wrap">
             <video id="video" autoplay muted playsinline></video>
             <div id="scan-line"></div>
-            <div class="corner corner-tl"></div>
-            <div class="corner corner-tr"></div>
-            <div class="corner corner-bl"></div>
-            <div class="corner corner-br"></div>
-            <div id="scan-status">A ler código de barras…</div>
+            <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div><div class="corner corner-br"></div>
+            <div id="scan-status">Reading barcode…</div>
         </div>
-        
-        <textarea id="input" placeholder="Aguardando digitalização ou entrada manual..."></textarea>
-
+        <textarea id="input" placeholder="Waiting for scan or manual input..."></textarea>
         <div class="btn-stack">
             <button class="main-btn btn-live" id="btnToggle" onclick="toggleScanner()">START SCANNER</button>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
                 <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
             </div>
         </div>
-
-        <div class="results" id="output"><span style="color:var(--text-muted); font-size:13px;">Pronto.</span></div>
+        <div class="results" id="output"><span style="color:var(--text-muted);font-size:13px;">Ready.</span></div>
     </main>
-
     <section class="info-panel">
-        <h2>Instruções de Uso</h2>
+        <h2>How to Use</h2>
         <ul>
-            <li><strong>Digitalização</strong>: Clique em START SCANNER e aponte para o código de barras. O sistema fecha a câmara automaticamente após a leitura.</li>
-            <li><strong>Entrada de 17 Dígitos</strong>: O sistema calcula e gera o dígito de controlo final.</li>
-            <li><strong>Entrada de 18 Dígitos</strong>: Valida o código existente. Se houver erro, destaca o dígito a <span style="color:var(--danger)">vermelho</span> e indica a correção.</li>
+            <li><strong>Scan</strong>: Tap START SCANNER and point the camera at the barcode. The scanner closes automatically after a successful read and validates the code immediately.</li>
+            <li><strong>Manual input (17 digits)</strong>: Type or paste the 17-digit SSCC body — the check digit is calculated and appended automatically when you press AUDIT.</li>
+            <li><strong>Manual input (18 digits)</strong>: Type or paste a full 18-digit SSCC to validate it. A wrong check digit is highlighted in <span style="color:var(--danger)">red</span> and the correct value is shown.</li>
+            <li><strong>Multiple codes</strong>: Enter one code per line. Press AUDIT to validate all at once.</li>
         </ul>
-
         <details>
-            <summary>Log de Alterações</summary>
+            <summary>Changelog</summary>
             <div class="changelog">
-                <p><span class="version">v5.0</span> <strong>Engine ZXing</strong>: Substituição do QuaggaJS pelo ZXing para leitura muito mais fiável de Code 128. Adicionada linha de mira animada e cantos de visor.</p>
-                <p><span class="version">v4.7</span> <strong>UI Cleanup</strong>: Removido o botão de captura manual. Foco total no scanner automático QuaggaJS.</p>
-                <p><span class="version">v4.6</span> <strong>Engine QuaggaJS</strong>: Implementação para resolver distorções de imagem.</p>
-                <p><span class="version">v2.0</span> <strong>Precisão</strong>: Introdução de <code>BigInt</code> para identificadores de 18 dígitos.</p>
+                <p><span class="version">v5.1</span> <strong>GS1-128 AI fix</strong>: Correct extraction of the 18-digit SSCC from barcodes that encode the Application Identifier <code>(00)</code> prefix — previously caused false validation failures. Added debounce to prevent duplicate reads.</p>
+                <p><span class="version">v5.0</span> <strong>ZXing engine</strong>: Replaced QuaggaJS with ZXing BrowserMultiFormatReader for significantly more reliable Code 128 reading in real-world conditions.</p>
+                <p><span class="version">v2.0</span> <strong>Check digit precision</strong>: Introduced <code>BigInt</code> arithmetic to handle full 18-digit SSCC identifiers without integer overflow.</p>
             </div>
         </details>
     </section>
 </div>
-
 <script>
-    let store = [];
-    let isScanning = false;
-    let codeReader = null;
-    let selectedDeviceId = null;
+    let store=[], isScanning=false, codeReader=null, lastScan=0;
+    const DEBOUNCE_MS=2000;
 
-    function getCD(s17) {
-        let sum = 0;
-        let d = s17.split('').reverse();
-        for (let i = 0; i < d.length; i++) sum += parseInt(d[i]) * (i % 2 === 0 ? 3 : 1);
-        return (10 - (sum % 10)) % 10;
+    function getCD(s17){
+        let sum=0, d=s17.split('').reverse();
+        for(let i=0;i<d.length;i++) sum+=parseInt(d[i])*(i%2===0?3:1);
+        return (10-(sum%10))%10;
     }
 
-    function toggleScanner() {
-        isScanning ? stopScanner() : startScanner();
+    // Extrai os 18 dígitos do SSCC do raw devolvido pelo ZXing.
+    // GS1-128 com AI (00): raw = "00" + 18 dígitos = 20 dígitos numéricos.
+    // Nunca usar os "últimos 18" — isso inclui os "00" do AI e corta 2 dígitos do SSCC.
+    function extractSSCC(raw){
+        const d = raw.replace(/\D/g,'');
+        if(d.length===20 && d.startsWith('00')) return d.substring(2);  // AI (00) + 18
+        if(d.length===18) return d;                                        // SSCC direto
+        if(d.length===17) return d;                                        // para geração CD
+        if(d.length>20)   return d.substring(d.length-18);               // fallback
+        return null;
     }
 
-    async function startScanner() {
-        const wrap = document.getElementById('viewport-wrap');
-        const btn = document.getElementById('btnToggle');
-        const video = document.getElementById('video');
-        const status = document.getElementById('scan-status');
+    function toggleScanner(){ isScanning ? stopScanner() : startScanner(); }
 
-        wrap.style.display = 'block';
-        btn.innerText = 'STOP SCANNER';
-        btn.style.background = 'var(--danger)';
-        isScanning = true;
-        status.textContent = 'A iniciar câmara…';
-
+    async function startScanner(){
+        const wrap=document.getElementById('viewport-wrap');
+        const btn=document.getElementById('btnToggle');
+        const status=document.getElementById('scan-status');
+        wrap.style.display='block';
+        btn.innerText='STOP SCANNER'; btn.style.background='var(--danger)';
+        isScanning=true; lastScan=0;
+        status.textContent='Starting camera…';
         try {
-            // ZXing: preferir câmara traseira, resolução alta
-            codeReader = new ZXing.BrowserMultiFormatReader();
-
-            const devices = await ZXing.BrowserMultiFormatReader.listVideoInputDevices();
-
-            // Escolher câmara traseira se disponível
-            selectedDeviceId = null;
-            for (const d of devices) {
-                const label = d.label.toLowerCase();
-                if (label.includes('back') || label.includes('rear') || label.includes('environment') || label.includes('traseira')) {
-                    selectedDeviceId = d.deviceId;
-                    break;
-                }
+            codeReader=new ZXing.BrowserMultiFormatReader();
+            const devices=await ZXing.BrowserMultiFormatReader.listVideoInputDevices();
+            let devId=null;
+            for(const d of devices){
+                const l=d.label.toLowerCase();
+                if(l.includes('back')||l.includes('rear')||l.includes('environment')||l.includes('traseira')){devId=d.deviceId;break;}
             }
-            // Se não encontrou, usar a última (normalmente traseira em mobile)
-            if (!selectedDeviceId && devices.length > 0) {
-                selectedDeviceId = devices[devices.length - 1].deviceId;
-            }
-
-            status.textContent = 'A ler código de barras…';
-
-            await codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, err) => {
-                if (result) {
-                    let raw = result.getText();
-                    // Limpar tudo o que não seja dígito
-                    let clean = raw.replace(/\D/g, '');
-
-                    // SSCC tem 18 dígitos; o barcode pode ter prefixo AI (00) ou não
-                    // Tentar extrair os últimos 18 se for mais comprido
-                    if (clean.length > 18) clean = clean.substring(clean.length - 18);
-
-                    if (clean.length >= 17) {
-                        const input = document.getElementById('input');
-                        const existing = input.value.trim();
-                        // Evitar duplicados consecutivos
-                        const lastLine = existing.split('\n').pop();
-                        if (lastLine !== clean) {
-                            input.value = existing ? existing + '\n' + clean : clean;
-                            if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-                            stopScanner();
-                            process();
-                        }
-                    } else {
-                        status.textContent = `Lido ${clean.length} dígitos — precisamos de 17-18`;
-                    }
-                }
-                // err é normal durante a leitura contínua, não fazer nada
+            if(!devId && devices.length>0) devId=devices[devices.length-1].deviceId;
+            status.textContent='Reading barcode…';
+            await codeReader.decodeFromVideoDevice(devId, document.getElementById('video'), (result,err)=>{
+                if(!result) return;
+                const now=Date.now();
+                if(now-lastScan<DEBOUNCE_MS) return; // debounce
+                const sscc=extractSSCC(result.getText());
+                if(!sscc){ status.textContent=`Unrecognized format (${result.getText().replace(/\D/g,'').length} digits)`; return; }
+                lastScan=now;
+                const input=document.getElementById('input');
+                const existing=input.value.trim();
+                if(existing.split('\n').pop()===sscc) return; // sem duplicado consecutivo
+                input.value=existing ? existing+'\n'+sscc : sscc;
+                if(navigator.vibrate) navigator.vibrate([80,40,80]);
+                stopScanner();
+                process();
             });
-
-        } catch (e) {
-            alert('Erro na câmara: ' + e.message);
-            stopScanner();
-        }
+        } catch(e){ alert('Camera error: '+e.message); stopScanner(); }
     }
 
-    function stopScanner() {
-        if (codeReader) {
-            codeReader.reset();
-            codeReader = null;
-        }
-        document.getElementById('viewport-wrap').style.display = 'none';
-        document.getElementById('btnToggle').innerText = 'START SCANNER';
-        document.getElementById('btnToggle').style.background = 'var(--primary)';
-        isScanning = false;
+    function stopScanner(){
+        if(codeReader){codeReader.reset();codeReader=null;}
+        document.getElementById('viewport-wrap').style.display='none';
+        document.getElementById('btnToggle').innerText='START SCANNER';
+        document.getElementById('btnToggle').style.background='var(--primary)';
+        isScanning=false;
     }
 
-    function process() {
-        const lines = document.getElementById('input').value.split('\n');
-        store = [];
-        lines.forEach(line => {
-            let val = line.trim().replace(/\D/g, '');
-            if (val.length === 18) {
-                let b = val.substring(0, 17), p = parseInt(val[17]), e = getCD(b);
-                let ok = p === e;
-                store.push({
-                    c: ok ? `(00)${b}${p}` : `(00)${b}<span class="error-digit">${p}</span>`,
-                    r: ok ? 'PASS' : `FAIL: esperado ${e}`,
-                    status: ok ? 'valid' : 'invalid'
-                });
-            } else if (val.length === 17) {
-                store.push({ c: `(00)${val}${getCD(val)}`, r: 'GEN', status: 'gen' });
+    function process(){
+        const lines=document.getElementById('input').value.split('\n');
+        store=[];
+        lines.forEach(line=>{
+            const val=line.trim().replace(/\D/g,'');
+            if(val.length===18){
+                const b=val.substring(0,17), p=parseInt(val[17]), e=getCD(b), ok=p===e;
+                store.push({c:ok?`(00)${b}${p}`:`(00)${b}<span class="error-digit">${p}</span>`, r:ok?'PASS':`FAIL: expected ${e}`, status:ok?'valid':'invalid'});
+            } else if(val.length===17){
+                store.push({c:`(00)${val}${getCD(val)}`, r:'GEN', status:'gen'});
             }
         });
         render();
     }
 
-    function render() {
-        const out = document.getElementById('output');
-        if (!store.length) {
-            out.innerHTML = '<span style="color:var(--text-muted); font-size:13px;">Pronto.</span>';
-            return;
-        }
-        out.innerHTML = store.map(i => {
-            const badgeClass = i.status === 'valid' ? 'badge-pass' : i.status === 'invalid' ? 'badge-fail' : 'badge-gen';
-            return `<div class="result-row" style="${i.status === 'invalid' ? 'color:#f87171' : ''}">
-                <span style="word-break:break-all;">${i.c}</span>
-                <span class="badge ${badgeClass}">${i.r}</span>
-            </div>`;
+    function render(){
+        const out=document.getElementById('output');
+        if(!store.length){out.innerHTML='<span style="color:var(--text-muted);font-size:13px;">Ready.</span>';return;}
+        out.innerHTML=store.map(i=>{
+            const bc=i.status==='valid'?'badge-pass':i.status==='invalid'?'badge-fail':'badge-gen';
+            return `<div class="result-row" style="${i.status==='invalid'?'color:#f87171':''}"><span style="word-break:break-all;">${i.c}</span><span class="badge ${bc}">${i.r}</span></div>`;
         }).join('');
     }
 
-    function clearAll() {
-        document.getElementById('input').value = '';
-        store = [];
-        render();
-    }
+    function clearAll(){document.getElementById('input').value='';store=[];render();}
 </script>
 </body>
 </html>

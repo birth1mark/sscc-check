@@ -117,9 +117,6 @@ async function startScanner() {
                 if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
                 beep();
 
-                // Save to history (camera scans only)
-                if (typeof historyAdd === 'function') historyAdd(sscc);
-
                 stopScanner();
                 process();
             }

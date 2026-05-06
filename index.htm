@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SSCC Pro Vision | Precision Scan v4.4</title>
+    <title>SSCC Pro Vision | Ultimate Compatibility v4.5</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,33 +33,23 @@
             margin-bottom: 15px;
         }
         
-        /* Botão de Captura - Estilo Industrial */
-        #captureBtn {
-            display: none;
-            width: 100%;
-            padding: 20px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 16px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-        }
+        /* Botões Estilo Industrial */
+        .btn-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .main-btn { width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; color: white; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        
+        .btn-live { background: var(--primary); }
+        .btn-file { background: var(--success); }
+        .btn-audit { background: #334155; }
+        .btn-clear { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
 
         textarea { width: 100%; height: 100px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; }
         
-        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .main-btn { padding: 15px; border-radius: 12px; font-weight: 700; font-size: 12px; border: none; color: white; cursor: pointer; text-transform: uppercase; }
-        .btn-open { background: var(--primary); grid-column: span 2; font-size: 14px; margin-bottom: 5px; }
-        .btn-audit { background: #334155; }
-        .btn-clear { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
-        
-        .results { margin-top: 20px; background: #0f172a; border-radius: 12px; padding: 10px; border: 1px solid var(--border); max-height: 250px; overflow-y: auto; }
-        .result-row { padding: 10px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; }
+        .results { background: #0f172a; border-radius: 12px; padding: 10px; border: 1px solid var(--border); max-height: 250px; overflow-y: auto; }
+        .result-row { padding: 10px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
         .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
+
+        /* Esconder o input real de ficheiro */
+        #file-input { display: none; }
 
         details { margin-top: 15px; font-size: 11px; color: var(--text-muted); }
     </style>
@@ -69,26 +59,31 @@
 <div class="container">
     <main class="card">
         <header>
-            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.4</small></h1>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.5</small></h1>
         </header>
 
         <div id="reader"></div>
         
-        <button id="captureBtn" onclick="scanNow()">SCAN CURRENT FRAME</button>
-        
-        <textarea id="input" placeholder="Codes appear here..."></textarea>
+        <textarea id="input" placeholder="Data terminal ready..."></textarea>
 
-        <nav class="actions">
-            <button class="main-btn btn-open" id="toggleBtn" onclick="toggleCamera()">OPEN CAMERA</button>
-            <button class="main-btn btn-audit" onclick="process()">RUN AUDIT</button>
-            <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
-        </nav>
+        <div class="btn-stack">
+            <button class="main-btn btn-live" id="liveBtn" onclick="toggleLiveScanner()">LIVE CAMERA SCAN</button>
+            
+            <!-- Botão de Ficheiro/Foto (O mais fiável para o teu caso) -->
+            <button class="main-btn btn-file" onclick="document.getElementById('file-input').click()">TAKE PHOTO / UPLOAD</button>
+            <input type="file" id="file-input" accept="image/*" capture="environment">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
+                <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
+            </div>
+        </div>
 
         <div class="results" id="output"></div>
 
         <details>
             <summary>Changelog</summary>
-            <p><strong>v4.4:</strong> Improved manual scan. The button now forces an immediate scan of the current video frame to resolve "indefinite reading" issues.</p>
+            <p><strong>v4.5:</strong> Added Native Photo Fallback. If live camera fails (aspect ratio issues), use "Take Photo" to use the phone's native camera app for 100% reliable decoding.</p>
         </details>
     </main>
 </div>
@@ -105,67 +100,63 @@
         return (10 - (sum % 10)) % 10;
     }
 
-    async function toggleCamera() {
+    // SCANNER LIVE
+    async function toggleLiveScanner() {
         const reader = document.getElementById('reader');
-        const capBtn = document.getElementById('captureBtn');
-        const togBtn = document.getElementById('toggleBtn');
+        const btn = document.getElementById('liveBtn');
 
         if (!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
             reader.style.display = 'block';
-            capBtn.style.display = 'block';
-            togBtn.innerText = "CLOSE CAMERA";
-            togBtn.style.background = "var(--danger)";
+            btn.innerText = "STOP LIVE SCAN";
+            btn.style.background = "var(--danger)";
 
             await html5QrCode.start(
                 { facingMode: "environment" }, 
-                { fps: 20, qrbox: { width: 250, height: 150 } },
+                { fps: 15, qrbox: { width: 250, height: 150 } },
                 (decodedText) => {
-                    // Se ele ler sozinho, óptimo, processa logo.
-                    handleDecodedText(decodedText);
+                    handleSuccess(decodedText);
+                    stopLive();
                 }
-            );
+            ).catch(err => alert("Camera Error: " + err));
         } else {
-            closeCamera();
+            stopLive();
         }
     }
 
-    // Função que força a leitura no momento do clique
-    function scanNow() {
+    function stopLive() {
         if (html5QrCode) {
-            // Tentamos obter o frame atual através do elemento video
-            const video = document.querySelector('#reader video');
-            if (video) {
-                html5QrCode.scanFile(video, false)
-                    .then(decodedText => {
-                        handleDecodedText(decodedText);
-                    })
-                    .catch(err => {
-                        alert("Could not find a clear code in this frame. Adjust focus.");
-                    });
-            }
+            html5QrCode.stop().then(() => {
+                html5QrCode = null;
+                document.getElementById('reader').style.display = 'none';
+                document.getElementById('liveBtn').innerText = "LIVE CAMERA SCAN";
+                document.getElementById('liveBtn').style.background = "var(--primary)";
+            });
         }
     }
 
-    function handleDecodedText(text) {
+    // SCAN POR FICHEIRO / FOTOGRAFIA (FALLBACK)
+    document.getElementById('file-input').addEventListener('change', e => {
+        if (e.target.files.length === 0) return;
+        const file = e.target.files[0];
+        const scanner = new Html5Qrcode("reader"); // Usamos o container escondido para processar
+        
+        scanner.scanFile(file, true)
+            .then(decodedText => {
+                handleSuccess(decodedText);
+            })
+            .catch(err => {
+                alert("Could not detect barcode. Please ensure the photo is clear and well-lit.");
+            });
+    });
+
+    function handleSuccess(text) {
         let clean = text.replace(/\D/g, '');
         if (clean.length >= 17) {
             if (clean.length > 18) clean = clean.substring(clean.length - 18);
             document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
             if (navigator.vibrate) navigator.vibrate(100);
-            closeCamera();
             process();
-        }
-    }
-
-    async function closeCamera() {
-        if (html5QrCode) {
-            await html5QrCode.stop();
-            html5QrCode = null;
-            document.getElementById('reader').style.display = 'none';
-            document.getElementById('captureBtn').style.display = 'none';
-            document.getElementById('toggleBtn').innerText = "OPEN CAMERA";
-            document.getElementById('toggleBtn').style.background = "var(--primary)";
         }
     }
 
@@ -177,9 +168,9 @@
             if (val.length === 18) {
                 let b = val.substring(0, 17), p = parseInt(val[17]), e = getCD(b);
                 let ok = p === e;
-                store.push({c: ok ? `(00)${b}${p}` : `(00)${b}<span class="error-digit">${p}</span>`, r: ok ? `PASS: ${countries[b.substring(1,4)] || "GLOBAL"}` : `FAIL: ${p} vs ${e}`, status: ok ? 'valid' : 'invalid'});
+                store.push({c: ok ? `(00)${b}${p}` : `(00)${b}<span class="error-digit">${p}</span>`, r: ok ? `PASS` : `FAIL: ${p} vs ${e}`, status: ok ? 'valid' : 'invalid'});
             } else if (val.length === 17) {
-                store.push({c: `(00)${val}${getCD(val)}`, r: `GEN: ${countries[val.substring(1,4)] || "GLOBAL"}`, status: 'gen'});
+                store.push({c: `(00)${val}${getCD(val)}`, r: `GEN`, status: 'gen'});
             }
         });
         render();

@@ -284,7 +284,7 @@
 <div class="container">
     <main class="card">
         <header>
-            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size:10px;">v5.5</small></h1>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size:10px;">v5.5.1</small></h1>
         </header>
 
         <div id="viewport-wrap">
@@ -323,23 +323,24 @@
     <section class="info-panel">
         <h2>How to Use</h2>
         <ul>
-            <li><strong>Scan</strong>: Tap START SCANNER and point the camera at the barcode. The scanner closes automatically after a successful read and validates the code immediately.</li>
+            <li><strong>Scan</strong>: Tap START SCANNER and point the camera at the barcode. Closes automatically after a successful read — device vibrates and beeps to confirm.</li>
             <li><strong>Manual input (17 digits)</strong>: Type or paste the 17-digit SSCC body — the check digit is calculated and appended automatically when you press AUDIT.</li>
             <li><strong>Manual input (18 digits)</strong>: Type or paste a full 18-digit SSCC to validate it. A wrong check digit is highlighted in <span style="color:var(--danger)">red</span> and the correct value is shown.</li>
             <li><strong>Multiple codes</strong>: Enter one code per line. Press AUDIT to validate all at once.</li>
-            <li><strong>Range</strong>: Enter two 17 or 18-digit codes separated by <code>-</code> to generate all SSCCs in between, e.g. <code>34001234500000001-34001234500000050</code>. Max 500 codes per range.</li>
+            <li><strong>Range</strong>: Enter two SSCCs separated by <code>-</code> to generate every code in between with check digits, e.g. <code>34001234500000001-34001234500000050</code>. Supports 17, 18 and 20-digit formats with or without AI <code>(00)</code> prefix. Max 500 codes.</li>
+            <li><strong>File upload</strong>: Click the upload area or drag and drop any EDIFACT, IDoc SAP, XML, CSV or TXT file — all SSCCs are extracted and validated automatically. 100% client-side, no data leaves your device.</li>
+            <li><strong>Copy &amp; Export</strong>: Use the copy button on each row to copy a single SSCC, or tap <strong>CSV</strong> in the summary bar to download all results.</li>
         </ul>
 
         <details>
             <summary>Changelog</summary>
             <div class="changelog">
-                <p><span class="version">v5.3</span> <strong>Range expansion</strong>: Enter two SSCCs separated by <code>-</code> to generate all codes in between with check digits. Supports 17, 18 and 20-digit formats, with or without AI <code>(00)</code> prefix.</p>
-                <p><span class="version">v5.5</span> <strong>File Upload</strong>: Upload EDIFACT, IDoc SAP, XML, CSV or any text file to extract and validate all SSCCs. Smart parser detects format automatically — 100% client-side.</p>
-                <p><span class="version">v5.4</span> <strong>Copy &amp; Export</strong>: Copy button on each result row, CSV export, and beep feedback on scan. Lucide icons throughout.</p>
-                <p><span class="version">v5.2</span> <strong>Code split</strong>: JavaScript separated into <code>app.js</code> (SSCC logic) and <code>scanner.js</code> (camera) for maintainability. PWA support added — installable on Android without the Play Store.</p>
-                <p><span class="version">v5.1</span> <strong>GS1-128 AI fix</strong>: Correct extraction of the 18-digit SSCC from barcodes with Application Identifier <code>(00)</code> prefix — previously caused false validation failures. Added debounce to prevent duplicate reads.</p>
-                <p><span class="version">v5.0</span> <strong>ZXing engine</strong>: Replaced QuaggaJS with ZXing BrowserMultiFormatReader for significantly more reliable Code 128 reading in real-world conditions.</p>
-                <p><span class="version">v2.0</span> <strong>Check digit precision</strong>: Introduced <code>BigInt</code> arithmetic to safely handle 17-digit SSCC bodies without integer overflow.</p>
+                <p><span class="version">v5.5</span> <strong>File upload</strong>: Drop or browse any EDIFACT, IDoc SAP, XML, CSV or TXT file — all SSCCs extracted and validated automatically. Format detected automatically. 100% client-side.</p>
+                <p><span class="version">v5.4</span> <strong>Copy &amp; Export</strong>: Copy individual SSCCs to clipboard or export all results as a CSV file. Beep feedback on successful camera scan.</p>
+                <p><span class="version">v5.3</span> <strong>Range expansion</strong>: Generate every SSCC between two codes with a single input — supports 17, 18 and 20-digit formats, with or without AI <code>(00)</code> prefix. Max 500 codes per range.</p>
+                <p><span class="version">v5.2</span> <strong>PWA</strong>: Install as a native-feeling app on Android and iOS directly from the browser — no app store required. Works offline.</p>
+                <p><span class="version">v5.1</span> <strong>Camera scanner</strong>: Reliable GS1-128 scanning via ZXing engine with automatic rear camera selection, vibration and beep feedback.</p>
+                <p><span class="version">v5.0</span> <strong>Validation &amp; generation</strong>: Validate 18-digit SSCCs with colour-coded results (AI, extension, body, check digit) or generate check digits from 17-digit bodies.</p>
             </div>
         </details>
     </section>

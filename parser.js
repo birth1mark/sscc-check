@@ -161,6 +161,45 @@ function extractGeneric(text, source, found) {
 
 // ─── SSCC Candidate Validator ────────────────────────────────────────────────
 
+// ─── SSCC Quality Filters ────────────────────────────────────────────────────
+
+/**
+ * Filter 1 — GS1 prefix validation.
+ * The GS1 prefix is digits 1–3 of the 18-digit SSCC (after the extension digit).
+ * Returns true if the prefix matches a known GS1 member range.
+ */
+function isValidGS1Prefix(body18) {
+    const prefix = parseInt(body18.substring(1, 4));
+    // Valid GS1 prefixes: 300–999 (excluding unassigned gaps handled by getFlag returning '')
+    // We reject anything below 300 — those are not assigned to any country
+    if (prefix < 300) return false;
+    // Also reject if getFlag returns empty string for non-global prefixes
+    // (global prefixes 950,951,960-969,977-984,990-999 are valid)
+    const flag = getFlag(body18);
+    if (flag !== '') return true;
+    // Double-check known global ranges explicitly
+    if (prefix === 950 || prefix === 951) return true;
+    if (prefix >= 960 && prefix <= 969) return true;
+    if (prefix >= 977 && prefix <= 984) return true;
+    if (prefix >= 990 && prefix <= 999) return true;
+    return false;
+}
+
+/**
+ * Filter 2 — Trivial sequence rejection.
+ * Rejects strings that are clearly not real SSCCs:
+ *   - More than 10 identical consecutive digits (e.g. 00000000000000228820)
+ *   - All same digit (e.g. 111111111111111111)
+ *   - Sequential runs (e.g. 012345678901234567)
+ */
+function isTrivialSequence(digits) {
+    // More than 10 identical consecutive digits anywhere
+    if (/(\d){10,}/.test(digits)) return true;
+    // All same digit
+    if (/^(\d)+$/.test(digits)) return true;
+    return false;
+}
+
 function tryAddSSCC(raw, source, found) {
     if (!raw) return;
     const digits = raw.replace(/\D/g, '');
@@ -172,9 +211,11 @@ function tryAddSSCC(raw, source, found) {
     } else if (digits.length === 18) {
         body18 = digits;
     } else if (digits.length === 17) {
-        // Body only — generate CD and treat as GEN
-        const cd   = getCD(digits);
-        const full = digits + cd;
+        // Body only — apply filters before generating
+        if (isTrivialSequence(digits)) return;
+        const full = digits + getCD(digits);
+        if (!isValidGS1Prefix(full)) return;
+        const cd = getCD(digits);
         if (!found.some(f => f.plain === `00${full}`)) {
             found.push({
                 code:   formatSSCC(digits, cd, null),
@@ -189,6 +230,10 @@ function tryAddSSCC(raw, source, found) {
     } else {
         return; // not an SSCC
     }
+
+    // Apply quality filters
+    if (isTrivialSequence(body18))      return; // e.g. 00000000000000228820
+    if (!isValidGS1Prefix(body18))      return; // unknown GS1 prefix
 
     // Validate check digit
     const body     = body18.substring(0, 17);
@@ -302,6 +347,23 @@ function showFileResult(filename, format, results) {
 
     banner.style.display = 'flex';
 }
+
+// ─── Global drag guard ───────────────────────────────────────────────────────
+// Prevents the browser from navigating away if a file is dropped outside the zone.
+
+document.addEventListener('dragover', e => {
+    const zone = document.getElementById('drop-zone');
+    if (zone && zone.contains(e.target)) return; // let the zone handle it
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'none';
+});
+
+document.addEventListener('drop', e => {
+    const zone = document.getElementById('drop-zone');
+    if (zone && zone.contains(e.target)) return; // let the zone handle it
+    e.preventDefault();
+    e.stopPropagation();
+});
 
 // Init on DOM ready
 document.addEventListener('DOMContentLoaded', initFileUpload);

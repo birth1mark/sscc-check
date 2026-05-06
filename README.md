@@ -1,6 +1,6 @@
 📦 SSCC Pro Vision
 Free, open-source SSCC barcode scanner and validator — runs entirely in the browser, installs as a PWA on Android.
-🔗 Try it live →
+🔗 Try it live → https://birth1mark.github.io/sscc-check/
 
 
 📸 What it does

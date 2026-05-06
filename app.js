@@ -291,7 +291,18 @@ function render() {
     const out = document.getElementById('output');
 
     if (!store.length) {
-        out.innerHTML = '<span class="ready-msg">Ready.</span>';
+        out.innerHTML = `<div class="empty-state">
+            <div class="empty-state-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                    <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                    <rect x="7" y="8" width="2" height="8" rx="1"/><rect x="11" y="8" width="1" height="8" rx="0.5"/>
+                    <rect x="14" y="8" width="3" height="8" rx="1"/>
+                </svg>
+            </div>
+            <div class="empty-state-label">Scan a barcode or enter an SSCC</div>
+            <div class="empty-state-hint">e.g. 356012345600000016</div>
+        </div>`;
         return;
     }
 

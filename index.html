@@ -157,6 +157,10 @@
             max-height: 300px; overflow-y: auto;
         }
         .ready-msg { color: var(--text-muted); font-size: 12px; }
+        .empty-state { display: block; text-align: center; padding: 14px 0 10px; }
+        .empty-state-icon  { display: block; margin: 0 auto 8px; opacity: 0.25; color: var(--text-muted); }
+        .empty-state-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .empty-state-hint  { display: block; font-size: 11px; color: var(--border); font-family: 'JetBrains Mono', monospace; }
 
         .result-row {
             padding: 6px 8px; border-bottom: 1px solid #1e293b;
@@ -177,7 +181,16 @@
         .sscc-cd.cd-valid   { color: var(--success); }
         .sscc-cd.cd-invalid { color: var(--danger); text-decoration: underline; }
 
-        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; font-weight: 700; }
+        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; font-weight: 700; position: relative; cursor: default; }
+        .badge[data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+            background: #0f172a; color: var(--text-main);
+            font-size: 10px; font-weight: 400;
+            padding: 4px 8px; border-radius: 6px;
+            border: 1px solid var(--border);
+            white-space: nowrap; pointer-events: none; z-index: 10;
+        }
         .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); }
         .badge-fail { background: rgba(239,68,68,0.15);  color: var(--danger);  }
         .badge-gen  { background: rgba(59,130,246,0.15); color: var(--primary); }
@@ -230,6 +243,16 @@
 
         ::-webkit-scrollbar       { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* Line counter */
+        .input-wrap { position: relative; }
+        .line-counter {
+            position: absolute; bottom: 20px; right: 10px;
+            font-size: 10px; color: var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            pointer-events: none; transition: color 0.2s;
+        }
+        .line-counter.active { color: var(--text-muted); }
 
         /* File upload */
         .drop-zone {
@@ -316,7 +339,18 @@
         </div>
 
         <div class="results" id="output">
-            <span class="ready-msg">Ready.</span>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                        <rect x="7" y="8" width="2" height="8" rx="1"/><rect x="11" y="8" width="1" height="8" rx="0.5"/>
+                        <rect x="14" y="8" width="3" height="8" rx="1"/>
+                    </svg>
+                </div>
+                <div class="empty-state-label">Scan a barcode or enter an SSCC</div>
+                <div class="empty-state-hint">e.g. 356012345600000016</div>
+            </div>
         </div>
     </main>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSCC Pro Vision | Final Stable Suite</title>
+    <title>SSCC Pro Vision | Final Scan Suite</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,10 +19,12 @@
         .container { width: 100%; max-width: 900px; padding-bottom: 50px; }
         .card { background: var(--card-bg); border-radius: 20px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid var(--border); margin-bottom: 20px; }
         header { margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        h1 { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+        h1 { font-size: 28px; font-weight: 700; margin: 0; }
         h1 span { color: var(--primary); }
         
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; display: none; border: 2px solid var(--primary) !important; background: #000; }
+        /* Scanner UI */
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; display: none; border: 2px solid var(--primary) !important; background: #000; min-height: 250px; }
+        
         textarea { width: 100%; height: 160px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 25px; box-sizing: border-box; }
         
         .actions { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 35px; }
@@ -37,14 +39,9 @@
         .tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; margin-right: 10px; }
         .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
         
-        .info-panel { background: rgba(15, 23, 42, 0.5); border-radius: 12px; border: 1px solid var(--border); padding: 25px; font-size: 13px; line-height: 1.6; }
-        .info-panel h2 { font-size: 16px; color: var(--primary); margin: 0 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .info-panel h3 { font-size: 14px; color: var(--text-main); margin: 15px 0 5px 0; }
-        .info-panel ul { padding-left: 20px; color: var(--text-muted); margin: 5px 0; }
-        
-        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 15px; margin-top: 15px; }
+        details { cursor: pointer; border-top: 1px solid var(--border); padding: 25px; margin-top: 15px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; }
         summary { font-weight: 700; color: var(--text-muted); outline: none; list-style: none; display: flex; align-items: center; justify-content: space-between; }
-        summary::after { content: '＋'; font-size: 18px; color: var(--primary); }
+        summary::after { content: '＋'; }
         details[open] summary::after { content: '－'; }
         .changelog p { margin: 8px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 12px; color: var(--text-muted); }
 
@@ -58,11 +55,11 @@
     <main class="card">
         <header>
             <h1><span>SSCC</span> PRO VISION</h1>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Stable Logistics Suite v3.8</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Strict Compliance Engine v3.8</p>
         </header>
 
         <div id="reader"></div>
-        <textarea id="input" spellcheck="false" placeholder="Scan barcode or paste seeds (17/18 digits)..."></textarea>
+        <textarea id="input" spellcheck="false" placeholder="Scan label or paste data..."></textarea>
 
         <nav class="actions">
             <button class="btn-scan" id="scanBtn" onclick="toggleScanner()">Camera Scan</button>
@@ -72,38 +69,23 @@
         </nav>
 
         <div class="results" id="output">
-            <div style="color: #475569; text-align: center;">Terminal ready.</div>
+            <div style="color: #475569; text-align: center;">Awaiting logistics data.</div>
         </div>
     </main>
 
-    <section class="info-panel">
-        <h2>User Instructions</h2>
-        <h3>1. Manual Input</h3>
-        <ul>
-            <li><strong>17 Digits:</strong> Generates the full SSCC with correct check digit.</li>
-            <li><strong>18 Digits:</strong> Audits the code. <strong>ERR</strong> marks invalid digits (highlighted in red).</li>
-            <li><strong>Ranges:</strong> Use <code>START - END</code> to generate sequences.</li>
-        </ul>
-        <h3>2. Vision Scanner</h3>
-        <ul>
-            <li>Click <strong>Camera Scan</strong>. Upon successful detection, the camera closes and data is processed automatically.</li>
-        </ul>
-
-        <details>
-            <summary>Development Changelog</summary>
-            <div class="changelog">
-                <p><span style="color: var(--success); font-weight: 700;">v3.8</span> <strong>Scanner Fix:</strong> Corrected callback order to ensure data is captured before camera shutdown.</p>
-                <p><span style="color: var(--success); font-weight: 700;">v3.7</span> <strong>Auto-Kill:</strong> Camera force-terminates upon detection.</p>
-                <p><span style="color: var(--success); font-weight: 700;">v3.3</span> <strong>Strict Audit:</strong> Visual check digit error highlighting (X should be Y).</p>
-            </div>
-        </details>
-    </section>
+    <details>
+        <summary>System Logs & Info</summary>
+        <div class="changelog">
+            <p><span style="color: var(--success); font-weight: 700;">v3.8</span> <strong>Scanner Overhaul:</strong> Removed scan-box constraints for better Barcode detection. Added forced auto-kill on successful read.</p>
+            <p><span style="color: var(--success); font-weight: 700;">v3.7</span> <strong>Auto-Dismiss:</strong> Camera terminates immediately upon detection.</p>
+        </div>
+    </details>
 </div>
 
 <script>
-    const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸', '300': 'FRANCE 🇫🇷', '400': 'GERMANY 🇩🇪', '000': 'USA 🇺🇸' };
+    const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸', '300': 'FRANCE 🇫🇷', '400': 'GERMANY 🇩🇪' };
     let store = [];
-    let html5QrCode;
+    let scanner = null;
 
     function getCD(s17) {
         let sum = 0;
@@ -113,50 +95,59 @@
     }
 
     async function toggleScanner() {
-        if (html5QrCode) {
+        const btn = document.getElementById('scanBtn');
+        const readerDiv = document.getElementById('reader');
+
+        if (scanner) {
             await stopScanner();
             return;
         }
 
-        html5QrCode = new Html5Qrcode("reader");
-        document.getElementById('reader').style.display = 'block';
-        document.getElementById('scanBtn').innerText = "Stop Scanner";
-        document.getElementById('scanBtn').style.background = "var(--danger)";
+        readerDiv.style.display = 'block';
+        btn.innerText = "Stop Scanner";
+        btn.style.background = "var(--danger)";
 
-        html5QrCode.start(
+        scanner = new Html5Qrcode("reader");
+        
+        const config = { 
+            fps: 20, 
+            aspectRatio: 1.777778 // Wide aspect ratio for barcodes
+        };
+
+        scanner.start(
             { facingMode: "environment" }, 
-            { fps: 20, qrbox: { width: 280, height: 160 } },
-            async (decodedText) => {
-                // 1. CAPTURE DATA FIRST
-                let data = decodedText.replace(/\D/g, '');
-                let clean = data.length > 18 ? data.substring(data.length - 18) : data;
-                
-                // 2. SHUTDOWN CAMERA
+            config,
+            async (text) => {
+                // STOP IMMEDIATELY
                 await stopScanner();
                 
-                // 3. APPLY DATA AND PROCESS
+                let clean = text.replace(/\D/g, '');
+                if (clean.length > 18) clean = clean.substring(clean.length - 18);
+                
                 if (clean.length >= 17) {
                     const field = document.getElementById('input');
                     field.value += (field.value ? '\n' : '') + clean;
-                    process(); 
+                    process();
                 }
             }
-        ).catch(err => console.error(err));
+        ).catch(err => {
+            alert("Camera Access Error: Ensure you are on HTTPS and granted permissions.");
+            stopScanner();
+        });
     }
 
     async function stopScanner() {
-        if (html5QrCode) {
+        if (scanner) {
             try {
-                await html5QrCode.stop();
-                html5QrCode = null;
-                document.getElementById('reader').style.display = 'none';
-                document.getElementById('scanBtn').innerText = "Camera Scan";
-                document.getElementById('scanBtn').style.background = "var(--success)";
-            } catch (err) {
-                html5QrCode = null;
-                document.getElementById('reader').style.display = 'none';
+                await scanner.stop();
+            } catch (e) {
+                console.warn(e);
             }
+            scanner = null;
         }
+        document.getElementById('reader').style.display = 'none';
+        document.getElementById('scanBtn').innerText = "Camera Scan";
+        document.getElementById('scanBtn').style.background = "var(--success)";
     }
 
     function process() {
@@ -207,14 +198,14 @@
                 <span>${i.status !== 'gen' ? `<span class="tag" style="background:${i.status === 'valid' ? 'rgba(16,185,129,0.2);color:#34d399' : 'rgba(239,68,68,0.2);color:#f87171'}">${i.status === 'valid' ? 'OK' : 'ERR'}</span>` : ''}${i.c}</span>
                 <span class="tag tag-country">${i.r}</span>
             </div>
-        `).join('') || '<div style="text-align: center; color: #475569;">No audit data.</div>';
+        `).join('') || '<div style="text-align: center; color: #475569;">No results yet.</div>';
     }
 
     function exportCSV() {
         let csv = "SSCC,Verdict\n" + store.map(i => `"${i.c.replace(/<[^>]*>/g, '')}","${i.r}"`).join("\n");
         let blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8' });
         let a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
-        a.download = "Audit_Report.csv"; a.click();
+        a.download = "SSCC_Audit.csv"; a.click();
     }
 
     function clearAll() { document.getElementById('input').value = ""; store = []; render(); }

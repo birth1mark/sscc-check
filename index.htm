@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SSCC Pro Vision | Manual Capture v4.3</title>
+    <title>SSCC Pro Vision | Precision Scan v4.4</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,10 +20,9 @@
         .card { background: var(--card-bg); border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); }
         
         header { margin-bottom: 20px; text-align: center; }
-        h1 { font-size: 22px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { font-size: 22px; font-weight: 700; margin: 0; text-transform: uppercase; }
         h1 span { color: var(--primary); }
 
-        /* Scanner Area */
         #reader { 
             width: 100% !important; 
             border-radius: 16px; 
@@ -33,13 +32,12 @@
             background: #000;
             margin-bottom: 15px;
         }
-        #reader video { width: 100% !important; height: auto !important; object-fit: contain !important; }
         
-        /* Capture Trigger Button (Overlay style feeling) */
+        /* Botão de Captura - Estilo Industrial */
         #captureBtn {
             display: none;
             width: 100%;
-            padding: 18px;
+            padding: 20px;
             background: var(--success);
             color: white;
             border: none;
@@ -47,14 +45,14 @@
             font-weight: 800;
             font-size: 16px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
             cursor: pointer;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
         }
 
         textarea { width: 100%; height: 100px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; }
         
         .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .main-btn { padding: 15px; border-radius: 12px; font-weight: 700; font-size: 12px; border: none; color: white; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .main-btn { padding: 15px; border-radius: 12px; font-weight: 700; font-size: 12px; border: none; color: white; cursor: pointer; text-transform: uppercase; }
         .btn-open { background: var(--primary); grid-column: span 2; font-size: 14px; margin-bottom: 5px; }
         .btn-audit { background: #334155; }
         .btn-clear { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
@@ -71,15 +69,14 @@
 <div class="container">
     <main class="card">
         <header>
-            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.3</small></h1>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size: 10px;">v4.4</small></h1>
         </header>
 
         <div id="reader"></div>
         
-        <!-- O BOTÃO DE CAPTURA MANUAL -->
-        <button id="captureBtn" onclick="captureNow()">CLICK TO SCAN NOW</button>
+        <button id="captureBtn" onclick="scanNow()">SCAN CURRENT FRAME</button>
         
-        <textarea id="input" placeholder="Captured codes will appear here..."></textarea>
+        <textarea id="input" placeholder="Codes appear here..."></textarea>
 
         <nav class="actions">
             <button class="main-btn btn-open" id="toggleBtn" onclick="toggleCamera()">OPEN CAMERA</button>
@@ -91,7 +88,7 @@
 
         <details>
             <summary>Changelog</summary>
-            <p><strong>v4.3:</strong> Added manual capture button to fix aspect ratio issues on specific mobile sensors. Improved scanner dismissal logic.</p>
+            <p><strong>v4.4:</strong> Improved manual scan. The button now forces an immediate scan of the current video frame to resolve "indefinite reading" issues.</p>
         </details>
     </main>
 </div>
@@ -100,7 +97,6 @@
     const countries = { '560': 'PORTUGAL 🇵🇹', '840': 'SPAIN 🇪🇸' };
     let store = [];
     let html5QrCode;
-    let lastResult = "";
 
     function getCD(s17) {
         let sum = 0;
@@ -124,27 +120,41 @@
             await html5QrCode.start(
                 { facingMode: "environment" }, 
                 { fps: 20, qrbox: { width: 250, height: 150 } },
-                (text) => { lastResult = text; } // Just store, don't close yet
+                (decodedText) => {
+                    // Se ele ler sozinho, óptimo, processa logo.
+                    handleDecodedText(decodedText);
+                }
             );
         } else {
             closeCamera();
         }
     }
 
-    function captureNow() {
-        if (lastResult) {
-            let clean = lastResult.replace(/\D/g, '');
-            if (clean.length >= 17) {
-                if (clean.length > 18) clean = clean.substring(clean.length - 18);
-                document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
-                if (navigator.vibrate) navigator.vibrate(50);
-                closeCamera();
-                process();
-            } else {
-                alert("Align the barcode better and try again.");
+    // Função que força a leitura no momento do clique
+    function scanNow() {
+        if (html5QrCode) {
+            // Tentamos obter o frame atual através do elemento video
+            const video = document.querySelector('#reader video');
+            if (video) {
+                html5QrCode.scanFile(video, false)
+                    .then(decodedText => {
+                        handleDecodedText(decodedText);
+                    })
+                    .catch(err => {
+                        alert("Could not find a clear code in this frame. Adjust focus.");
+                    });
             }
-        } else {
-            alert("No barcode detected yet. Center the image.");
+        }
+    }
+
+    function handleDecodedText(text) {
+        let clean = text.replace(/\D/g, '');
+        if (clean.length >= 17) {
+            if (clean.length > 18) clean = clean.substring(clean.length - 18);
+            document.getElementById('input').value += (document.getElementById('input').value ? '\n' : '') + clean;
+            if (navigator.vibrate) navigator.vibrate(100);
+            closeCamera();
+            process();
         }
     }
 
@@ -156,7 +166,6 @@
             document.getElementById('captureBtn').style.display = 'none';
             document.getElementById('toggleBtn').innerText = "OPEN CAMERA";
             document.getElementById('toggleBtn').style.background = "var(--primary)";
-            lastResult = "";
         }
     }
 

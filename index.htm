@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSCC Pro Vision | Auto-Stop Suite</title>
+    <title>SSCC Pro Vision | Final Stable Suite</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +37,12 @@
         .tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; margin-right: 10px; }
         .error-digit { color: var(--danger); font-weight: 700; text-decoration: underline; }
         
-        details { cursor: pointer; border-top: 1px solid var(--border); padding: 25px; margin-top: 15px; background: rgba(15, 23, 42, 0.5); border-radius: 12px; }
+        .info-panel { background: rgba(15, 23, 42, 0.5); border-radius: 12px; border: 1px solid var(--border); padding: 25px; font-size: 13px; line-height: 1.6; }
+        .info-panel h2 { font-size: 16px; color: var(--primary); margin: 0 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .info-panel h3 { font-size: 14px; color: var(--text-main); margin: 15px 0 5px 0; }
+        .info-panel ul { padding-left: 20px; color: var(--text-muted); margin: 5px 0; }
+        
+        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 15px; margin-top: 15px; }
         summary { font-weight: 700; color: var(--text-muted); outline: none; list-style: none; display: flex; align-items: center; justify-content: space-between; }
         summary::after { content: '＋'; font-size: 18px; color: var(--primary); }
         details[open] summary::after { content: '－'; }
@@ -53,11 +58,11 @@
     <main class="card">
         <header>
             <h1><span>SSCC</span> PRO VISION</h1>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Auto-Dismiss Suite v3.7</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Stable Logistics Suite v3.8</p>
         </header>
 
         <div id="reader"></div>
-        <textarea id="input" spellcheck="false" placeholder="Ready for scan or manual entry..."></textarea>
+        <textarea id="input" spellcheck="false" placeholder="Scan barcode or paste seeds (17/18 digits)..."></textarea>
 
         <nav class="actions">
             <button class="btn-scan" id="scanBtn" onclick="toggleScanner()">Camera Scan</button>
@@ -71,14 +76,28 @@
         </div>
     </main>
 
-    <details>
-        <summary>Changelog & Documentation</summary>
-        <div class="changelog">
-            <p><span style="color: var(--success); font-weight: 700;">v3.7</span> <strong>Auto-Kill Logic:</strong> Camera now force-terminates immediately upon detection to prevent UI lock. Cleaned up redundant UI elements.</p>
-            <p><span style="color: var(--success); font-weight: 700;">v3.3</span> <strong>Strict Audit:</strong> Visual check digit error highlighting (X should be Y).</p>
-            <p><span style="color: var(--success); font-weight: 700;">v2.0</span> <strong>BigInt:</strong> Standardized 18-digit precision logic.</p>
-        </div>
-    </details>
+    <section class="info-panel">
+        <h2>User Instructions</h2>
+        <h3>1. Manual Input</h3>
+        <ul>
+            <li><strong>17 Digits:</strong> Generates the full SSCC with correct check digit.</li>
+            <li><strong>18 Digits:</strong> Audits the code. <strong>ERR</strong> marks invalid digits (highlighted in red).</li>
+            <li><strong>Ranges:</strong> Use <code>START - END</code> to generate sequences.</li>
+        </ul>
+        <h3>2. Vision Scanner</h3>
+        <ul>
+            <li>Click <strong>Camera Scan</strong>. Upon successful detection, the camera closes and data is processed automatically.</li>
+        </ul>
+
+        <details>
+            <summary>Development Changelog</summary>
+            <div class="changelog">
+                <p><span style="color: var(--success); font-weight: 700;">v3.8</span> <strong>Scanner Fix:</strong> Corrected callback order to ensure data is captured before camera shutdown.</p>
+                <p><span style="color: var(--success); font-weight: 700;">v3.7</span> <strong>Auto-Kill:</strong> Camera force-terminates upon detection.</p>
+                <p><span style="color: var(--success); font-weight: 700;">v3.3</span> <strong>Strict Audit:</strong> Visual check digit error highlighting (X should be Y).</p>
+            </div>
+        </details>
+    </section>
 </div>
 
 <script>
@@ -93,9 +112,9 @@
         return (10 - (sum % 10)) % 10;
     }
 
-    function toggleScanner() {
+    async function toggleScanner() {
         if (html5QrCode) {
-            stopScanner();
+            await stopScanner();
             return;
         }
 
@@ -107,34 +126,36 @@
         html5QrCode.start(
             { facingMode: "environment" }, 
             { fps: 20, qrbox: { width: 280, height: 160 } },
-            (decodedText) => {
-                // Kill camera immediately on first successful read
-                stopScanner();
-                
+            async (decodedText) => {
+                // 1. CAPTURE DATA FIRST
                 let data = decodedText.replace(/\D/g, '');
                 let clean = data.length > 18 ? data.substring(data.length - 18) : data;
                 
+                // 2. SHUTDOWN CAMERA
+                await stopScanner();
+                
+                // 3. APPLY DATA AND PROCESS
                 if (clean.length >= 17) {
                     const field = document.getElementById('input');
                     field.value += (field.value ? '\n' : '') + clean;
-                    process(); // Run audit
+                    process(); 
                 }
             }
-        ).catch(err => console.error("Scanner failed to start", err));
+        ).catch(err => console.error(err));
     }
 
-    function stopScanner() {
+    async function stopScanner() {
         if (html5QrCode) {
-            html5QrCode.stop().then(() => {
+            try {
+                await html5QrCode.stop();
                 html5QrCode = null;
                 document.getElementById('reader').style.display = 'none';
                 document.getElementById('scanBtn').innerText = "Camera Scan";
                 document.getElementById('scanBtn').style.background = "var(--success)";
-            }).catch(err => {
-                // Force UI clean if library hangs
+            } catch (err) {
                 html5QrCode = null;
                 document.getElementById('reader').style.display = 'none';
-            });
+            }
         }
     }
 

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SSCC API — Free REST API for SSCC Validation | SSCC Pro Vision</title>
+    <meta name="description" content="Free REST API for SSCC validation, check digit generation, range expansion and file extraction. Built on Cloudflare Workers. No auth required.">
+    <meta name="keywords" content="SSCC API, SSCC REST API, GS1 API, check digit API, SSCC validation API, EDIFACT SSCC extract">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://birth1mark.github.io/sscc-check/api.html">
+    <link rel="sitemap" type="application/xml" href="sitemap.xml">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://birth1mark.github.io/sscc-check/api.html">
+    <meta property="og:title" content="SSCC API — Free REST API for SSCC Validation">
+    <meta property="og:description" content="Free REST API for SSCC validation, check digit generation, range expansion and file extraction. No auth required.">
+    <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "SSCC API — Free REST API for SSCC Validation",
+      "description": "Free REST API for SSCC validation, check digit generation, range expansion and EDIFACT file extraction.",
+      "url": "https://birth1mark.github.io/sscc-check/api.html"
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0f172a; --surface: #1e293b; --border: #334155;
+            --primary: #3b82f6; --success: #10b981; --danger: #ef4444;
+            --text: #f1f5f9; --muted: #94a3b8; --code-bg: #0d1117;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+
+        nav {
+            border-bottom: 1px solid var(--border); padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; background: rgba(15,23,42,0.95);
+            backdrop-filter: blur(8px); z-index: 100;
+        }
+        .nav-brand { font-size: 14px; font-weight: 600; color: var(--primary); text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-link { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.15s; }
+        .nav-link:hover { color: var(--text); }
+        .nav-cta { background: var(--primary); color: white; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; }
+
+        .wrapper { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+
+        .article-header { margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 28px; }
+        .article-tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); padding: 3px 10px; border-radius: 20px; margin-bottom: 16px; }
+        h1 { font-size: clamp(22px, 4vw, 32px); font-weight: 600; line-height: 1.25; margin-bottom: 12px; }
+        h1 em { color: var(--primary); font-style: normal; }
+        .base-url { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--success); background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); padding: 8px 14px; border-radius: 8px; display: inline-block; margin-top: 8px; }
+
+        h2 { font-size: 20px; font-weight: 600; margin: 44px 0 16px; padding-top: 44px; border-top: 1px solid var(--border); scroll-margin-top: 80px; }
+        h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        h3 { font-size: 16px; font-weight: 600; margin: 28px 0 10px; color: var(--primary); }
+        p { margin-bottom: 14px; color: var(--muted); }
+        p strong { color: var(--text); }
+        a { color: var(--primary); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul, ol { padding-left: 20px; margin-bottom: 14px; }
+        li { margin-bottom: 5px; color: var(--muted); }
+        li strong { color: var(--text); }
+
+        /* Endpoint cards */
+        .endpoints-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+        .endpoint-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px 20px;
+            display: flex; align-items: flex-start; gap: 14px;
+        }
+        .method { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 5px; flex-shrink: 0; margin-top: 2px; }
+        .method-get  { background: rgba(16,185,129,0.15); color: var(--success); }
+        .method-post { background: rgba(59,130,246,0.15); color: var(--primary); }
+        .endpoint-info { flex: 1; }
+        .endpoint-path { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--text); margin-bottom: 4px; }
+        .endpoint-desc { font-size: 13px; color: var(--muted); }
+
+        /* Code blocks */
+        .code-tabs { margin: 16px 0 24px; }
+        .tab-buttons { display: flex; gap: 2px; margin-bottom: -1px; }
+        .tab-btn { background: var(--surface); border: 1px solid var(--border); border-bottom: none; padding: 6px 14px; font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--muted); cursor: pointer; border-radius: 6px 6px 0 0; transition: color 0.15s; }
+        .tab-btn.active { color: var(--text); background: var(--code-bg); border-color: var(--border); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        pre {
+            background: var(--code-bg); border: 1px solid var(--border);
+            border-radius: 0 10px 10px 10px; padding: 20px;
+            overflow-x: auto; font-size: 13px; line-height: 1.6; margin: 0;
+        }
+        code { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+        p code, li code { background: var(--surface); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; color: var(--primary); font-size: 13px; }
+
+        .comment { color: #6b7280; }
+        .kw  { color: #c084fc; }
+        .str { color: #86efac; }
+        .num { color: #fb923c; }
+        .key { color: #60a5fa; }
+
+        /* Response example */
+        .response-box {
+            background: var(--code-bg); border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden; margin: 16px 0 24px;
+        }
+        .response-header { background: var(--surface); padding: 8px 16px; font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+        .status-ok { color: var(--success); font-weight: 600; }
+        .response-body { padding: 16px; font-size: 13px; line-height: 1.6; }
+
+        /* Notes */
+        .callout { border-left: 3px solid var(--primary); background: rgba(59,130,246,0.06); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 16px 0 20px; font-size: 14px; color: var(--muted); }
+        .callout strong { color: var(--text); }
+
+        /* Notes table */
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+        .note-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+        .note-card .note-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+        .note-card .note-value { font-size: 14px; font-weight: 600; color: var(--text); }
+
+        /* CTA */
+        .cta-box { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(99,102,241,0.1)); border: 1px solid rgba(59,130,246,0.25); border-radius: 16px; padding: 28px; text-align: center; margin-top: 48px; }
+        .cta-box h3 { font-size: 18px; margin-bottom: 8px; }
+        .cta-box p { margin-bottom: 18px; }
+        .cta-btn { display: inline-block; background: var(--primary); color: white; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; }
+
+        @media (max-width: 600px) { .wrapper { padding: 28px 16px 60px; } .nav-links { gap: 12px; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a class="nav-brand" href="/sscc-check/">← SSCC Pro Vision</a>
+    <div class="nav-links">
+        <a class="nav-link" href="/sscc-check/guide.html">Guide</a>
+        <a class="nav-cta" href="/sscc-check/">Open App</a>
+    </div>
+</nav>
+
+<div class="wrapper">
+
+    <header class="article-header">
+        <span class="article-tag">REST API</span>
+        <h1>SSCC <em>API</em></h1>
+        <p style="color:var(--muted); margin-bottom:10px;">Free, open REST API for SSCC validation, check digit generation, range expansion and file extraction. No authentication required.</p>
+        <div class="base-url">https://sscc.birth1mark.workers.dev</div>
+    </header>
+
+    <div class="notes-grid">
+        <div class="note-card"><div class="note-label">Auth</div><div class="note-value">None required</div></div>
+        <div class="note-card"><div class="note-label">Rate limit</div><div class="note-value">100k req/day</div></div>
+        <div class="note-card"><div class="note-label">CORS</div><div class="note-value">* (open)</div></div>
+        <div class="note-card"><div class="note-label">Format</div><div class="note-value">JSON</div></div>
+        <div class="note-card"><div class="note-label">Max range</div><div class="note-value">500 codes</div></div>
+        <div class="note-card"><div class="note-label">Uptime</div><div class="note-value">Cloudflare edge</div></div>
+    </div>
+
+    <h2 id="endpoints">Endpoints</h2>
+
+    <div class="endpoints-grid">
+        <div class="endpoint-card">
+            <span class="method method-get">GET</span>
+            <div class="endpoint-info">
+                <div class="endpoint-path">/validate?sscc=&lt;18 digits&gt;</div>
+                <div class="endpoint-desc">Validate an 18-digit SSCC — checks the GS1 check digit and returns country info</div>
+            </div>
+        </div>
+        <div class="endpoint-card">
+            <span class="method method-get">GET</span>
+            <div class="endpoint-info">
+                <div class="endpoint-path">/generate?body=&lt;17 digits&gt;</div>
+                <div class="endpoint-desc">Calculate and append the GS1 check digit to a 17-digit SSCC body</div>
+            </div>
+        </div>
+        <div class="endpoint-card">
+            <span class="method method-get">GET</span>
+            <div class="endpoint-info">
+                <div class="endpoint-path">/range?from=&lt;SSCC&gt;&to=&lt;SSCC&gt;</div>
+                <div class="endpoint-desc">Generate every SSCC between two codes with check digits (max 500)</div>
+            </div>
+        </div>
+        <div class="endpoint-card">
+            <span class="method method-get">GET</span>
+            <div class="endpoint-info">
+                <div class="endpoint-path">/prefix?sscc=&lt;18 digits&gt;</div>
+                <div class="endpoint-desc">Look up the GS1 member country from the SSCC company prefix</div>
+            </div>
+        </div>
+        <div class="endpoint-card">
+            <span class="method method-post">POST</span>
+            <div class="endpoint-info">
+                <div class="endpoint-path">/extract</div>
+                <div class="endpoint-desc">Extract and validate all SSCCs from EDIFACT, IDoc SAP, XML, CSV or TXT content sent in the request body</div>
+            </div>
+        </div>
+        <div class="endpoint-card">
+            <span class="method method-get">GET</span>
+            <div class="endpoint-info">
+                <div class="endpoint-path">/health</div>
+                <div class="endpoint-desc">API status and endpoint listing</div>
+            </div>
+        </div>
+    </div>
+
+    <h2 id="validate">GET /validate</h2>
+    <p>Validates an 18-digit SSCC. Accepts bare 18-digit strings or 20-digit strings with the GS1 AI <code>(00)</code> prefix.</p>
+
+    <div class="code-tabs">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab(this, 'v-curl')">curl</button>
+            <button class="tab-btn" onclick="switchTab(this, 'v-js')">JavaScript</button>
+            <button class="tab-btn" onclick="switchTab(this, 'v-py')">Python</button>
+        </div>
+        <div id="v-curl" class="tab-content active">
+<pre><code>curl "https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016"</code></pre>
+        </div>
+        <div id="v-js" class="tab-content">
+<pre><code><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016'</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();
+console.log(data.valid);       <span class="comment">// true</span>
+console.log(data.gs1.country); <span class="comment">// "Portugal"</span></code></pre>
+        </div>
+        <div id="v-py" class="tab-content">
+<pre><code><span class="kw">import</span> requests
+r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/validate'</span>,
+                 params={<span class="str">'sscc'</span>: <span class="str">'356012345600000016'</span>})
+print(r.json()[<span class="str">'valid'</span>])       <span class="comment"># True</span>
+print(r.json()[<span class="str">'gs1'</span>][<span class="str">'country'</span>]) <span class="comment"># Portugal</span></code></pre>
+        </div>
+    </div>
+
+    <div class="response-box">
+        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
+        <div class="response-body">
+<pre><code>{
+  <span class="key">"input"</span>:     <span class="str">"356012345600000016"</span>,
+  <span class="key">"sscc"</span>:      <span class="str">"356012345600000016"</span>,
+  <span class="key">"formatted"</span>: <span class="str">"(00)356012345600000016"</span>,
+  <span class="key">"valid"</span>:     <span class="kw">true</span>,
+  <span class="key">"checkDigit"</span>: { <span class="key">"provided"</span>: <span class="num">6</span>, <span class="key">"expected"</span>: <span class="num">6</span> },
+  <span class="key">"gs1"</span>: {
+    <span class="key">"extensionDigit"</span>: <span class="num">3</span>,
+    <span class="key">"prefix"</span>:         <span class="num">560</span>,
+    <span class="key">"country"</span>:        <span class="str">"Portugal"</span>,
+    <span class="key">"countryCode"</span>:    <span class="str">"PT"</span>,
+    <span class="key">"flag"</span>:           <span class="str">"🇵🇹"</span>
+  }
+}</code></pre>
+        </div>
+    </div>
+
+    <h2 id="generate">GET /generate</h2>
+    <p>Calculates the GS1 check digit for a 17-digit SSCC body and returns the complete 18-digit SSCC.</p>
+
+    <div class="code-tabs">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab(this, 'g-curl')">curl</button>
+            <button class="tab-btn" onclick="switchTab(this, 'g-js')">JavaScript</button>
+            <button class="tab-btn" onclick="switchTab(this, 'g-py')">Python</button>
+        </div>
+        <div id="g-curl" class="tab-content active">
+<pre><code>curl "https://sscc.birth1mark.workers.dev/generate?body=35601234560000001"</code></pre>
+        </div>
+        <div id="g-js" class="tab-content">
+<pre><code><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/generate?body=35601234560000001'</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();
+console.log(data.sscc); <span class="comment">// "356012345600000016"</span></code></pre>
+        </div>
+        <div id="g-py" class="tab-content">
+<pre><code>r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/generate'</span>,
+                 params={<span class="str">'body'</span>: <span class="str">'35601234560000001'</span>})
+print(r.json()[<span class="str">'sscc'</span>]) <span class="comment"># 356012345600000016</span></code></pre>
+        </div>
+    </div>
+
+    <div class="response-box">
+        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
+        <div class="response-body">
+<pre><code>{
+  <span class="key">"input"</span>:      <span class="str">"35601234560000001"</span>,
+  <span class="key">"body"</span>:       <span class="str">"35601234560000001"</span>,
+  <span class="key">"checkDigit"</span>: <span class="num">6</span>,
+  <span class="key">"sscc"</span>:       <span class="str">"356012345600000016"</span>,
+  <span class="key">"formatted"</span>:  <span class="str">"(00)356012345600000016"</span>
+}</code></pre>
+        </div>
+    </div>
+
+    <h2 id="range">GET /range</h2>
+    <p>Generates every SSCC between two codes, each with its check digit. Accepts 17, 18 or 20-digit inputs on either side.</p>
+
+    <div class="code-tabs">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab(this, 'r-curl')">curl</button>
+            <button class="tab-btn" onclick="switchTab(this, 'r-js')">JavaScript</button>
+            <button class="tab-btn" onclick="switchTab(this, 'r-py')">Python</button>
+        </div>
+        <div id="r-curl" class="tab-content active">
+<pre><code>curl "https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005"</code></pre>
+        </div>
+        <div id="r-js" class="tab-content">
+<pre><code><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005'</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();
+data.items.forEach(item => console.log(item.sscc));</code></pre>
+        </div>
+        <div id="r-py" class="tab-content">
+<pre><code>r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/range'</span>,
+                 params={<span class="str">'from'</span>: <span class="str">'35601234560000001'</span>, <span class="str">'to'</span>: <span class="str">'35601234560000005'</span>})
+<span class="kw">for</span> item <span class="kw">in</span> r.json()[<span class="str">'items'</span>]:
+    print(item[<span class="str">'sscc'</span>])</code></pre>
+        </div>
+    </div>
+
+    <div class="response-box">
+        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
+        <div class="response-body">
+<pre><code>{
+  <span class="key">"from"</span>:  <span class="str">"35601234560000001"</span>,
+  <span class="key">"to"</span>:    <span class="str">"35601234560000005"</span>,
+  <span class="key">"count"</span>: <span class="num">5</span>,
+  <span class="key">"items"</span>: [
+    { <span class="key">"sscc"</span>: <span class="str">"356012345600000016"</span>, <span class="key">"formatted"</span>: <span class="str">"(00)356012345600000016"</span>, <span class="key">"checkDigit"</span>: <span class="num">6</span> },
+    { <span class="key">"sscc"</span>: <span class="str">"356012345600000023"</span>, <span class="key">"formatted"</span>: <span class="str">"(00)356012345600000023"</span>, <span class="key">"checkDigit"</span>: <span class="num">3</span> },
+    ...
+  ]
+}</code></pre>
+        </div>
+    </div>
+
+    <h2 id="extract">POST /extract</h2>
+    <p>Send the raw content of any EDIFACT, IDoc SAP, XML, CSV or TXT file as the request body. The API detects the format automatically and returns all SSCCs found, validated against the GS1 prefix table and check digit.</p>
+
+    <div class="callout">
+        <strong>Format detection:</strong> EDIFACT is detected by a <code>UNA</code> or <code>UNB+</code> header. XML/IDoc by a <code>&lt;?xml</code> or <code>&lt;IDOC&gt;</code> tag. Everything else is scanned with a generic regex pipeline.
+    </div>
+
+    <div class="code-tabs">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab(this, 'e-curl')">curl</button>
+            <button class="tab-btn" onclick="switchTab(this, 'e-js')">JavaScript</button>
+            <button class="tab-btn" onclick="switchTab(this, 'e-py')">Python</button>
+        </div>
+        <div id="e-curl" class="tab-content active">
+<pre><code>curl -X POST "https://sscc.birth1mark.workers.dev/extract" \
+  -H "Content-Type: text/plain" \
+  --data-binary @desadv.edi</code></pre>
+        </div>
+        <div id="e-js" class="tab-content">
+<pre><code><span class="comment">// From a file input</span>
+<span class="kw">const</span> file    = document.querySelector(<span class="str">'#file-input'</span>).files[<span class="num">0</span>];
+<span class="kw">const</span> content = <span class="kw">await</span> file.text();
+<span class="kw">const</span> res     = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/extract'</span>, {
+    method: <span class="str">'POST'</span>,
+    body:   content,
+});
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();
+console.log(data.count);  <span class="comment">// number of SSCCs found</span>
+console.log(data.items);  <span class="comment">// array of validated SSCCs</span></code></pre>
+        </div>
+        <div id="e-py" class="tab-content">
+<pre><code><span class="kw">with</span> open(<span class="str">'desadv.edi'</span>, <span class="str">'r'</span>) <span class="kw">as</span> f:
+    content = f.read()
+
+r = requests.post(<span class="str">'https://sscc.birth1mark.workers.dev/extract'</span>, data=content)
+data = r.json()
+print(f"Found {data['count']} SSCCs ({data['format']} format)")
+<span class="kw">for</span> item <span class="kw">in</span> data[<span class="str">'items'</span>]:
+    print(item[<span class="str">'sscc'</span>], item[<span class="str">'valid'</span>])</code></pre>
+        </div>
+    </div>
+
+    <div class="response-box">
+        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
+        <div class="response-body">
+<pre><code>{
+  <span class="key">"format"</span>:  <span class="str">"edifact"</span>,
+  <span class="key">"count"</span>:   <span class="num">3</span>,
+  <span class="key">"summary"</span>: { <span class="key">"valid"</span>: <span class="num">2</span>, <span class="key">"invalid"</span>: <span class="num">1</span>, <span class="key">"generated"</span>: <span class="num">0</span> },
+  <span class="key">"items"</span>: [
+    {
+      <span class="key">"sscc"</span>:      <span class="str">"356012345600000016"</span>,
+      <span class="key">"formatted"</span>: <span class="str">"(00)356012345600000016"</span>,
+      <span class="key">"valid"</span>:     <span class="kw">true</span>,
+      <span class="key">"checkDigit"</span>: { <span class="key">"provided"</span>: <span class="num">6</span>, <span class="key">"expected"</span>: <span class="num">6</span> },
+      <span class="key">"gs1"</span>: { <span class="key">"prefix"</span>: <span class="num">560</span>, <span class="key">"country"</span>: <span class="str">"Portugal"</span>, <span class="key">"countryCode"</span>: <span class="str">"PT"</span>, <span class="key">"flag"</span>: <span class="str">"🇵🇹"</span> }
+    },
+    ...
+  ]
+}</code></pre>
+        </div>
+    </div>
+
+    <h2 id="errors">Errors</h2>
+    <p>All errors return a JSON object with an <code>error</code> field and an appropriate HTTP status code.</p>
+
+    <div class="response-box">
+        <div class="response-header"><span style="color:var(--danger); font-weight:600;">400 Bad Request</span></div>
+        <div class="response-body">
+<pre><code>{ <span class="key">"error"</span>: <span class="str">"Invalid length: expected 18 digits, got 15"</span> }</code></pre>
+        </div>
+    </div>
+
+    <div class="cta-box">
+        <h3>Try the app</h3>
+        <p>Prefer a visual interface? SSCC Pro Vision runs entirely in the browser — no installation required.</p>
+        <a class="cta-btn" href="/sscc-check/">Open SSCC Pro Vision →</a>
+    </div>
+
+</div>
+
+<script>
+function switchTab(btn, id) {
+    const parent = btn.closest('.code-tabs');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+}
+</script>
+
+</body>
+</html>

@@ -3,7 +3,6 @@
 **Free, open-source SSCC validator, check digit calculator and REST API — runs entirely in the browser, installs as a PWA on Android and iOS.**
 
 🔗 **[Try it live →](https://birth1mark.github.io/sscc-check/)**
-🔗 **[API & guide →](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
 🔗 **[API documentation →](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
 
 ![Version](https://img.shields.io/badge/version-5.5.3-blue)

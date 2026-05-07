@@ -4,7 +4,7 @@
 
 🔗 **[Try it live →](https://birth1mark.github.io/sscc-check/)**
 
-![Version](https://img.shields.io/badge/version-5.5.2-blue)
+![Version](https://img.shields.io/badge/version-5.5.3-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![PWA](https://img.shields.io/badge/PWA-ready-purple)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
@@ -41,6 +41,16 @@ https://birth1mark.github.io/sscc-check/
 
 ---
 
+## 📖 Technical Guide
+
+New to SSCC validation? Read the complete guide:
+
+🔗 **[How to Validate SSCC Codes — Format, Algorithm & Tools](https://birth1mark.github.io/sscc-check/guide.html)**
+
+Covers the SSCC structure, check digit algorithm with a worked example, JavaScript implementation, and how to extract SSCCs from EDIFACT files.
+
+---
+
 ## 🗂 Project Structure
 
 ```
@@ -54,8 +64,9 @@ sscc-check/
 ├── og-image.png        # Social share preview (1200×630)
 ├── icon-192.png        # PWA icon
 ├── icon-512.png        # PWA splash icon
+├── guide.html          # Technical article: How to validate SSCC codes
 ├── robots.txt          # Crawler directives
-└── sitemap.xml         # Sitemap for Google/Bing
+└── sitemap.xml         # Sitemap for Google/Bing (app + guide)
 ```
 
 ---
@@ -118,6 +129,7 @@ Full documentation in the **[Wiki](../../wiki)**:
 
 | Version | Highlights |
 |---|---|
+| **v5.5.3** | Technical guide, GS1 2025 prefix table, fixed-width file support, binary file rejection |
 | **v5.5.2** | Smarter SSCC detection in files — GS1 prefix validation and trivial sequence rejection |
 | **v5.5** | File upload — EDIFACT, IDoc, XML, CSV, TXT with smart format detection |
 | **v5.4** | Copy per row, CSV export, beep on scan, Lucide icons |

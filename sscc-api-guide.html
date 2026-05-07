@@ -23,7 +23,7 @@
       "@type": "TechArticle",
       "headline": "SSCC API — Free REST API for SSCC Validation",
       "description": "Free REST API for SSCC validation, check digit generation, range expansion and EDIFACT file extraction.",
-      "url": "https://birth1mark.github.io/sscc-check/api.html"
+      "url": "https://birth1mark.github.io/sscc-check/sscc-api-guide.html"
     }
     </script>
 
@@ -133,6 +133,101 @@
         .cta-btn { display: inline-block; background: var(--primary); color: white; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; }
 
         @media (max-width: 600px) { .wrapper { padding: 28px 16px 60px; } .nav-links { gap: 12px; } }
+
+        /* ── Playground ── */
+        .playground {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 48px;
+        }
+        .playground-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .playground-title {
+            font-size: 13px; font-weight: 600;
+            color: var(--text); display: flex; align-items: center; gap: 8px;
+        }
+        .playground-title::before {
+            content: ''; display: inline-block;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 6px var(--success);
+        }
+        .pg-tabs {
+            display: flex; gap: 2px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        .pg-tab {
+            background: none; border: 1px solid var(--border);
+            color: var(--muted); padding: 5px 14px; border-radius: 6px;
+            font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+            cursor: pointer; white-space: nowrap; transition: all 0.15s;
+        }
+        .pg-tab:hover { color: var(--text); border-color: var(--text); }
+        .pg-tab.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        .pg-body { display: none; padding: 20px; gap: 16px; }
+        .pg-body.active { display: flex; flex-direction: column; }
+
+        .pg-inputs { display: flex; flex-direction: column; gap: 10px; }
+        .pg-field { display: flex; flex-direction: column; gap: 5px; }
+        .pg-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+        .pg-input {
+            background: var(--code-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 9px 12px;
+            color: var(--text); font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px; width: 100%; box-sizing: border-box;
+            transition: border-color 0.15s;
+        }
+        .pg-input:focus { outline: none; border-color: var(--primary); }
+        .pg-textarea {
+            background: var(--code-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 9px 12px;
+            color: var(--text); font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px; width: 100%; box-sizing: border-box;
+            min-height: 100px; resize: vertical;
+            transition: border-color 0.15s;
+        }
+        .pg-textarea:focus { outline: none; border-color: var(--primary); }
+
+        .pg-actions { display: flex; align-items: center; gap: 10px; }
+        .pg-run {
+            background: var(--primary); color: white;
+            border: none; border-radius: 8px;
+            padding: 9px 20px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: opacity 0.15s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .pg-run:hover { opacity: 0.85; }
+        .pg-run:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pg-status {
+            font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+            padding: 4px 10px; border-radius: 6px; display: none;
+        }
+        .pg-status.ok   { background: rgba(16,185,129,0.15); color: var(--success); display: inline-block; }
+        .pg-status.err  { background: rgba(239,68,68,0.15);  color: var(--danger);  display: inline-block; }
+        .pg-status.warn { background: rgba(251,146,60,0.15); color: #fb923c;        display: inline-block; }
+
+        .pg-result {
+            background: var(--code-bg); border: 1px solid var(--border);
+            border-radius: 8px; padding: 14px;
+            font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+            line-height: 1.6; overflow-x: auto;
+            min-height: 60px; display: none;
+            white-space: pre;
+        }
+        .pg-result.visible { display: block; }
+        .json-key    { color: #60a5fa; }
+        .json-str    { color: #86efac; }
+        .json-num    { color: #fb923c; }
+        .json-bool   { color: #c084fc; }
+        .json-null   { color: #94a3b8; }
     </style>
 </head>
 <body>
@@ -161,6 +256,103 @@
         <div class="note-card"><div class="note-label">Format</div><div class="note-value">JSON</div></div>
         <div class="note-card"><div class="note-label">Max range</div><div class="note-value">500 codes</div></div>
         <div class="note-card"><div class="note-label">Uptime</div><div class="note-value">Cloudflare edge</div></div>
+    </div>
+
+    <!-- ── Playground ── -->
+    <div class="playground">
+        <div class="playground-header">
+            <span class="playground-title">Live API Playground</span>
+            <span style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono',monospace;">sscc.birth1mark.workers.dev</span>
+        </div>
+
+        <div class="pg-tabs">
+            <button class="pg-tab active" onclick="pgSwitch(this,'pg-validate')">GET /validate</button>
+            <button class="pg-tab" onclick="pgSwitch(this,'pg-generate')">GET /generate</button>
+            <button class="pg-tab" onclick="pgSwitch(this,'pg-range')">GET /range</button>
+            <button class="pg-tab" onclick="pgSwitch(this,'pg-prefix')">GET /prefix</button>
+            <button class="pg-tab" onclick="pgSwitch(this,'pg-extract')">POST /extract</button>
+        </div>
+
+        <!-- Validate -->
+        <div id="pg-validate" class="pg-body active">
+            <div class="pg-inputs">
+                <div class="pg-field">
+                    <span class="pg-label">sscc — 18-digit SSCC</span>
+                    <input class="pg-input" id="pg-v-sscc" value="356012345600000016" placeholder="18-digit SSCC">
+                </div>
+            </div>
+            <div class="pg-actions">
+                <button class="pg-run" onclick="pgValidate()">▶ Try it</button>
+                <span class="pg-status" id="pg-v-status"></span>
+            </div>
+            <div class="pg-result" id="pg-v-result"></div>
+        </div>
+
+        <!-- Generate -->
+        <div id="pg-generate" class="pg-body">
+            <div class="pg-inputs">
+                <div class="pg-field">
+                    <span class="pg-label">body — 17-digit SSCC body</span>
+                    <input class="pg-input" id="pg-g-body" value="35601234560000001" placeholder="17-digit body">
+                </div>
+            </div>
+            <div class="pg-actions">
+                <button class="pg-run" onclick="pgGenerate()">▶ Try it</button>
+                <span class="pg-status" id="pg-g-status"></span>
+            </div>
+            <div class="pg-result" id="pg-g-result"></div>
+        </div>
+
+        <!-- Range -->
+        <div id="pg-range" class="pg-body">
+            <div class="pg-inputs">
+                <div class="pg-field">
+                    <span class="pg-label">from</span>
+                    <input class="pg-input" id="pg-r-from" value="35601234560000001" placeholder="Start SSCC">
+                </div>
+                <div class="pg-field">
+                    <span class="pg-label">to</span>
+                    <input class="pg-input" id="pg-r-to" value="35601234560000005" placeholder="End SSCC">
+                </div>
+            </div>
+            <div class="pg-actions">
+                <button class="pg-run" onclick="pgRange()">▶ Try it</button>
+                <span class="pg-status" id="pg-r-status"></span>
+            </div>
+            <div class="pg-result" id="pg-r-result"></div>
+        </div>
+
+        <!-- Prefix -->
+        <div id="pg-prefix" class="pg-body">
+            <div class="pg-inputs">
+                <div class="pg-field">
+                    <span class="pg-label">sscc — 18-digit SSCC</span>
+                    <input class="pg-input" id="pg-p-sscc" value="356012345600000016" placeholder="18-digit SSCC">
+                </div>
+            </div>
+            <div class="pg-actions">
+                <button class="pg-run" onclick="pgPrefix()">▶ Try it</button>
+                <span class="pg-status" id="pg-p-status"></span>
+            </div>
+            <div class="pg-result" id="pg-p-result"></div>
+        </div>
+
+        <!-- Extract -->
+        <div id="pg-extract" class="pg-body">
+            <div class="pg-inputs">
+                <div class="pg-field">
+                    <span class="pg-label">File content — paste EDIFACT, XML, CSV or plain text</span>
+                    <textarea class="pg-textarea" id="pg-e-body" placeholder="Paste file content here...">GIN+BJ:356012345600000016'
+GIN+BJ:356012345600000023'
+GIN+BJ:356012345600000030'</textarea>
+                </div>
+            </div>
+            <div class="pg-actions">
+                <button class="pg-run" onclick="pgExtract()">▶ Try it</button>
+                <span class="pg-status" id="pg-e-status"></span>
+            </div>
+            <div class="pg-result" id="pg-e-result"></div>
+        </div>
     </div>
 
     <h2 id="endpoints">Endpoints</h2>
@@ -423,6 +615,86 @@ function switchTab(btn, id) {
     parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(id).classList.add('active');
+}
+</script>
+
+<script>
+const API = 'https://sscc.birth1mark.workers.dev';
+
+function pgSwitch(btn, id) {
+    document.querySelectorAll('.pg-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.pg-body').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+}
+
+function syntaxHighlight(json) {
+    return JSON.stringify(json, null, 2)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/("(\u[a-zA-Z0-9]{4}|\[^u]|[^\"])*"(\s*:)?|(true|false|null)|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+            if (/^"/.test(m)) {
+                if (/:$/.test(m)) return `<span class="json-key">${m}</span>`;
+                return `<span class="json-str">${m}</span>`;
+            }
+            if (/true|false/.test(m)) return `<span class="json-bool">${m}</span>`;
+            if (/null/.test(m))       return `<span class="json-null">${m}</span>`;
+            return `<span class="json-num">${m}</span>`;
+        });
+}
+
+async function pgCall(url, options, statusId, resultId) {
+    const statusEl = document.getElementById(statusId);
+    const resultEl = document.getElementById(resultId);
+    const btn      = statusEl.closest('.pg-actions').querySelector('.pg-run');
+
+    btn.disabled = true;
+    btn.textContent = '...';
+    statusEl.className = 'pg-status';
+    resultEl.classList.remove('visible');
+
+    try {
+        const res  = await fetch(url, options);
+        const data = await res.json();
+
+        statusEl.textContent = res.status + ' ' + (res.ok ? 'OK' : res.statusText || 'Error');
+        statusEl.className   = 'pg-status ' + (res.status === 429 ? 'warn' : res.ok ? 'ok' : 'err');
+        resultEl.innerHTML   = syntaxHighlight(data);
+        resultEl.classList.add('visible');
+    } catch (e) {
+        statusEl.textContent = 'Network error';
+        statusEl.className   = 'pg-status err';
+        resultEl.innerHTML   = e.message;
+        resultEl.classList.add('visible');
+    }
+
+    btn.disabled    = false;
+    btn.textContent = '▶ Try it';
+}
+
+function pgValidate() {
+    const sscc = document.getElementById('pg-v-sscc').value.trim();
+    pgCall(`${API}/validate?sscc=${encodeURIComponent(sscc)}`, {}, 'pg-v-status', 'pg-v-result');
+}
+
+function pgGenerate() {
+    const body = document.getElementById('pg-g-body').value.trim();
+    pgCall(`${API}/generate?body=${encodeURIComponent(body)}`, {}, 'pg-g-status', 'pg-g-result');
+}
+
+function pgRange() {
+    const from = document.getElementById('pg-r-from').value.trim();
+    const to   = document.getElementById('pg-r-to').value.trim();
+    pgCall(`${API}/range?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`, {}, 'pg-r-status', 'pg-r-result');
+}
+
+function pgPrefix() {
+    const sscc = document.getElementById('pg-p-sscc').value.trim();
+    pgCall(`${API}/prefix?sscc=${encodeURIComponent(sscc)}`, {}, 'pg-p-status', 'pg-p-result');
+}
+
+function pgExtract() {
+    const body = document.getElementById('pg-e-body').value;
+    pgCall(`${API}/extract`, { method: 'POST', body }, 'pg-e-status', 'pg-e-result');
 }
 </script>
 

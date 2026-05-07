@@ -4,7 +4,7 @@
 
 🔗 **Live app**: [birth1mark.github.io/sscc-check](https://birth1mark.github.io/sscc-check/)
 🔗 **Technical guide**: [birth1mark.github.io/sscc-check/sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
-🔗 **API documentation**: [birth1mark.github.io/sscc-check/sscc-api-sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-sscc-api-guide.html)
+🔗 **API documentation**: [birth1mark.github.io/sscc-check/sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
 🔗 **REST API**: [sscc.birth1mark.workers.dev](https://sscc.birth1mark.workers.dev)
 
 ---
@@ -89,7 +89,7 @@ SSCCs are encoded in **GS1-128** barcodes and transmitted in EDI messages such a
 
 ### 🔌 API
 - Use the REST API for programmatic access from any system
-- Full docs at [sscc-api-sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-sscc-api-guide.html)
+- Full docs at [sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
 
 ---
 
@@ -172,7 +172,7 @@ A free public REST API is available at `https://sscc.birth1mark.workers.dev`.
 - Built on Cloudflare Workers — edge network, no cold starts
 - No data stored or logged
 
-Full documentation with live playground: **[sscc-api-sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-sscc-api-guide.html)**
+Full documentation with live playground: **[sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
 
 API source code: **[github.com/birth1mark/sscc-api](https://github.com/birth1mark/sscc-api)**
 
@@ -261,7 +261,7 @@ sscc-check/
 ├── manifest.json         # PWA manifest
 ├── service-worker.js     # Offline cache (cache-first strategy)
 ├── sscc-api-guide.html            # Technical article: SSCC structure, algorithm, EDIFACT
-├── sscc-api-sscc-api-guide.html   # API documentation with live playground
+├── sscc-api-guide.html   # API documentation with live playground
 ├── og-image.png          # Social share preview (1200×630px)
 ├── icon-192.png          # PWA icon (home screen)
 ├── icon-512.png          # PWA icon (splash screen)
@@ -312,7 +312,7 @@ sscc-check/
 
 ### v5.5.3
 - 🔌 **REST API**: free public API on Cloudflare Workers — `/validate`, `/generate`, `/range`, `/prefix`, `/extract`
-- 📄 **API documentation**: `sscc-api-sscc-api-guide.html` with live playground (Try it tab on each endpoint)
+- 📄 **API documentation**: `sscc-api-guide.html` with live playground (Try it tab on each endpoint)
 - 🔒 **Rate limiting**: 500 requests/hour per IP via Cloudflare KV (optimised for free tier)
 
 ### v5.5.2

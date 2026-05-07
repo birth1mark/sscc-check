@@ -3,8 +3,8 @@
 **Free, open-source SSCC validator, check digit calculator and REST API — runs entirely in the browser, installs as a PWA on Android and iOS.**
 
 🔗 **[Try it live →](https://birth1mark.github.io/sscc-check/)**
-🔗 **[Technical guide →](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
-🔗 **[API documentation →](https://birth1mark.github.io/sscc-check/sscc-api-sscc-api-guide.html)**
+🔗 **[API & guide →](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
+🔗 **[API documentation →](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
 
 ![Version](https://img.shields.io/badge/version-5.5.3-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -60,7 +60,7 @@ https://sscc.birth1mark.workers.dev
 | `GET /prefix?sscc=<18 digits>` | GS1 country lookup |
 | `POST /extract` | Extract SSCCs from file content |
 
-No authentication required. Full documentation: [sscc-api-sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-sscc-api-guide.html)
+No authentication required. Full documentation: [sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
 
 ---
 
@@ -83,7 +83,7 @@ sscc-check/
 ├── manifest.json         # PWA manifest
 ├── service-worker.js     # Offline cache
 ├── sscc-api-guide.html            # Technical article: SSCC structure, algorithm, EDIFACT
-├── sscc-api-sscc-api-guide.html   # API documentation with live playground
+├── sscc-api-guide.html   # API documentation with live playground
 ├── og-image.png          # Social share preview (1200×630)
 ├── icon-192.png          # PWA icon
 ├── icon-512.png          # PWA splash icon

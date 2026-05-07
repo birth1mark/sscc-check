@@ -3,185 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>SSCC API — Free REST API for SSCC Validation | SSCC Pro Vision</title>
     <meta name="description" content="Free REST API for SSCC validation, check digit generation, range expansion and file extraction. Built on Cloudflare Workers. No auth required.">
     <meta name="keywords" content="SSCC API, SSCC REST API, GS1 API, check digit API, SSCC validation API, EDIFACT SSCC extract">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://birth1mark.github.io/sscc-check/sscc-api-guide.html">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
-
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://birth1mark.github.io/sscc-check/sscc-api-guide.html">
     <meta property="og:title" content="SSCC API — Free REST API for SSCC Validation">
     <meta property="og:description" content="Free REST API for SSCC validation, check digit generation, range expansion and file extraction. No auth required.">
     <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
-
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "TechArticle",
-      "headline": "SSCC API — Free REST API for SSCC Validation",
-      "description": "Free REST API for SSCC validation, check digit generation, range expansion and EDIFACT file extraction.",
-      "url": "https://birth1mark.github.io/sscc-check/sscc-api-guide.html"
-    }
+    {"@context":"https://schema.org","@type":"TechArticle","headline":"SSCC API — Free REST API for SSCC Validation","url":"https://birth1mark.github.io/sscc-check/sscc-api-guide.html"}
     </script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --bg: #0f172a; --surface: #1e293b; --border: #334155;
-            --primary: #3b82f6; --success: #10b981; --danger: #ef4444;
-            --text: #f1f5f9; --muted: #94a3b8; --code-bg: #0d1117;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px; }
+        :root { --bg:#0f172a;--surface:#1e293b;--border:#334155;--primary:#3b82f6;--success:#10b981;--danger:#ef4444;--text:#f1f5f9;--muted:#94a3b8;--code-bg:#0d1117; }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:16px;}
+        nav{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(15,23,42,0.95);backdrop-filter:blur(8px);z-index:100;}
+        .nav-brand{font-size:14px;font-weight:600;color:var(--primary);text-decoration:none;}
+        .nav-links{display:flex;gap:20px;align-items:center;}
+        .nav-link{color:var(--muted);text-decoration:none;font-size:13px;transition:color 0.15s;}
+        .nav-link:hover{color:var(--text);}
+        .nav-cta{background:var(--primary);color:white;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;}
+        .wrapper{max-width:800px;margin:0 auto;padding:48px 24px 80px;}
+        .article-header{margin-bottom:28px;border-bottom:1px solid var(--border);padding-bottom:24px;}
+        .article-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--primary);background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);padding:3px 10px;border-radius:20px;margin-bottom:14px;}
+        h1{font-size:clamp(22px,4vw,30px);font-weight:600;line-height:1.25;margin-bottom:10px;}
+        h1 em{color:var(--primary);font-style:normal;}
+        .base-url{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--success);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);padding:7px 14px;border-radius:8px;display:inline-block;margin-top:6px;}
+        .notes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:20px 0 36px;}
+        .note-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;}
+        .note-label{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:3px;}
+        .note-value{font-size:13px;font-weight:600;color:var(--text);}
+        h2{font-size:18px;font-weight:600;margin:40px 0 4px;padding-top:40px;border-top:1px solid var(--border);scroll-margin-top:80px;display:flex;align-items:center;gap:10px;}
+        h2:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+        .method{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:5px;flex-shrink:0;}
+        .method-get{background:rgba(16,185,129,0.15);color:var(--success);}
+        .method-post{background:rgba(59,130,246,0.15);color:var(--primary);}
+        .endpoint-path{font-family:'IBM Plex Mono',monospace;font-size:15px;}
+        p{margin-bottom:12px;color:var(--muted);font-size:14px;}
+        p strong{color:var(--text);}
+        a{color:var(--primary);text-decoration:none;}
+        a:hover{text-decoration:underline;}
+        code{font-family:'IBM Plex Mono',monospace;font-size:13px;}
+        p code,li code{background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:4px;color:var(--primary);font-size:12px;}
 
-        nav { border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: rgba(15,23,42,0.95); backdrop-filter: blur(8px); z-index: 100; }
-        .nav-brand { font-size: 14px; font-weight: 600; color: var(--primary); text-decoration: none; }
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .nav-link { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.15s; }
-        .nav-link:hover { color: var(--text); }
-        .nav-cta { background: var(--primary); color: white; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; }
-
-        .wrapper { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
-
-        .article-header { margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 28px; }
-        .article-tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); padding: 3px 10px; border-radius: 20px; margin-bottom: 16px; }
-        h1 { font-size: clamp(22px, 4vw, 32px); font-weight: 600; line-height: 1.25; margin-bottom: 12px; }
-        h1 em { color: var(--primary); font-style: normal; }
-        .base-url { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--success); background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); padding: 8px 14px; border-radius: 8px; display: inline-block; margin-top: 8px; }
-
-        h2 { font-size: 20px; font-weight: 600; margin: 44px 0 16px; padding-top: 44px; border-top: 1px solid var(--border); scroll-margin-top: 80px; }
-        h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
-        p { margin-bottom: 14px; color: var(--muted); }
-        p strong { color: var(--text); }
-        a { color: var(--primary); text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        ul, ol { padding-left: 20px; margin-bottom: 14px; }
-        li { margin-bottom: 5px; color: var(--muted); }
-
-        /* Endpoint cards */
-        .endpoints-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
-        .endpoint-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px; }
-        .method { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 5px; flex-shrink: 0; margin-top: 2px; }
-        .method-get  { background: rgba(16,185,129,0.15); color: var(--success); }
-        .method-post { background: rgba(59,130,246,0.15); color: var(--primary); }
-        .endpoint-path { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--text); margin-bottom: 3px; }
-        .endpoint-desc { font-size: 13px; color: var(--muted); }
-
-        /* Notes grid */
-        .notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 20px 0 32px; }
-        .note-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
-        .note-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 3px; }
-        .note-value { font-size: 14px; font-weight: 600; color: var(--text); }
-
-        /* Code tabs with Try it */
-        .code-tabs { margin: 16px 0 24px; }
-        .tab-buttons { display: flex; gap: 2px; margin-bottom: -1px; flex-wrap: wrap; }
-        .tab-btn { background: var(--surface); border: 1px solid var(--border); border-bottom: none; padding: 6px 14px; font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--muted); cursor: pointer; border-radius: 6px 6px 0 0; transition: all 0.15s; }
-        .tab-btn:hover { color: var(--text); }
-        .tab-btn.active { color: var(--text); background: var(--code-bg); }
-        .tab-btn.try-btn { color: var(--primary); border-color: var(--primary); background: rgba(59,130,246,0.08); }
-        .tab-btn.try-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 0 10px 10px 10px; padding: 18px; overflow-x: auto; font-size: 13px; line-height: 1.6; margin: 0; }
-        code { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
-        p code, li code { background: var(--surface); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; color: var(--primary); font-size: 13px; }
-        .comment { color: #6b7280; }
-        .kw  { color: #c084fc; }
-        .str { color: #86efac; }
-        .num { color: #fb923c; }
-        .key { color: #60a5fa; }
+        /* Code tabs */
+        .code-tabs{margin:14px 0 0;}
+        .tab-buttons{display:flex;gap:2px;flex-wrap:wrap;}
+        .tab-btn{background:var(--surface);border:1px solid var(--border);border-bottom:none;padding:5px 13px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--muted);cursor:pointer;border-radius:6px 6px 0 0;transition:all 0.15s;}
+        .tab-btn:hover{color:var(--text);}
+        .tab-btn.active{color:var(--text);background:var(--code-bg);}
+        .tab-btn.try-btn{color:var(--primary);border-color:var(--primary);background:rgba(59,130,246,0.08);}
+        .tab-btn.try-btn.active{background:var(--primary);color:white;}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;}
+        pre{background:var(--code-bg);border:1px solid var(--border);border-radius:0 10px 10px 10px;padding:16px;overflow-x:auto;font-size:13px;line-height:1.6;margin:0;}
 
         /* Try it panel */
-        .try-panel { background: var(--code-bg); border: 1px solid var(--border); border-radius: 0 10px 10px 10px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-        .try-field { display: flex; flex-direction: column; gap: 5px; }
-        .try-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-        .try-input { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 13px; width: 100%; transition: border-color 0.15s; }
-        .try-input:focus { outline: none; border-color: var(--primary); }
-        .try-textarea { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 12px; width: 100%; min-height: 90px; resize: vertical; transition: border-color 0.15s; }
-        .try-textarea:focus { outline: none; border-color: var(--primary); }
-        .try-actions { display: flex; align-items: center; gap: 10px; }
-        .try-run { background: var(--primary); color: white; border: none; border-radius: 7px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
-        .try-run:hover { opacity: 0.85; }
-        .try-run:disabled { opacity: 0.5; cursor: not-allowed; }
-        .try-status { font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 3px 10px; border-radius: 5px; display: none; }
-        .try-status.ok   { background: rgba(16,185,129,0.15); color: var(--success); display: inline-block; }
-        .try-status.err  { background: rgba(239,68,68,0.15);  color: var(--danger);  display: inline-block; }
-        .try-status.warn { background: rgba(251,146,60,0.15); color: #fb923c;        display: inline-block; }
-        .try-result { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.6; overflow-x: auto; white-space: pre; display: none; }
-        .try-result.visible { display: block; }
-        .json-key  { color: #60a5fa; }
-        .json-str  { color: #86efac; }
-        .json-num  { color: #fb923c; }
-        .json-bool { color: #c084fc; }
-        .json-null { color: #94a3b8; }
+        .try-panel{background:var(--code-bg);border:1px solid var(--border);border-radius:0 10px 10px 10px;padding:16px;display:flex;flex-direction:column;gap:10px;}
+        .try-field{display:flex;flex-direction:column;gap:4px;}
+        .try-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);}
+        .try-input{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;width:100%;transition:border-color 0.15s;}
+        .try-input:focus{outline:none;border-color:var(--primary);}
+        .try-textarea{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;min-height:80px;resize:vertical;transition:border-color 0.15s;}
+        .try-textarea:focus{outline:none;border-color:var(--primary);}
+        .try-actions{display:flex;align-items:center;gap:10px;}
+        .try-run{background:var(--primary);color:white;border:none;border-radius:7px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.15s;}
+        .try-run:hover{opacity:0.85;}
+        .try-run:disabled{opacity:0.5;cursor:not-allowed;}
+        .try-status{font-size:12px;font-family:'IBM Plex Mono',monospace;padding:3px 10px;border-radius:5px;display:none;}
+        .try-status.ok{background:rgba(16,185,129,0.15);color:var(--success);display:inline-block;}
+        .try-status.err{background:rgba(239,68,68,0.15);color:var(--danger);display:inline-block;}
+        .try-status.warn{background:rgba(251,146,60,0.15);color:#fb923c;display:inline-block;}
+        .try-result{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre;display:none;margin-top:4px;}
+        .try-result.visible{display:block;}
+        .json-key{color:#60a5fa;}.json-str{color:#86efac;}.json-num{color:#fb923c;}.json-bool{color:#c084fc;}.json-null{color:#94a3b8;}
+        .comment{color:#6b7280;}.kw{color:#c084fc;}.str{color:#86efac;}.num{color:#fb923c;}
 
-        /* Response box */
-        .response-box { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 16px 0 24px; }
-        .response-header { background: var(--surface); padding: 7px 14px; font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
-        .status-ok { color: var(--success); font-weight: 600; }
-        .response-body { padding: 16px; font-size: 13px; line-height: 1.6; }
+        /* Errors */
+        .error-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+        .error-table th{background:var(--surface);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;padding:7px 12px;border:1px solid var(--border);font-weight:500;text-align:left;}
+        .error-table td{padding:8px 12px;border:1px solid var(--border);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
 
-        .callout { border-left: 3px solid var(--primary); background: rgba(59,130,246,0.06); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 16px 0 20px; font-size: 14px; color: var(--muted); }
-        .callout strong { color: var(--text); }
+        .cta-box{background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(99,102,241,0.1));border:1px solid rgba(59,130,246,0.25);border-radius:16px;padding:24px;text-align:center;margin-top:48px;}
+        .cta-box h3{font-size:17px;margin-bottom:8px;}
+        .cta-box p{margin-bottom:16px;}
+        .cta-btn{display:inline-block;background:var(--primary);color:white;padding:10px 22px;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none;}
 
-        .cta-box { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(99,102,241,0.1)); border: 1px solid rgba(59,130,246,0.25); border-radius: 16px; padding: 28px; text-align: center; margin-top: 48px; }
-        .cta-box h3 { font-size: 18px; margin-bottom: 8px; }
-        .cta-box p { margin-bottom: 18px; }
-        .cta-btn { display: inline-block; background: var(--primary); color: white; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; }
-
-        @media (max-width: 600px) { .wrapper { padding: 28px 16px 60px; } .nav-links { gap: 12px; } }
+        @media(max-width:600px){.wrapper{padding:28px 16px 60px;}.nav-links{gap:12px;}}
     </style>
 </head>
 <body>
-
 <nav>
     <a class="nav-brand" href="/sscc-check/">← SSCC Pro Vision</a>
     <div class="nav-links">
-        <a class="nav-link" href="/sscc-check/guide.html">Guide</a>
         <a class="nav-cta" href="/sscc-check/">Open App</a>
     </div>
 </nav>
 
 <div class="wrapper">
-
     <header class="article-header">
         <span class="article-tag">REST API</span>
         <h1>SSCC <em>API</em></h1>
-        <p style="color:var(--muted); margin-bottom:10px;">Free, open REST API for SSCC validation, check digit generation, range expansion and file extraction. No authentication required.</p>
+        <p>Free, open REST API — no authentication required. Built on Cloudflare Workers.</p>
         <div class="base-url">https://sscc.birth1mark.workers.dev</div>
     </header>
 
     <div class="notes-grid">
-        <div class="note-card"><div class="note-label">Auth</div><div class="note-value">None required</div></div>
+        <div class="note-card"><div class="note-label">Auth</div><div class="note-value">None</div></div>
         <div class="note-card"><div class="note-label">Rate limit</div><div class="note-value">500 req/hour</div></div>
         <div class="note-card"><div class="note-label">CORS</div><div class="note-value">* (open)</div></div>
         <div class="note-card"><div class="note-label">Format</div><div class="note-value">JSON</div></div>
         <div class="note-card"><div class="note-label">Max range</div><div class="note-value">500 codes</div></div>
-        <div class="note-card"><div class="note-label">Runtime</div><div class="note-value">Cloudflare edge</div></div>
-    </div>
-
-    <h2 id="endpoints">Endpoints</h2>
-    <div class="endpoints-grid">
-        <div class="endpoint-card"><span class="method method-get">GET</span><div><div class="endpoint-path">/validate?sscc=&lt;18 digits&gt;</div><div class="endpoint-desc">Validate an 18-digit SSCC and return GS1 country info</div></div></div>
-        <div class="endpoint-card"><span class="method method-get">GET</span><div><div class="endpoint-path">/generate?body=&lt;17 digits&gt;</div><div class="endpoint-desc">Calculate and append the GS1 check digit to a 17-digit body</div></div></div>
-        <div class="endpoint-card"><span class="method method-get">GET</span><div><div class="endpoint-path">/range?from=&lt;SSCC&gt;&to=&lt;SSCC&gt;</div><div class="endpoint-desc">Generate every SSCC between two codes with check digits (max 500)</div></div></div>
-        <div class="endpoint-card"><span class="method method-get">GET</span><div><div class="endpoint-path">/prefix?sscc=&lt;18 digits&gt;</div><div class="endpoint-desc">Look up the GS1 member country from the SSCC prefix</div></div></div>
-        <div class="endpoint-card"><span class="method method-post">POST</span><div><div class="endpoint-path">/extract</div><div class="endpoint-desc">Extract and validate all SSCCs from EDIFACT, IDoc SAP, XML, CSV or TXT content</div></div></div>
-        <div class="endpoint-card"><span class="method method-get">GET</span><div><div class="endpoint-path">/health</div><div class="endpoint-desc">API status and endpoint list</div></div></div>
+        <div class="note-card"><div class="note-label">Runtime</div><div class="note-value">CF edge</div></div>
     </div>
 
     <!-- /validate -->
-    <h2 id="validate">GET /validate</h2>
-    <p>Validates an 18-digit SSCC. Accepts bare 18-digit strings or 20-digit strings with the GS1 AI <code>(00)</code> prefix.</p>
-
+    <h2 id="validate"><span class="method method-get">GET</span><span class="endpoint-path">/validate</span></h2>
+    <p>Validates an 18-digit SSCC. Accepts bare 18-digit strings or 20-digit with AI <code>(00)</code> prefix.</p>
     <div class="code-tabs">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="switchTab(this,'v-curl')">curl</button>
@@ -189,40 +134,22 @@
             <button class="tab-btn" onclick="switchTab(this,'v-py')">Python</button>
             <button class="tab-btn try-btn" onclick="switchTab(this,'v-try')">▶ Try it</button>
         </div>
-        <div id="v-curl" class="tab-content active"><pre><code>curl "https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016"</code></pre></div>
-        <div id="v-js" class="tab-content"><pre><code><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();
-console.log(data.valid);        <span class="comment">// true</span>
-console.log(data.gs1.country);  <span class="comment">// "Portugal"</span></code></pre></div>
-        <div id="v-py" class="tab-content"><pre><code><span class="kw">import</span> requests
-r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/validate'</span>,
-                 params={<span class="str">'sscc'</span>: <span class="str">'356012345600000016'</span>})
-print(r.json()[<span class="str">'valid'</span>])        <span class="comment"># True</span>
-print(r.json()[<span class="str">'gs1'</span>][<span class="str">'country'</span>])  <span class="comment"># Portugal</span></code></pre></div>
+        <div id="v-curl" class="tab-content active"><pre><code id="v-curl-code">curl "https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016"</code></pre></div>
+        <div id="v-js" class="tab-content"><pre><code id="v-js-code"><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016'</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();</code></pre></div>
+        <div id="v-py" class="tab-content"><pre><code id="v-py-code">r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/validate'</span>, params={<span class="str">'sscc'</span>: <span class="str">'356012345600000016'</span>})</code></pre></div>
         <div id="v-try" class="tab-content">
             <div class="try-panel">
-                <div class="try-field"><span class="try-label">sscc</span><input class="try-input" id="t-v-sscc" value="356012345600000016"></div>
+                <div class="try-field"><span class="try-label">sscc</span><input class="try-input" id="t-v-sscc" value="356012345600000016" oninput="updateCode('validate')"></div>
                 <div class="try-actions"><button class="try-run" onclick="tryCall('validate')">▶ Run</button><span class="try-status" id="t-v-status"></span></div>
                 <div class="try-result" id="t-v-result"></div>
             </div>
         </div>
     </div>
 
-    <div class="response-box">
-        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
-        <div class="response-body"><pre><code>{
-  <span class="key">"sscc"</span>:      <span class="str">"356012345600000016"</span>,
-  <span class="key">"formatted"</span>: <span class="str">"(00)356012345600000016"</span>,
-  <span class="key">"valid"</span>:     <span class="kw">true</span>,
-  <span class="key">"checkDigit"</span>: { <span class="key">"provided"</span>: <span class="num">6</span>, <span class="key">"expected"</span>: <span class="num">6</span> },
-  <span class="key">"gs1"</span>: { <span class="key">"prefix"</span>: <span class="num">560</span>, <span class="key">"country"</span>: <span class="str">"Portugal"</span>, <span class="key">"countryCode"</span>: <span class="str">"PT"</span>, <span class="key">"flag"</span>: <span class="str">"🇵🇹"</span> }
-}</code></pre></div>
-    </div>
-
     <!-- /generate -->
-    <h2 id="generate">GET /generate</h2>
-    <p>Calculates the GS1 check digit for a 17-digit SSCC body and returns the complete 18-digit SSCC.</p>
-
+    <h2 id="generate"><span class="method method-get">GET</span><span class="endpoint-path">/generate</span></h2>
+    <p>Calculates the check digit for a 17-digit SSCC body and returns the complete 18-digit SSCC.</p>
     <div class="code-tabs">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="switchTab(this,'g-curl')">curl</button>
@@ -230,37 +157,22 @@ print(r.json()[<span class="str">'gs1'</span>][<span class="str">'country'</span
             <button class="tab-btn" onclick="switchTab(this,'g-py')">Python</button>
             <button class="tab-btn try-btn" onclick="switchTab(this,'g-try')">▶ Try it</button>
         </div>
-        <div id="g-curl" class="tab-content active"><pre><code>curl "https://sscc.birth1mark.workers.dev/generate?body=35601234560000001"</code></pre></div>
-        <div id="g-js" class="tab-content"><pre><code><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/generate?body=35601234560000001'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();
-console.log(data.sscc); <span class="comment">// "356012345600000016"</span></code></pre></div>
-        <div id="g-py" class="tab-content"><pre><code>r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/generate'</span>,
-                 params={<span class="str">'body'</span>: <span class="str">'35601234560000001'</span>})
-print(r.json()[<span class="str">'sscc'</span>]) <span class="comment"># 356012345600000016</span></code></pre></div>
+        <div id="g-curl" class="tab-content active"><pre><code id="g-curl-code">curl "https://sscc.birth1mark.workers.dev/generate?body=35601234560000001"</code></pre></div>
+        <div id="g-js" class="tab-content"><pre><code id="g-js-code"><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/generate?body=35601234560000001'</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();</code></pre></div>
+        <div id="g-py" class="tab-content"><pre><code id="g-py-code">r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/generate'</span>, params={<span class="str">'body'</span>: <span class="str">'35601234560000001'</span>})</code></pre></div>
         <div id="g-try" class="tab-content">
             <div class="try-panel">
-                <div class="try-field"><span class="try-label">body — 17 digits</span><input class="try-input" id="t-g-body" value="35601234560000001"></div>
+                <div class="try-field"><span class="try-label">body — 17 digits</span><input class="try-input" id="t-g-body" value="35601234560000001" oninput="updateCode('generate')"></div>
                 <div class="try-actions"><button class="try-run" onclick="tryCall('generate')">▶ Run</button><span class="try-status" id="t-g-status"></span></div>
                 <div class="try-result" id="t-g-result"></div>
             </div>
         </div>
     </div>
 
-    <div class="response-box">
-        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
-        <div class="response-body"><pre><code>{
-  <span class="key">"body"</span>:       <span class="str">"35601234560000001"</span>,
-  <span class="key">"checkDigit"</span>: <span class="num">6</span>,
-  <span class="key">"sscc"</span>:       <span class="str">"356012345600000016"</span>,
-  <span class="key">"formatted"</span>:  <span class="str">"(00)356012345600000016"</span>,
-  <span class="key">"gs1"</span>: { <span class="key">"prefix"</span>: <span class="num">560</span>, <span class="key">"country"</span>: <span class="str">"Portugal"</span>, <span class="key">"countryCode"</span>: <span class="str">"PT"</span>, <span class="key">"flag"</span>: <span class="str">"🇵🇹"</span> }
-}</code></pre></div>
-    </div>
-
     <!-- /range -->
-    <h2 id="range">GET /range</h2>
-    <p>Generates every SSCC between two codes, each with its check digit. Accepts 17, 18 or 20-digit inputs. Maximum 500 codes per request.</p>
-
+    <h2 id="range"><span class="method method-get">GET</span><span class="endpoint-path">/range</span></h2>
+    <p>Generates every SSCC between two codes with check digits. Accepts 17, 18 or 20-digit inputs. Max 500 codes.</p>
     <div class="code-tabs">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="switchTab(this,'r-curl')">curl</button>
@@ -268,40 +180,23 @@ print(r.json()[<span class="str">'sscc'</span>]) <span class="comment"># 3560123
             <button class="tab-btn" onclick="switchTab(this,'r-py')">Python</button>
             <button class="tab-btn try-btn" onclick="switchTab(this,'r-try')">▶ Try it</button>
         </div>
-        <div id="r-curl" class="tab-content active"><pre><code>curl "https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005"</code></pre></div>
-        <div id="r-js" class="tab-content"><pre><code><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();
-data.items.forEach(item => console.log(item.sscc));</code></pre></div>
-        <div id="r-py" class="tab-content"><pre><code>r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/range'</span>,
-                 params={<span class="str">'from'</span>: <span class="str">'35601234560000001'</span>, <span class="str">'to'</span>: <span class="str">'35601234560000005'</span>})
-<span class="kw">for</span> item <span class="kw">in</span> r.json()[<span class="str">'items'</span>]:
-    print(item[<span class="str">'sscc'</span>])</code></pre></div>
+        <div id="r-curl" class="tab-content active"><pre><code id="r-curl-code">curl "https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005"</code></pre></div>
+        <div id="r-js" class="tab-content"><pre><code id="r-js-code"><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005'</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();</code></pre></div>
+        <div id="r-py" class="tab-content"><pre><code id="r-py-code">r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/range'</span>, params={<span class="str">'from'</span>: <span class="str">'35601234560000001'</span>, <span class="str">'to'</span>: <span class="str">'35601234560000005'</span>})</code></pre></div>
         <div id="r-try" class="tab-content">
             <div class="try-panel">
-                <div class="try-field"><span class="try-label">from</span><input class="try-input" id="t-r-from" value="35601234560000001"></div>
-                <div class="try-field"><span class="try-label">to</span><input class="try-input" id="t-r-to" value="35601234560000005"></div>
+                <div class="try-field"><span class="try-label">from</span><input class="try-input" id="t-r-from" value="35601234560000001" oninput="updateCode('range')"></div>
+                <div class="try-field"><span class="try-label">to</span><input class="try-input" id="t-r-to" value="35601234560000005" oninput="updateCode('range')"></div>
                 <div class="try-actions"><button class="try-run" onclick="tryCall('range')">▶ Run</button><span class="try-status" id="t-r-status"></span></div>
                 <div class="try-result" id="t-r-result"></div>
             </div>
         </div>
     </div>
 
-    <div class="response-box">
-        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
-        <div class="response-body"><pre><code>{
-  <span class="key">"from"</span>: <span class="str">"35601234560000001"</span>, <span class="key">"to"</span>: <span class="str">"35601234560000005"</span>, <span class="key">"count"</span>: <span class="num">5</span>,
-  <span class="key">"items"</span>: [
-    { <span class="key">"sscc"</span>: <span class="str">"356012345600000016"</span>, <span class="key">"formatted"</span>: <span class="str">"(00)356012345600000016"</span>, <span class="key">"checkDigit"</span>: <span class="num">6</span> },
-    { <span class="key">"sscc"</span>: <span class="str">"356012345600000023"</span>, <span class="key">"formatted"</span>: <span class="str">"(00)356012345600000023"</span>, <span class="key">"checkDigit"</span>: <span class="num">3</span> },
-    ...
-  ]
-}</code></pre></div>
-    </div>
-
     <!-- /prefix -->
-    <h2 id="prefix">GET /prefix</h2>
-    <p>Returns the GS1 member country for an SSCC based on its company prefix (digits 1–3 after the extension digit).</p>
-
+    <h2 id="prefix"><span class="method method-get">GET</span><span class="endpoint-path">/prefix</span></h2>
+    <p>Returns the GS1 member country for an SSCC based on its company prefix.</p>
     <div class="code-tabs">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="switchTab(this,'p-curl')">curl</button>
@@ -309,41 +204,22 @@ data.items.forEach(item => console.log(item.sscc));</code></pre></div>
             <button class="tab-btn" onclick="switchTab(this,'p-py')">Python</button>
             <button class="tab-btn try-btn" onclick="switchTab(this,'p-try')">▶ Try it</button>
         </div>
-        <div id="p-curl" class="tab-content active"><pre><code>curl "https://sscc.birth1mark.workers.dev/prefix?sscc=356012345600000016"</code></pre></div>
-        <div id="p-js" class="tab-content"><pre><code><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/prefix?sscc=356012345600000016'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();
-console.log(data.country); <span class="comment">// "Portugal"</span></code></pre></div>
-        <div id="p-py" class="tab-content"><pre><code>r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/prefix'</span>,
-                 params={<span class="str">'sscc'</span>: <span class="str">'356012345600000016'</span>})
-print(r.json()[<span class="str">'country'</span>]) <span class="comment"># Portugal</span></code></pre></div>
+        <div id="p-curl" class="tab-content active"><pre><code id="p-curl-code">curl "https://sscc.birth1mark.workers.dev/prefix?sscc=356012345600000016"</code></pre></div>
+        <div id="p-js" class="tab-content"><pre><code id="p-js-code"><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/prefix?sscc=356012345600000016'</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();</code></pre></div>
+        <div id="p-py" class="tab-content"><pre><code id="p-py-code">r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/prefix'</span>, params={<span class="str">'sscc'</span>: <span class="str">'356012345600000016'</span>})</code></pre></div>
         <div id="p-try" class="tab-content">
             <div class="try-panel">
-                <div class="try-field"><span class="try-label">sscc</span><input class="try-input" id="t-p-sscc" value="356012345600000016"></div>
+                <div class="try-field"><span class="try-label">sscc</span><input class="try-input" id="t-p-sscc" value="356012345600000016" oninput="updateCode('prefix')"></div>
                 <div class="try-actions"><button class="try-run" onclick="tryCall('prefix')">▶ Run</button><span class="try-status" id="t-p-status"></span></div>
                 <div class="try-result" id="t-p-result"></div>
             </div>
         </div>
     </div>
 
-    <div class="response-box">
-        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
-        <div class="response-body"><pre><code>{
-  <span class="key">"sscc"</span>:        <span class="str">"356012345600000016"</span>,
-  <span class="key">"prefix"</span>:      <span class="num">560</span>,
-  <span class="key">"country"</span>:     <span class="str">"Portugal"</span>,
-  <span class="key">"countryCode"</span>: <span class="str">"PT"</span>,
-  <span class="key">"flag"</span>:        <span class="str">"🇵🇹"</span>
-}</code></pre></div>
-    </div>
-
     <!-- /extract -->
-    <h2 id="extract">POST /extract</h2>
-    <p>Send the raw content of any EDIFACT, IDoc SAP, XML, CSV or TXT file as the request body. Format is detected automatically.</p>
-
-    <div class="callout">
-        <strong>Format detection:</strong> EDIFACT by <code>UNA</code>/<code>UNB+</code> header · XML/IDoc by <code>&lt;?xml&gt;</code> or <code>&lt;IDOC&gt;</code> tag · Everything else scanned with a generic regex pipeline.
-    </div>
-
+    <h2 id="extract"><span class="method method-post">POST</span><span class="endpoint-path">/extract</span></h2>
+    <p>Send raw file content as the request body — EDIFACT, IDoc SAP, XML, CSV or TXT. Format detected automatically.</p>
     <div class="code-tabs">
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="switchTab(this,'e-curl')">curl</button>
@@ -351,25 +227,18 @@ print(r.json()[<span class="str">'country'</span>]) <span class="comment"># Port
             <button class="tab-btn" onclick="switchTab(this,'e-py')">Python</button>
             <button class="tab-btn try-btn" onclick="switchTab(this,'e-try')">▶ Try it</button>
         </div>
-        <div id="e-curl" class="tab-content active"><pre><code>curl -X POST "https://sscc.birth1mark.workers.dev/extract" \
+        <div id="e-curl" class="tab-content active"><pre><code id="e-curl-code">curl -X POST "https://sscc.birth1mark.workers.dev/extract" \
   -H "Content-Type: text/plain" \
   --data-binary @desadv.edi</code></pre></div>
-        <div id="e-js" class="tab-content"><pre><code><span class="kw">const</span> file    = document.querySelector(<span class="str">'#file-input'</span>).files[<span class="num">0</span>];
-<span class="kw">const</span> content = <span class="kw">await</span> file.text();
-<span class="kw">const</span> res     = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/extract'</span>, {
-    method: <span class="str">'POST'</span>, body: content
-});
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();
-console.log(data.count, data.items);</code></pre></div>
-        <div id="e-py" class="tab-content"><pre><code><span class="kw">with</span> open(<span class="str">'desadv.edi'</span>, <span class="str">'r'</span>) <span class="kw">as</span> f:
-    content = f.read()
-r = requests.post(<span class="str">'https://sscc.birth1mark.workers.dev/extract'</span>, data=content)
-<span class="kw">for</span> item <span class="kw">in</span> r.json()[<span class="str">'items'</span>]:
-    print(item[<span class="str">'sscc'</span>], item[<span class="str">'valid'</span>])</code></pre></div>
+        <div id="e-js" class="tab-content"><pre><code id="e-js-code"><span class="kw">const</span> content = <span class="kw">await</span> file.text();
+<span class="kw">const</span> res     = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/extract'</span>, { method: <span class="str">'POST'</span>, body: content });
+<span class="kw">const</span> data    = <span class="kw">await</span> res.json();</code></pre></div>
+        <div id="e-py" class="tab-content"><pre><code id="e-py-code"><span class="kw">with</span> open(<span class="str">'desadv.edi'</span>) <span class="kw">as</span> f: content = f.read()
+r = requests.post(<span class="str">'https://sscc.birth1mark.workers.dev/extract'</span>, data=content)</code></pre></div>
         <div id="e-try" class="tab-content">
             <div class="try-panel">
                 <div class="try-field">
-                    <span class="try-label">File content — paste EDIFACT, XML, CSV or plain text</span>
+                    <span class="try-label">File content</span>
                     <textarea class="try-textarea" id="t-e-body">GIN+BJ:356012345600000016'
 GIN+BJ:356012345600000023'
 GIN+BJ:356012345600000030'</textarea>
@@ -380,34 +249,20 @@ GIN+BJ:356012345600000030'</textarea>
         </div>
     </div>
 
-    <div class="response-box">
-        <div class="response-header"><span class="status-ok">200 OK</span> application/json</div>
-        <div class="response-body"><pre><code>{
-  <span class="key">"format"</span>:  <span class="str">"edifact"</span>,
-  <span class="key">"count"</span>:   <span class="num">3</span>,
-  <span class="key">"summary"</span>: { <span class="key">"valid"</span>: <span class="num">3</span>, <span class="key">"invalid"</span>: <span class="num">0</span>, <span class="key">"generated"</span>: <span class="num">0</span> },
-  <span class="key">"items"</span>: [ ... ]
-}</code></pre></div>
-    </div>
-
     <!-- Errors -->
     <h2 id="errors">Errors</h2>
-    <p>All errors return a JSON object with an <code>error</code> field and an appropriate HTTP status code.</p>
-    <div class="response-box">
-        <div class="response-header"><span style="color:var(--danger);font-weight:600;">400 Bad Request</span></div>
-        <div class="response-body"><pre><code>{ <span class="key">"error"</span>: <span class="str">"Invalid length: expected 18 digits, got 15"</span> }</code></pre></div>
-    </div>
-    <div class="response-box">
-        <div class="response-header"><span style="color:#fb923c;font-weight:600;">429 Too Many Requests</span></div>
-        <div class="response-body"><pre><code>{ <span class="key">"error"</span>: <span class="str">"Rate limit exceeded: max 500 requests per hour per IP. Try again later."</span> }</code></pre></div>
-    </div>
+    <table class="error-table">
+        <tr><th>Status</th><th>Meaning</th></tr>
+        <tr><td>400</td><td>Missing or invalid parameter</td></tr>
+        <tr><td>405</td><td>Method not allowed</td></tr>
+        <tr><td>429</td><td>Rate limit exceeded — max 500 req/hour per IP</td></tr>
+    </table>
 
     <div class="cta-box">
         <h3>Prefer a visual interface?</h3>
         <p>SSCC Pro Vision runs entirely in the browser — scan barcodes, validate codes, upload EDIFACT files and export results as CSV.</p>
         <a class="cta-btn" href="/sscc-check/">Open SSCC Pro Vision →</a>
     </div>
-
 </div>
 
 <script>
@@ -421,6 +276,37 @@ function switchTab(btn, id) {
     document.getElementById(id).classList.add('active');
 }
 
+function updateCode(ep) {
+    const codes = {
+        validate: () => {
+            const s = document.getElementById('t-v-sscc').value.trim();
+            document.getElementById('v-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/validate?sscc=${s}"`;
+            document.getElementById('v-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/validate?sscc=${s}'</span>);\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
+            document.getElementById('v-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/validate'</span>, params={<span class="str">'sscc'</span>: <span class="str">'${s}'</span>})`;
+        },
+        generate: () => {
+            const b = document.getElementById('t-g-body').value.trim();
+            document.getElementById('g-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/generate?body=${b}"`;
+            document.getElementById('g-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/generate?body=${b}'</span>);\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
+            document.getElementById('g-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/generate'</span>, params={<span class="str">'body'</span>: <span class="str">'${b}'</span>})`;
+        },
+        range: () => {
+            const f = document.getElementById('t-r-from').value.trim();
+            const t = document.getElementById('t-r-to').value.trim();
+            document.getElementById('r-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/range?from=${f}&to=${t}"`;
+            document.getElementById('r-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/range?from=${f}&to=${t}'</span>);\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
+            document.getElementById('r-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/range'</span>, params={<span class="str">'from'</span>: <span class="str">'${f}'</span>, <span class="str">'to'</span>: <span class="str">'${t}'</span>})`;
+        },
+        prefix: () => {
+            const s = document.getElementById('t-p-sscc').value.trim();
+            document.getElementById('p-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/prefix?sscc=${s}"`;
+            document.getElementById('p-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/prefix?sscc=${s}'</span>);\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
+            document.getElementById('p-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/prefix'</span>, params={<span class="str">'sscc'</span>: <span class="str">'${s}'</span>})`;
+        },
+    };
+    if (codes[ep]) codes[ep]();
+}
+
 function syntaxHighlight(json) {
     return JSON.stringify(json, null, 2)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -432,49 +318,38 @@ function syntaxHighlight(json) {
         });
 }
 
-async function tryCall(endpoint) {
-    const statusEl = document.getElementById(`t-${endpoint[0]}-status`);
-    const resultEl = document.getElementById(`t-${endpoint[0]}-result`);
-    const btn      = statusEl.closest('.try-actions').querySelector('.try-run');
-
-    // map endpoint name to correct prefix
-    const prefix = { validate:'v', generate:'g', range:'r', prefix:'p', extract:'e' }[endpoint];
+async function tryCall(ep) {
+    const prefix = {validate:'v',generate:'g',range:'r',prefix:'p',extract:'e'}[ep];
     const sEl = document.getElementById(`t-${prefix}-status`);
     const rEl = document.getElementById(`t-${prefix}-result`);
-    const b   = sEl.closest('.try-actions').querySelector('.try-run');
+    const btn = sEl.closest('.try-actions').querySelector('.try-run');
 
-    b.disabled = true; b.textContent = '...';
+    btn.disabled = true; btn.textContent = '...';
     sEl.className = 'try-status'; rEl.classList.remove('visible');
 
     try {
-        let url, options = {};
-        if (endpoint === 'validate') {
-            url = `${API}/validate?sscc=${encodeURIComponent(document.getElementById('t-v-sscc').value.trim())}`;
-        } else if (endpoint === 'generate') {
-            url = `${API}/generate?body=${encodeURIComponent(document.getElementById('t-g-body').value.trim())}`;
-        } else if (endpoint === 'range') {
-            url = `${API}/range?from=${encodeURIComponent(document.getElementById('t-r-from').value.trim())}&to=${encodeURIComponent(document.getElementById('t-r-to').value.trim())}`;
-        } else if (endpoint === 'prefix') {
-            url = `${API}/prefix?sscc=${encodeURIComponent(document.getElementById('t-p-sscc').value.trim())}`;
-        } else if (endpoint === 'extract') {
-            url = `${API}/extract`;
-            options = { method: 'POST', body: document.getElementById('t-e-body').value };
-        }
+        let url, opts = {};
+        if (ep === 'validate') url = `${API}/validate?sscc=${encodeURIComponent(document.getElementById('t-v-sscc').value.trim())}`;
+        else if (ep === 'generate') url = `${API}/generate?body=${encodeURIComponent(document.getElementById('t-g-body').value.trim())}`;
+        else if (ep === 'range') url = `${API}/range?from=${encodeURIComponent(document.getElementById('t-r-from').value.trim())}&to=${encodeURIComponent(document.getElementById('t-r-to').value.trim())}`;
+        else if (ep === 'prefix') url = `${API}/prefix?sscc=${encodeURIComponent(document.getElementById('t-p-sscc').value.trim())}`;
+        else if (ep === 'extract') { url = `${API}/extract`; opts = {method:'POST', body: document.getElementById('t-e-body').value}; }
 
-        const res  = await fetch(url, options);
+        const res  = await fetch(url, opts);
         const data = await res.json();
         sEl.textContent = res.status + ' ' + (res.ok ? 'OK' : 'Error');
-        sEl.className   = 'try-status ' + (res.status === 429 ? 'warn' : res.ok ? 'ok' : 'err');
-        rEl.innerHTML   = syntaxHighlight(data);
+        sEl.className = 'try-status ' + (res.status === 429 ? 'warn' : res.ok ? 'ok' : 'err');
+        rEl.innerHTML = syntaxHighlight(data);
         rEl.classList.add('visible');
+
+        // Update code examples with values used
+        if (ep !== 'extract') updateCode(ep);
     } catch(e) {
         sEl.textContent = 'Network error'; sEl.className = 'try-status err';
         rEl.innerHTML = e.message; rEl.classList.add('visible');
     }
-
-    b.disabled = false; b.textContent = '▶ Run';
+    btn.disabled = false; btn.textContent = '▶ Run';
 }
 </script>
-
 </body>
 </html>

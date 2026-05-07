@@ -138,23 +138,27 @@ function parseGeneric(text) {
 }
 
 function extractGeneric(text, source, found) {
-    // (00)XXXXXXXXXXXXXXXXXX — explicit AI notation
-    const reAI = /\(00\)(\d{18})/g;
     let m;
+
+    // Pattern 1: (00)XXXXXXXXXXXXXXXXXX — explicit AI notation
+    const reAI = /\(00\)(\d{18})/g;
     while ((m = reAI.exec(text)) !== null) {
         tryAddSSCC(m[1], source, found);
     }
 
-    // 00XXXXXXXXXXXXXXXXXX — 20-digit with leading 00
-    const re20 = /\b(00\d{18})\b/g;
+    // Pattern 2: 00XXXXXXXXXXXXXXXXXX — 20 digits starting with 00
+    // Lookbehind ensures we don't start mid-number.
+    // No lookahead — in fixed-width files the SSCC can be immediately
+    // followed by more digits (e.g. line number). We always take exactly
+    // the first 20 digits (AI 00 + 18-digit SSCC).
+    const re20 = /(?<!\d)(00\d{18})/g;
     while ((m = re20.exec(text)) !== null) {
         tryAddSSCC(m[1], source, found);
     }
 
-    // Standalone 18-digit numbers (not preceded by more digits)
+    // Pattern 3: standalone 18-digit numbers
     const re18 = /(?<!\d)(\d{18})(?!\d)/g;
     while ((m = re18.exec(text)) !== null) {
-        // Skip if it's actually a 20-digit match we already caught
         tryAddSSCC(m[1], source, found);
     }
 }
@@ -168,20 +172,42 @@ function extractGeneric(text, source, found) {
  * The GS1 prefix is digits 1–3 of the 18-digit SSCC (after the extension digit).
  * Returns true if the prefix matches a known GS1 member range.
  */
+// Valid GS1 prefix ranges (source: GS1 General Specifications 2025)
+// Self-contained in parser.js — does not depend on app.js GS1_FLAGS
+const VALID_GS1_RANGES = [
+    [1,19],[30,39],[60,139],          // USA
+    [200,299],                         // Restricted circulation
+    [300,379],                         // France/Monaco
+    [380,380],[383,383],[385,385],[387,387],[389,390], // SE Europe
+    [400,440],                         // Germany
+    [450,459],[490,499],               // Japan
+    [460,469],[470,470],[471,471],[474,489], // Russia + ex-USSR + Asia
+    [500,509],                         // UK
+    [520,521],[528,531],[535,535],[539,539], // Greece, Lebanon, Cyprus, Albania, Macedonia, Malta, Ireland
+    [540,549],                         // Belgium & Luxembourg
+    [560,560],[569,569],[570,579],     // Portugal, Iceland, Denmark
+    [590,590],[594,594],[599,599],     // Poland, Romania, Hungary
+    [600,601],[603,632],               // Africa & Middle East
+    [640,649],                         // Finland
+    [680,681],[690,699],               // China
+    [700,709],[729,729],[730,739],     // Norway, Israel, Sweden
+    [740,746],[750,750],[754,755],[758,759], // Central America, Mexico, Canada, Venezuela
+    [760,769],[770,771],[773,773],[775,775],[777,777],[778,779],[780,780],[784,784],[786,786],[789,790], // South America + Switzerland
+    [800,839],                         // Italy
+    [840,849],                         // Spain ← 842 is here
+    [850,850],[858,860],[865,865],[867,869], // Cuba, Slovakia, Czech, Serbia, Mongolia, N.Korea, Turkey
+    [870,879],[880,881],[883,883],[884,885],[888,888],[890,890],[893,894],[896,896],[899,899], // Netherlands, Korea, SE Asia, India, Bangladesh, Pakistan, Indonesia
+    [900,919],                         // Austria
+    [930,939],[940,949],               // Australia, New Zealand
+    [950,952],[955,955],[958,958],     // Global Office, Malaysia, Macau
+    [977,984],[990,999],               // Serials, ISBN, coupons
+];
+
 function isValidGS1Prefix(body18) {
     const prefix = parseInt(body18.substring(1, 4));
-    // Valid GS1 prefixes: 300–999 (excluding unassigned gaps handled by getFlag returning '')
-    // We reject anything below 300 — those are not assigned to any country
-    if (prefix < 300) return false;
-    // Also reject if getFlag returns empty string for non-global prefixes
-    // (global prefixes 950,951,960-969,977-984,990-999 are valid)
-    const flag = getFlag(body18);
-    if (flag !== '') return true;
-    // Double-check known global ranges explicitly
-    if (prefix === 950 || prefix === 951) return true;
-    if (prefix >= 960 && prefix <= 969) return true;
-    if (prefix >= 977 && prefix <= 984) return true;
-    if (prefix >= 990 && prefix <= 999) return true;
+    for (const [lo, hi] of VALID_GS1_RANGES) {
+        if (prefix >= lo && prefix <= hi) return true;
+    }
     return false;
 }
 

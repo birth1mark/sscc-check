@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools</title>
+    <meta name="description" content="Complete guide to SSCC validation: structure, GS1-128 format, check digit algorithm with worked example, JavaScript implementation, and how to extract SSCCs from EDIFACT files.">
+    <meta name="keywords" content="SSCC validation, SSCC check digit, GS1-128 format, serial shipping container code, EDI DESADV SSCC, SSCC algorithm, check digit calculator, logistics barcode">
+    <meta name="author" content="SSCC Pro Vision">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://birth1mark.github.io/sscc-check/guide.html">
+    <link rel="sitemap" type="application/xml" href="sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://birth1mark.github.io/sscc-check/guide.html">
+    <meta property="og:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
+    <meta property="og:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
+    <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+    <meta property="og:site_name" content="SSCC Pro Vision">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
+    <meta name="twitter:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
+    <meta name="twitter:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+
+    <!-- Schema.org Article -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools",
+      "description": "Complete guide to SSCC validation: structure, GS1-128 format, check digit algorithm with worked example, and JavaScript implementation.",
+      "url": "https://birth1mark.github.io/sscc-check/guide.html",
+      "author": { "@type": "Organization", "name": "SSCC Pro Vision" },
+      "publisher": { "@type": "Organization", "name": "SSCC Pro Vision" },
+      "mainEntityOfPage": "https://birth1mark.github.io/sscc-check/guide.html"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "SSCC Pro Vision",
+          "item": "https://birth1mark.github.io/sscc-check/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "How to Validate SSCC Codes",
+          "item": "https://birth1mark.github.io/sscc-check/guide.html"
+        }
+      ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg:        #0f172a;
+            --surface:   #1e293b;
+            --border:    #334155;
+            --primary:   #3b82f6;
+            --success:   #10b981;
+            --text:      #f1f5f9;
+            --muted:     #94a3b8;
+            --code-bg:   #0d1117;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            font-size: 16px;
+        }
+
+        /* ── Nav ── */
+        nav {
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; background: rgba(15,23,42,0.95);
+            backdrop-filter: blur(8px); z-index: 100;
+        }
+        .nav-brand { font-size: 14px; font-weight: 600; color: var(--primary); text-decoration: none; }
+        .nav-cta {
+            background: var(--primary); color: white;
+            padding: 7px 16px; border-radius: 8px; font-size: 13px;
+            font-weight: 600; text-decoration: none; transition: opacity 0.15s;
+        }
+        .nav-cta:hover { opacity: 0.85; }
+
+        /* ── Layout ── */
+        .wrapper {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ── Header ── */
+        .article-header { margin-bottom: 48px; border-bottom: 1px solid var(--border); padding-bottom: 32px; }
+        .article-tag {
+            display: inline-block;
+            font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--primary);
+            background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+            padding: 3px 10px; border-radius: 20px; margin-bottom: 16px;
+        }
+        h1 {
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: 600; line-height: 1.25;
+            margin-bottom: 16px;
+        }
+        h1 em { color: var(--primary); font-style: normal; }
+        .article-meta { font-size: 13px; color: var(--muted); }
+
+        /* ── TOC ── */
+        .toc {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px 24px; margin-bottom: 40px;
+        }
+        .toc-title { font-size: 12px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; }
+        .toc ol { padding-left: 18px; }
+        .toc li { margin-bottom: 6px; }
+        .toc a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.15s; }
+        .toc a:hover { color: var(--primary); }
+
+        /* ── Content ── */
+        h2 {
+            font-size: 22px; font-weight: 600;
+            margin: 48px 0 16px;
+            padding-top: 48px; border-top: 1px solid var(--border);
+            scroll-margin-top: 80px;
+        }
+        h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+        h3 { font-size: 17px; font-weight: 600; margin: 28px 0 12px; color: var(--text); }
+
+        p { margin-bottom: 16px; color: var(--muted); }
+        p strong { color: var(--text); }
+
+        a { color: var(--primary); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* ── Code ── */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0 24px;
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+        code {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+        }
+        p code, li code {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1px 6px; border-radius: 4px;
+            color: var(--primary);
+            font-size: 13px;
+        }
+        .comment { color: #6b7280; }
+        .kw      { color: #c084fc; }
+        .fn      { color: #60a5fa; }
+        .str     { color: #86efac; }
+        .num     { color: #fb923c; }
+        .var     { color: #f1f5f9; }
+
+        /* ── Structure diagram ── */
+        .sscc-diagram {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px 20px;
+            margin: 20px 0 24px;
+            overflow-x: auto;
+        }
+        .sscc-diagram table { border-collapse: collapse; width: 100%; min-width: 480px; }
+        .sscc-diagram td {
+            text-align: center;
+            padding: 10px 6px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            border: 1px solid var(--border);
+        }
+        .sscc-diagram .label { font-size: 11px; color: var(--muted); background: var(--surface); font-family: 'IBM Plex Sans', sans-serif; }
+        .cell-ai   { color: #94a3b8; }
+        .cell-ext  { color: #60a5fa; font-weight: 600; }
+        .cell-gcp  { color: #f1f5f9; }
+        .cell-ref  { color: #f1f5f9; }
+        .cell-cd   { color: #10b981; font-weight: 600; }
+
+        /* ── Worked example table ── */
+        .calc-table {
+            width: 100%; border-collapse: collapse;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px; margin: 20px 0 24px;
+            overflow-x: auto; display: block;
+        }
+        .calc-table th {
+            background: var(--surface); color: var(--muted);
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+            padding: 8px 12px; border: 1px solid var(--border); font-weight: 500;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        .calc-table td { padding: 8px 12px; border: 1px solid var(--border); text-align: center; }
+        .calc-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+        .calc-table .total td { background: var(--surface); color: var(--text); font-weight: 600; }
+
+        /* ── Callout ── */
+        .callout {
+            border-left: 3px solid var(--primary);
+            background: rgba(59,130,246,0.06);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin: 20px 0 24px;
+            font-size: 14px; color: var(--muted);
+        }
+        .callout strong { color: var(--text); }
+        .callout.success { border-color: var(--success); background: rgba(16,185,129,0.06); }
+
+        /* ── EDIFACT segments ── */
+        .segment-table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
+        .segment-table th { background: var(--surface); color: var(--muted); font-size: 12px;
+            text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 14px;
+            border: 1px solid var(--border); font-weight: 500; text-align: left; }
+        .segment-table td { padding: 10px 14px; border: 1px solid var(--border); color: var(--muted); }
+        .segment-table td:first-child { font-family: 'IBM Plex Mono', monospace; color: var(--primary); font-size: 13px; }
+        .segment-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+        /* ── CTA ── */
+        .cta-box {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(99,102,241,0.1));
+            border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 16px; padding: 32px;
+            text-align: center; margin-top: 48px;
+        }
+        .cta-box h3 { font-size: 20px; margin-bottom: 10px; color: var(--text); }
+        .cta-box p { margin-bottom: 20px; }
+        .cta-btn {
+            display: inline-block;
+            background: var(--primary); color: white;
+            padding: 12px 28px; border-radius: 10px;
+            font-weight: 600; font-size: 15px; text-decoration: none;
+            transition: opacity 0.15s;
+        }
+        .cta-btn:hover { opacity: 0.85; text-decoration: none; }
+
+        /* ── Lists ── */
+        ul, ol { padding-left: 22px; margin-bottom: 16px; }
+        li { margin-bottom: 6px; color: var(--muted); }
+        li strong { color: var(--text); }
+
+        @media (max-width: 600px) {
+            .wrapper { padding: 32px 16px 60px; }
+            h2 { font-size: 19px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a class="nav-brand" href="/sscc-check/">← SSCC Pro Vision</a>
+    <a class="nav-cta" href="/sscc-check/">Open Validator</a>
+</nav>
+
+<div class="wrapper">
+
+    <header class="article-header">
+        <span class="article-tag">Technical Guide</span>
+        <h1>How to Validate <em>SSCC Codes</em> — Format, Algorithm &amp; Tools</h1>
+        <p class="article-meta">GS1-128 · Check Digit · EDIFACT · JavaScript</p>
+    </header>
+
+    <nav class="toc" aria-label="Table of contents">
+        <div class="toc-title">Contents</div>
+        <ol>
+            <li><a href="#what-is-sscc">What is an SSCC?</a></li>
+            <li><a href="#structure">SSCC Structure</a></li>
+            <li><a href="#algorithm">Check Digit Algorithm</a></li>
+            <li><a href="#common-mistakes">Common Mistakes</a></li>
+            <li><a href="#javascript">JavaScript Implementation</a></li>
+            <li><a href="#edifact">Extracting SSCCs from EDIFACT</a></li>
+            <li><a href="#tool">Free Online Validator</a></li>
+        </ol>
+    </nav>
+
+    <h2 id="what-is-sscc">What is an SSCC?</h2>
+    <p>The <strong>Serial Shipping Container Code (SSCC)</strong> is an 18-digit GS1 identifier used in logistics to uniquely identify a physical shipping unit — a pallet, box, roll cage, or any other logistic unit. It is the primary identifier used in supply chain transactions between trading partners.</p>
+    <p>SSCCs appear in two main contexts:</p>
+    <ul>
+        <li><strong>Physically</strong> — encoded in a <strong>GS1-128 barcode</strong> (a variant of Code 128) printed on pallet labels</li>
+        <li><strong>Electronically</strong> — transmitted in EDI messages such as <strong>DESADV</strong> (Despatch Advice / ASN) and <strong>IFTMIN</strong> (Forwarding Instruction) in segments like <code>GIN+BJ</code></li>
+    </ul>
+    <p>The SSCC is always accompanied by the <strong>Application Identifier (AI) 00</strong>, which signals to any GS1-compliant system that what follows is an SSCC.</p>
+
+    <h2 id="structure">SSCC Structure</h2>
+    <p>An SSCC has exactly <strong>18 digits</strong>, structured as follows:</p>
+
+    <div class="sscc-diagram">
+        <table>
+            <tr>
+                <td class="label">AI</td>
+                <td class="label">Extension</td>
+                <td class="label" colspan="2">GS1 Company Prefix</td>
+                <td class="label">Serial Reference</td>
+                <td class="label">Check Digit</td>
+            </tr>
+            <tr>
+                <td class="cell-ai">(00)</td>
+                <td class="cell-ext">3</td>
+                <td class="cell-gcp" colspan="2">56012345</td>
+                <td class="cell-ref">00000001</td>
+                <td class="cell-cd">6</td>
+            </tr>
+            <tr>
+                <td class="label">not stored</td>
+                <td class="label">1 digit</td>
+                <td class="label" colspan="2">7–10 digits</td>
+                <td class="label">variable</td>
+                <td class="label">1 digit</td>
+            </tr>
+        </table>
+    </div>
+
+    <ul>
+        <li><strong>AI (00)</strong> — Application Identifier. Always <code>(00)</code> for SSCCs. Not part of the 18 digits — it is a label that precedes them.</li>
+        <li><strong>Extension digit</strong> — A single digit (0–9) assigned by the company to extend the numbering capacity.</li>
+        <li><strong>GS1 Company Prefix</strong> — Issued by the local GS1 member organisation to the company. Length varies from 7 to 10 digits depending on the prefix allocation. The first 3 digits identify the issuing GS1 member country.</li>
+        <li><strong>Serial reference</strong> — Assigned sequentially or randomly by the company to uniquely identify each logistic unit. Length varies inversely with the GCP length.</li>
+        <li><strong>Check digit</strong> — Calculated from the preceding 17 digits using the GS1 modulo-10 algorithm. Used to detect transcription errors.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Important:</strong> The GS1 Company Prefix identifies the organisation that <em>issued</em> the SSCC, not necessarily the country of origin of the goods. A Portuguese company with prefix <code>560</code> may ship goods manufactured anywhere in the world.
+    </div>
+
+    <h2 id="algorithm">Check Digit Algorithm</h2>
+    <p>The SSCC check digit uses the standard <strong>GS1 Modulo-10</strong> algorithm. Given the 17-digit body:</p>
+    <ol>
+        <li>Starting from the <strong>rightmost digit</strong>, multiply alternating digits by <strong>3</strong> and <strong>1</strong></li>
+        <li>Sum all products</li>
+        <li>Check digit = <code>(10 − (sum mod 10)) mod 10</code></li>
+    </ol>
+
+    <h3>Worked Example</h3>
+    <p>Body: <code>35601234500000001</code></p>
+
+    <table class="calc-table">
+        <tr>
+            <th>Position (from right)</th>
+            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th>
+            <th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th>
+        </tr>
+        <tr>
+            <th>Digit</th>
+            <td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5</td>
+            <td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>6</td><td>5</td><td>3</td>
+        </tr>
+        <tr>
+            <th>Multiplier</th>
+            <td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td>
+            <td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td>
+        </tr>
+        <tr>
+            <th>Product</th>
+            <td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>15</td>
+            <td>4</td><td>9</td><td>2</td><td>3</td><td>0</td><td>18</td><td>5</td><td>9</td>
+        </tr>
+        <tr class="total">
+            <td colspan="18">Sum = 68 → Check digit = (10 − (68 mod 10)) mod 10 = (10 − 8) mod 10 = <strong>2</strong></td>
+        </tr>
+    </table>
+
+    <p>Full SSCC: <code>(00) 35601234500000001 2</code></p>
+
+    <div class="callout success">
+        <strong>Quick check:</strong> If the result of <code>(sum + check_digit) mod 10 === 0</code>, the SSCC is valid. This is the fastest way to validate an existing 18-digit SSCC.
+    </div>
+
+    <h2 id="common-mistakes">Common Mistakes</h2>
+
+    <h3>1. Confusing the AI with the SSCC digits</h3>
+    <p>The AI <code>(00)</code> is a label, not part of the 18 digits. When a barcode is scanned with a GS1-128 reader, the raw output is often <code>00</code> followed by the 18 digits — giving 20 characters total. Always strip the leading <code>00</code> before validating the check digit.</p>
+
+    <h3>2. Wrong digit count</h3>
+    <p>An SSCC body is always exactly <strong>17 digits</strong> (before the check digit) or <strong>18 digits</strong> (including it). Numbers with 19, 20 or more digits are either GTINs, IBANs, or other identifiers — not SSCCs.</p>
+
+    <h3>3. Padding zeros</h3>
+    <p>Some ERP systems store SSCCs in fixed-width fields padded with leading zeros. A 20-character field starting with <code>00</code> followed by an 18-digit SSCC, or a 21-character field where the last character is a line number — always extract exactly 18 digits for the SSCC.</p>
+
+    <h3>4. GS1 prefix vs country of origin</h3>
+    <p>The GS1 prefix (first 3 digits of the SSCC after the extension digit) identifies the GS1 member organisation that issued the company prefix — <strong>not</strong> the country where the goods were made or shipped from. A company registered in Portugal (<code>560</code>) may ship from a warehouse in Spain.</p>
+
+    <h2 id="javascript">JavaScript Implementation</h2>
+    <p>Here is a complete, dependency-free JavaScript implementation for validating and generating SSCC check digits. It uses <code>BigInt</code> to safely handle the large numbers involved.</p>
+
+<pre><code><span class="comment">/**
+ * Calculate the GS1 check digit for a 17-digit SSCC body.
+ * @param {string} body17 - 17-digit string (no check digit)
+ * @returns {number} check digit (0-9)
+ */</span>
+<span class="kw">function</span> <span class="fn">getCheckDigit</span>(<span class="var">body17</span>) {
+    <span class="kw">let</span> <span class="var">sum</span> = <span class="num">0</span>;
+    <span class="kw">const</span> <span class="var">digits</span> = <span class="var">body17</span>.<span class="fn">split</span>(<span class="str">''</span>).<span class="fn">reverse</span>();
+    <span class="kw">for</span> (<span class="kw">let</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="var">digits</span>.length; <span class="var">i</span>++) {
+        <span class="var">sum</span> += <span class="fn">parseInt</span>(<span class="var">digits</span>[<span class="var">i</span>]) * (<span class="var">i</span> % <span class="num">2</span> === <span class="num">0</span> ? <span class="num">3</span> : <span class="num">1</span>);
+    }
+    <span class="kw">return</span> (<span class="num">10</span> - (<span class="var">sum</span> % <span class="num">10</span>)) % <span class="num">10</span>;
+}
+
+<span class="comment">/**
+ * Validate an 18-digit SSCC string.
+ * @param {string} sscc18 - 18-digit SSCC (without AI prefix)
+ * @returns {{ valid: boolean, expected: number, provided: number }}
+ */</span>
+<span class="kw">function</span> <span class="fn">validateSSCC</span>(<span class="var">sscc18</span>) {
+    <span class="kw">const</span> <span class="var">digits</span> = <span class="var">sscc18</span>.<span class="fn">replace</span>(<span class="str">/\D/g</span>, <span class="str">''</span>);
+    <span class="kw">if</span> (<span class="var">digits</span>.length !== <span class="num">18</span>) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'SSCC must be 18 digits'</span>);
+
+    <span class="kw">const</span> <span class="var">body</span>     = <span class="var">digits</span>.<span class="fn">substring</span>(<span class="num">0</span>, <span class="num">17</span>);
+    <span class="kw">const</span> <span class="var">provided</span> = <span class="fn">parseInt</span>(<span class="var">digits</span>[<span class="num">17</span>]);
+    <span class="kw">const</span> <span class="var">expected</span> = <span class="fn">getCheckDigit</span>(<span class="var">body</span>);
+
+    <span class="kw">return</span> { <span class="var">valid</span>: <span class="var">provided</span> === <span class="var">expected</span>, <span class="var">expected</span>, <span class="var">provided</span> };
+}
+
+<span class="comment">/**
+ * Normalise any SSCC input to an 18-digit string.
+ * Handles: 17 digits (generates CD), 18 digits, 20 digits with AI "00".
+ */</span>
+<span class="kw">function</span> <span class="fn">normaliseSSCC</span>(<span class="var">raw</span>) {
+    <span class="kw">const</span> <span class="var">d</span> = <span class="var">raw</span>.<span class="fn">replace</span>(<span class="str">/\D/g</span>, <span class="str">''</span>);
+    <span class="kw">if</span> (<span class="var">d</span>.length === <span class="num">17</span>) <span class="kw">return</span> <span class="var">d</span> + <span class="fn">getCheckDigit</span>(<span class="var">d</span>);
+    <span class="kw">if</span> (<span class="var">d</span>.length === <span class="num">18</span>) <span class="kw">return</span> <span class="var">d</span>;
+    <span class="kw">if</span> (<span class="var">d</span>.length === <span class="num">20</span> && <span class="var">d</span>.<span class="fn">startsWith</span>(<span class="str">'00'</span>)) <span class="kw">return</span> <span class="var">d</span>.<span class="fn">substring</span>(<span class="num">2</span>);
+    <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`Unexpected length: ${d.length}`</span>);
+}
+
+<span class="comment">// Examples</span>
+<span class="fn">validateSSCC</span>(<span class="str">'356012345000000012'</span>);  <span class="comment">// { valid: true, expected: 2, provided: 2 }</span>
+<span class="fn">validateSSCC</span>(<span class="str">'356012345000000019'</span>);  <span class="comment">// { valid: false, expected: 2, provided: 9 }</span>
+<span class="fn">normaliseSSCC</span>(<span class="str">'00356012345000000012'</span>); <span class="comment">// '356012345000000012' (strips AI)</span>
+<span class="fn">normaliseSSCC</span>(<span class="str">'35601234500000001'</span>);   <span class="comment">// '356012345000000012' (generates CD)</span></code></pre>
+
+    <h2 id="edifact">Extracting SSCCs from EDIFACT Files</h2>
+    <p>In EDIFACT messages, SSCCs appear in several segments. The most common is <code>GIN</code> with qualifier <code>BJ</code> (Goods Identity Number, SSCC), used in <strong>DESADV</strong> (Despatch Advice) and <strong>IFTMIN</strong> (Forwarding Instruction).</p>
+
+    <table class="segment-table">
+        <tr>
+            <th>Segment</th>
+            <th>Description</th>
+            <th>Example</th>
+        </tr>
+        <tr>
+            <td>GIN+BJ:&lt;SSCC&gt;</td>
+            <td>Primary SSCC segment in DESADV / IFTMIN</td>
+            <td><code>GIN+BJ:356012345000000012'</code></td>
+        </tr>
+        <tr>
+            <td>RFF+SI:&lt;SSCC&gt;</td>
+            <td>Reference, qualifier SI = Shipment ID</td>
+            <td><code>RFF+SI:356012345000000012'</code></td>
+        </tr>
+        <tr>
+            <td>RFF+AAK:&lt;SSCC&gt;</td>
+            <td>Reference, qualifier AAK = Despatch number</td>
+            <td><code>RFF+AAK:356012345000000012'</code></td>
+        </tr>
+        <tr>
+            <td>PAC</td>
+            <td>Package segment — SSCC sometimes embedded</td>
+            <td><code>PAC+1++09:356012345000000012'</code></td>
+        </tr>
+    </table>
+
+    <h3>Parsing GIN+BJ with JavaScript</h3>
+
+<pre><code><span class="comment">/**
+ * Extract all SSCCs from an EDIFACT message string.
+ * Handles custom UNA delimiters.
+ */</span>
+<span class="kw">function</span> <span class="fn">extractSSCCsFromEDIFACT</span>(<span class="var">text</span>) {
+    <span class="kw">const</span> <span class="var">ssccList</span> = [];
+
+    <span class="comment">// Read custom delimiters from UNA service string</span>
+    <span class="kw">let</span> <span class="var">compSep</span> = <span class="str">':'</span>, <span class="var">elemSep</span> = <span class="str">'+'</span>, <span class="var">segTerm</span> = <span class="str">"'"</span>;
+    <span class="kw">const</span> <span class="var">una</span> = <span class="var">text</span>.<span class="fn">match</span>(<span class="str">/^UNA(.{6})/</span>);
+    <span class="kw">if</span> (<span class="var">una</span>) {
+        <span class="var">compSep</span> = <span class="var">una</span>[<span class="num">1</span>][<span class="num">0</span>];
+        <span class="var">elemSep</span> = <span class="var">una</span>[<span class="num">1</span>][<span class="num">1</span>];
+        <span class="var">segTerm</span> = <span class="var">una</span>[<span class="num">1</span>][<span class="num">5</span>];
+    }
+
+    <span class="kw">const</span> <span class="var">segments</span> = <span class="var">text</span>
+        .<span class="fn">replace</span>(<span class="str">/\r?\n/g</span>, <span class="str">''</span>)
+        .<span class="fn">split</span>(<span class="var">segTerm</span>)
+        .<span class="fn">map</span>(<span class="var">s</span> => <span class="var">s</span>.<span class="fn">trim</span>())
+        .<span class="fn">filter</span>(<span class="var">Boolean</span>);
+
+    <span class="kw">for</span> (<span class="kw">const</span> <span class="var">seg</span> <span class="kw">of</span> <span class="var">segments</span>) {
+        <span class="kw">const</span> <span class="var">parts</span> = <span class="var">seg</span>.<span class="fn">split</span>(<span class="var">elemSep</span>);
+        <span class="kw">if</span> (<span class="var">parts</span>[<span class="num">0</span>] !== <span class="str">'GIN'</span>) <span class="kw">continue</span>;
+
+        <span class="kw">for</span> (<span class="kw">const</span> <span class="var">el</span> <span class="kw">of</span> <span class="var">parts</span>.<span class="fn">slice</span>(<span class="num">1</span>)) {
+            <span class="kw">const</span> [<span class="var">qualifier</span>, <span class="var">value</span>] = <span class="var">el</span>.<span class="fn">split</span>(<span class="var">compSep</span>);
+            <span class="kw">if</span> (<span class="var">qualifier</span> === <span class="str">'BJ'</span> && <span class="var">value</span>) {
+                <span class="kw">const</span> <span class="var">result</span> = <span class="fn">validateSSCC</span>(<span class="var">value</span>);
+                <span class="var">ssccList</span>.<span class="fn">push</span>({ <span class="var">sscc</span>: <span class="var">value</span>, ...<span class="var">result</span> });
+            }
+        }
+    }
+    <span class="kw">return</span> <span class="var">ssccList</span>;
+}</code></pre>
+
+    <div class="callout">
+        <strong>Note on custom delimiters:</strong> EDIFACT allows trading partners to define custom component, element and segment separators in the UNA service string. Always read the UNA header before parsing — defaulting to <code>: + '</code> will silently fail on non-standard files.
+    </div>
+
+    <h2 id="tool">Free Online Validator</h2>
+    <p>If you need to validate SSCCs without writing code, <strong>SSCC Pro Vision</strong> is a free, open-source tool that runs entirely in the browser. No installation, no backend, no data leaves your device.</p>
+
+    <ul>
+        <li>Scan GS1-128 barcodes directly with your phone camera</li>
+        <li>Validate or generate check digits for single or batch SSCCs</li>
+        <li>Expand SSCC ranges to generate every code between two values</li>
+        <li>Upload EDIFACT, IDoc SAP, XML, CSV or TXT files — all SSCCs extracted automatically</li>
+        <li>Installs as a PWA on Android and iOS</li>
+    </ul>
+
+    <div class="cta-box">
+        <h3>Try SSCC Pro Vision</h3>
+        <p>Free, open-source SSCC validator and check digit calculator — runs entirely in your browser.</p>
+        <a class="cta-btn" href="/sscc-check/">Open Validator →</a>
+    </div>
+
+</div>
+
+</body>
+</html>

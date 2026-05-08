@@ -276,13 +276,19 @@ function switchTab(btn, id) {
     document.getElementById(id).classList.add('active');
 }
 
+function escHTML(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function updateCode(ep) {
     const codes = {
         validate: () => {
             const s = document.getElementById('t-v-sscc').value.trim();
+            const se = escHTML(s);
             document.getElementById('v-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/validate?sscc=${s}"`;
-            document.getElementById('v-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/validate?sscc=${s}'</span>);\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
-            document.getElementById('v-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/validate'</span>, params={<span class="str">'sscc'</span>: <span class="str">'${s}'</span>})`;
+            document.getElementById('v-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/validate?sscc=${se}'</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
+            document.getElementById('v-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/validate'</span>, params={<span class="str">'sscc'</span>: <span class="str">'${se}'</span>})`;
         },
         generate: () => {
             const b = document.getElementById('t-g-body').value.trim();
@@ -308,6 +314,7 @@ function updateCode(ep) {
 }
 
 function syntaxHighlight(json) {
+    // Escape first, then apply syntax highlighting spans
     return JSON.stringify(json, null, 2)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {

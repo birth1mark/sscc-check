@@ -3,6 +3,17 @@
 // Supports: EDIFACT, IDoc SAP, XML, CSV, TXT (generic fallback)
 // Everything runs client-side — no data leaves the browser.
 
+// ─── DOM Safety ──────────────────────────────────────────────────────────────
+// Escape user-controlled strings before inserting into innerHTML
+function escapeHTML(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // ─── Format Detection ─────────────────────────────────────────────────────────
 
 function detectFormat(text) {
@@ -347,7 +358,7 @@ function handleFile(file) {
     if (BINARY_EXTENSIONS.has(ext)) {
         const banner = document.getElementById('file-banner');
         if (banner) {
-            banner.innerHTML = `<span class="file-banner-name">📄 ${file.name}</span>
+            banner.innerHTML = `<span class="file-banner-name">📄 ${escapeHTML(file.name)}</span>
                 <span class="file-banner-info" style="color:var(--danger)">Binary format not supported — use EDIFACT, XML, CSV or TXT</span>`;
             banner.style.display = 'flex';
         }
@@ -385,8 +396,8 @@ function showFileResult(filename, format, results) {
         const valid   = results.filter(r => r.status === 'valid').length;
         const invalid = results.filter(r => r.status === 'invalid').length;
         const gen     = results.filter(r => r.status === 'gen').length;
-        banner.innerHTML = `<span class="file-banner-name">📄 ${filename}</span>
-            <span class="file-banner-info">${fmtLabel} · ${count} SSCC${count !== 1 ? 's' : ''} found
+        banner.innerHTML = `<span class="file-banner-name">📄 ${escapeHTML(filename)}</span>
+            <span class="file-banner-info">${escapeHTML(fmtLabel)} · ${count} SSCC${count !== 1 ? 's' : ''} found
                 ${valid   ? `· <span style="color:var(--success)">${valid} valid</span>`   : ''}
                 ${invalid ? `· <span style="color:var(--danger)">${invalid} invalid</span>` : ''}
                 ${gen     ? `· <span style="color:var(--primary)">${gen} generated</span>`  : ''}

@@ -3,8 +3,17 @@ const ASSETS = [
   '/sscc-check/',
   '/sscc-check/index.html',
   '/sscc-check/guide.html',
+  '/sscc-check/sscc-api-guide.html',
+  '/sscc-check/app.js',
+  '/sscc-check/parser.js',
+  '/sscc-check/scanner.js',
+  '/sscc-check/manifest.json',
+  '/sscc-check/icon-192.png',
+  '/sscc-check/icon-512.png',
+  '/sscc-check/og-image.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
-  'https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'
+  'https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js',
+  'https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js'
 ];
 
 self.addEventListener('install', e => {

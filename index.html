@@ -17,43 +17,89 @@
         form-action 'self';
     ">
 
-    <title>SSCC Pro Vision</title>
+    <title>SSCC Validator & Check Digit Calculator | SSCC Pro Vision</title>
     <link rel="icon" href="data:,">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
-        :root { --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --bg: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --text-muted: #94a3b8; --border: #334155; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 12px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 500px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 18px; border: 1px solid var(--border); }
-        header { text-align: center; margin-bottom: 14px; }
-        h1 { font-size: 18px; margin: 0; }
+        :root {
+            --primary:    #3b82f6;
+            --success:    #10b981;
+            --danger:     #ef4444;
+            --bg:         #0f172a;
+            --card-bg:    #1e293b;
+            --text-main:  #f8fafc;
+            --text-muted: #94a3b8;
+            --border:     #334155;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 12px; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 500px; padding-bottom: 24px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); }
+        header { margin-bottom: 14px; text-align: center; }
+        h1 { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; }
         h1 span { color: var(--primary); }
-        #viewport-wrap { width: 100%; height: 220px; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary); margin-bottom: 10px; background: #000; position: relative; display: none; }
-        #video { width: 100%; height: 100%; object-fit: cover; }
-        textarea { width: 100%; height: 100px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #fff; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; box-sizing: border-box; }
+
+        #viewport-wrap { width: 100%; height: 220px; border-radius: 16px; overflow: hidden; border: 2px solid var(--primary); margin-bottom: 10px; background: #000; position: relative; display: none; }
+        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        textarea { width: 100%; height: 100px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 10px; box-sizing: border-box; resize: vertical; }
+
         .btn-stack { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .main-btn { width: 100%; padding: 13px; border-radius: 10px; font-weight: 700; border: none; color: white; cursor: pointer; text-transform: uppercase; }
-        .btn-live { background: var(--primary); }
+        .btn-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .main-btn { width: 100%; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; color: white; cursor: pointer; text-transform: uppercase; transition: opacity 0.2s; }
+        .btn-live  { background: var(--primary); }
         .btn-audit { background: #334155; }
         .btn-clear { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
-        .results { background: #0f172a; border-radius: 10px; padding: 6px; border: 1px solid var(--border); min-height: 40px; }
-        .drop-zone { width: 100%; border: 1.5px dashed var(--border); border-radius: 10px; padding: 12px; color: var(--text-muted); font-size: 12px; cursor: pointer; margin-bottom: 10px; text-align: center; }
+
+        .results { background: #0f172a; border-radius: 10px; padding: 6px; border: 1px solid var(--border); max-height: 300px; overflow-y: auto; }
+        .result-row { padding: 6px 8px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .sscc-cd.cd-valid { color: var(--success); font-weight: bold; }
+        .sscc-cd.cd-invalid { color: var(--danger); text-decoration: underline; }
+
+        .drop-zone { width: 100%; box-sizing: border-box; border: 1.5px dashed var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; color: var(--text-muted); font-size: 12px; cursor: pointer; display: flex; align-items: center; }
+        .file-banner { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 12px; margin-bottom: 10px; padding: 8px 12px; border-radius: 8px; background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.15); }
+
+        /* Estilos originais das instruções e changelog */
+        .info-panel { margin-top: 12px; background: rgba(15,23,42,0.5); border-radius: 12px; border: 1px solid var(--border); padding: 16px; font-size: 12px; line-height: 1.6; }
+        .info-panel h2 { font-size: 13px; color: var(--primary); margin: 0 0 8px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+        .info-panel ul { padding-left: 18px; color: var(--text-muted); margin: 0; }
+        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 12px; }
+        summary { font-weight: 700; color: var(--text-muted); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        summary::after { content: '＋'; color: var(--primary); }
+        details[open] summary::after { content: '－'; }
+        .changelog p { margin: 6px 0; border-left: 2px solid var(--border); padding-left: 8px; font-size: 11px; color: var(--text-muted); }
+        .version { font-weight: 700; color: var(--success); margin-right: 6px; }
+        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
+        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <main class="card">
-        <header><h1><span>SSCC</span> PRO VISION</h1></header>
-        <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
-        <textarea id="input" placeholder="Waiting for input..."></textarea>
-        <div id="drop-zone" class="drop-zone">Drop file or click to browse</div>
-        <input type="file" id="file-input" style="display:none">
-        <div id="file-banner" style="display:none; padding:8px; font-size:11px; background:rgba(59,130,246,0.1); margin-bottom:10px;"></div>
+        <header>
+            <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font.size:10px;">v5.5.3</small></h1>
+        </header>
+
+        <div id="viewport-wrap">
+            <video id="video" autoplay muted playsinline></video>
+        </div>
+
+        <textarea id="input" placeholder="Waiting for scan or manual input..." inputmode="numeric"></textarea>
+
+        <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+            <i data-lucide="upload" style="width:18px;height:18px;margin-right:8px;opacity:0.6;"></i>
+            <span>Drop file or <u>browse</u> — EDIFACT, XML, CSV, TXT</span>
+            <input type="file" id="file-input" style="display:none;">
+        </div>
+        <div id="file-banner" style="display:none;"></div>
+
         <div class="btn-stack">
             <button class="main-btn btn-live" onclick="toggleScanner()">START SCANNER</button>
             <div class="btn-grid">
@@ -61,8 +107,37 @@
                 <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
             </div>
         </div>
-        <div class="results" id="output"></div>
+
+        <div class="results" id="output">
+            <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Scan a barcode or enter an SSCC</div>
+        </div>
     </main>
+
+    <section class="info-panel">
+        <h2>How to Use</h2>
+        <p>New to SSCC? Read the <a href="guide.html" style="color:var(--primary);">complete guide →</a> · <a href="sscc-api-guide.html" style="color:var(--primary);">API documentation →</a></p>
+        <p>Scan barcodes, validate or generate SSCCs, expand ranges, or upload EDIFACT/XML/CSV files.</p>
+
+        <details>
+            <summary>Show all instructions</summary>
+            <ul style="margin-top:10px;">
+                <li><strong>Scan</strong>: Tap START SCANNER and point the camera at the barcode.</li>
+                <li><strong>Manual input</strong>: Type or paste 17 digits to generate the check digit, or 18 to validate.</li>
+                <li><strong>Multiple codes</strong>: Enter one code per line. Press AUDIT to process all.</li>
+                <li><strong>Range</strong>: Use <code>START-END</code> to generate up to 500 codes.</li>
+                <li><strong>File upload</strong>: Drag and drop EDIFACT, XML or CSV files for automatic extraction.</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Changelog</summary>
+            <div class="changelog">
+                <p><span class="version">v5.5.3</span> <strong>REST API</strong>: Suporte para API pública no Cloudflare Workers.</p>
+                <p><span class="version">v5.5.2</span> Atualização da tabela de prefixos GS1 2025.</p>
+                <p><span class="version">v5.5</span> Upload de ficheiros EDIFACT/XML com extração inteligente.</p>
+            </div>
+        </details>
+    </section>
 </div>
 
 <script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>

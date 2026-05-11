@@ -41,16 +41,39 @@
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 12px; display: flex; justify-content: center; min-height: 100vh; }
         .container { width: 100%; max-width: 500px; padding-bottom: 24px; }
         .card { background: var(--card-bg); border-radius: 16px; padding: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); }
+        
         header { margin-bottom: 14px; text-align: center; }
         h1 { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; }
         h1 span { color: var(--primary); }
 
-        #viewport-wrap { width: 100%; height: 220px; border-radius: 16px; overflow: hidden; border: 2px solid var(--primary); margin-bottom: 10px; background: #000; position: relative; display: none; }
-        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
-
         textarea { width: 100%; height: 100px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 10px; box-sizing: border-box; resize: vertical; }
 
-        /* Buttons */
+        /* Drop Zone Restaurada (O aspeto "bonito") */
+        .drop-zone {
+            width: 100%; box-sizing: border-box;
+            border: 1.5px dashed var(--border); border-radius: 12px;
+            padding: 16px; margin-bottom: 12px;
+            color: var(--text-muted); font-size: 13px;
+            cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .drop-zone:hover { border-color: var(--primary); background: rgba(59, 130, 246, 0.05); color: var(--text-main); }
+        .drop-zone i { margin-right: 10px; opacity: 0.7; }
+
+        /* Resultados (Coloração por partes) */
+        .results { background: #0f172a; border-radius: 10px; padding: 6px; border: 1px solid var(--border); max-height: 300px; overflow-y: auto; }
+        .result-row { padding: 10px 12px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .result-row:last-child { border-bottom: none; }
+        
+        .sscc-ai  { color: var(--text-muted); opacity: 0.6; }
+        .sscc-ext { color: var(--primary); font-weight: 700; }
+        .sscc-ref { color: var(--text-main); }
+        .sscc-cd  { font-weight: 700; }
+        .sscc-cd.cd-valid   { color: var(--success); }
+        .sscc-cd.cd-invalid { color: var(--danger); text-decoration: underline; }
+
+        /* Botões */
         .btn-stack { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
         .btn-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .main-btn { width: 100%; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; color: white; cursor: pointer; text-transform: uppercase; }
@@ -58,43 +81,18 @@
         .btn-audit { background: #334155; }
         .btn-clear { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
 
-        /* Results Display (A parte que "já foi mais bonita") */
-        .results { background: #0f172a; border-radius: 10px; padding: 6px; border: 1px solid var(--border); max-height: 300px; overflow-y: auto; }
-        .result-row { padding: 8px 10px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-        .result-row:last-child { border-bottom: none; }
-        
-        .result-meta { display: flex; align-items: center; gap: 8px; }
-        .flag { font-size: 14px; opacity: 0.9; }
-        
-        /* Cores das partes do SSCC */
-        .sscc-ai  { color: var(--text-muted); opacity: 0.7; }
-        .sscc-ext { color: var(--primary); font-weight: 700; }
-        .sscc-ref { color: var(--text-main); }
-        .sscc-cd  { font-weight: 700; }
-        .sscc-cd.cd-valid   { color: var(--success); }
-        .sscc-cd.cd-invalid { color: var(--danger); text-decoration: underline; }
-
-        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; text-transform: uppercase; }
-        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); }
-        .badge-fail { background: rgba(239,68,68,0.15);  color: var(--danger);  }
-        .badge-gen  { background: rgba(59,130,246,0.15); color: var(--primary); }
-
-        .btn-copy { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); padding: 2px 6px; cursor: pointer; transition: all 0.2s; }
-        .btn-copy:hover { border-color: var(--primary); color: var(--primary); }
-
-        /* File Upload */
-        .drop-zone { width: 100%; box-sizing: border-box; border: 1.5px dashed var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; color: var(--text-muted); font-size: 12px; cursor: pointer; display: flex; align-items: center; }
-
-        /* Info Panel */
+        /* Painel de Info */
         .info-panel { margin-top: 12px; background: rgba(15,23,42,0.5); border-radius: 12px; border: 1px solid var(--border); padding: 16px; font-size: 12px; line-height: 1.6; }
         .info-panel h2 { font-size: 13px; color: var(--primary); margin: 0 0 8px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
-        
         details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 12px; }
         summary { font-weight: 700; color: var(--text-muted); list-style: none; display: flex; align-items: center; justify-content: space-between; }
         summary::after { content: '＋'; color: var(--primary); }
         details[open] summary::after { content: '－'; }
 
-        .changelog p { margin: 6px 0; border-left: 2px solid var(--border); padding-left: 8px; font-size: 11px; color: var(--text-muted); }
+        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
+        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-fail { background: rgba(239,68,68,0.15);  color: var(--danger);  }
+        .badge-gen  { background: rgba(59,130,246,0.15); color: var(--primary); }
         .version { font-weight: 700; color: var(--success); margin-right: 6px; }
     </style>
 </head>
@@ -106,14 +104,10 @@
             <h1><span>SSCC</span> PRO VISION <small style="opacity:0.5; font-size:10px;">v5.5.3</small></h1>
         </header>
 
-        <div id="viewport-wrap">
-            <video id="video" autoplay muted playsinline></video>
-        </div>
-
         <textarea id="input" placeholder="Waiting for scan or manual input..." inputmode="numeric"></textarea>
 
-        <div id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <i data-lucide="upload" style="width:18px;height:18px;margin-right:8px;opacity:0.6;"></i>
+        <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+            <i data-lucide="upload"></i>
             <span>Drop file or <u>browse</u> — EDIFACT, XML, CSV, TXT</span>
             <input type="file" id="file-input" style="display:none;">
         </div>
@@ -143,20 +137,17 @@
         <details>
             <summary>Show all instructions</summary>
             <ul style="margin-top:10px; padding-left:18px; color:var(--text-muted);">
-                <li><strong>Scan</strong>: Tap START SCANNER and point the camera at the barcode. device vibrates and beeps to confirm.</li>
-                <li><strong>Manual input (17 digits)</strong>: Type or paste the 17-digit SSCC body — the check digit is calculated automatically when you press AUDIT.</li>
-                <li><strong>Manual input (18 digits)</strong>: Type or paste a full 18-digit SSCC to validate it. Wrong digits are highlighted in <span style="color:var(--danger)">red</span>.</li>
-                <li><strong>Multiple codes</strong>: Enter one code per line. Press AUDIT to validate all at once.</li>
-                <li><strong>File upload</strong>: Drop any EDIFACT, XML, CSV or TXT file. 100% client-side, no data leaves your device.</li>
+                <li><strong>Scan</strong>: Point camera at the barcode. Device vibrates on success.</li>
+                <li><strong>Manual</strong>: Enter 17 digits to generate CD, or 18 to validate.</li>
+                <li><strong>File upload</strong>: Drop EDIFACT/XML files. 100% client-side parsing.</li>
             </ul>
         </details>
 
         <details>
             <summary>Changelog</summary>
-            <div class="changelog">
-                <p><span class="version">v5.5.3</span> <strong>REST API</strong>: Free public API for SSCC validation and generation.</p>
-                <p><span class="version">v5.5.2</span> <strong>Smarter parsing</strong>: GS1 prefix validation updated to GS1 2025 spec.</p>
-                <p><span class="version">v5.5</span> <strong>File upload</strong>: Drop or browse EDIFACT, XML or CSV files.</p>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:10px;">
+                <p><span class="version">v5.5.3</span> REST API and security enhancements.</p>
+                <p><span class="version">v5.5</span> Intelligent file extraction for EDIFACT/XML.</p>
             </div>
         </details>
     </section>

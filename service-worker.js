@@ -1,4 +1,4 @@
-const CACHE = 'sscc-v5';
+const CACHE = 'sscc-v6';
 const ASSETS = [
   '/sscc-check/',
   '/sscc-check/index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   '/sscc-check/app.js',
   '/sscc-check/parser.js',
   '/sscc-check/scanner.js',
+  '/sscc-check/init.js',
   '/sscc-check/manifest.json',
   '/sscc-check/icon-192.png',
   '/sscc-check/icon-512.png',

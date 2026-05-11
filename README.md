@@ -25,7 +25,7 @@
 | ⎘ Copy & Export | Copy single SSCCs or export all results as CSV |
 | 🔌 REST API | Free public API for programmatic access — no auth required |
 | 📱 Install as app | PWA — no Play Store needed, works on Android and iOS |
-| 🔒 100% client-side | No data ever leaves your device |
+| 🔒 Web app: 100% client-side | All processing happens in your browser — files never leave your device. The REST API is a separate, optional service (see Privacy below). |
 
 ---
 
@@ -115,9 +115,30 @@ Drop or browse any file to extract all SSCCs automatically:
 | **XML** | `<?xml` header | Known logistics tags + regex fallback |
 | **CSV / TXT** | Generic fallback | Regex scan for 17/18/20-digit patterns |
 
-Everything runs **100% client-side** — no file is ever uploaded to a server.
+Everything in the web app runs **100% client-side** — files are read and parsed locally in your browser, never uploaded to a server. (The optional REST API is a separate, server-side service — see [Privacy](#-privacy) below.)
 
 ---
+
+## 🔒 Privacy
+
+The web app and the REST API have different privacy profiles. Pick the one that fits your data.
+
+### Web app — fully local
+
+The web app at [birth1mark.github.io/sscc-check](https://birth1mark.github.io/sscc-check/) runs entirely in your browser. Files dropped on the page are read and parsed by JavaScript locally — nothing is uploaded, no request is made to any backend, no analytics track the file content. Works offline once installed as a PWA.
+
+If you handle sensitive shipment data (real consignor/consignee details in EDIFACT/IDoc files), use the web app.
+
+### REST API — server-side processing
+
+The REST API at `sscc.birth1mark.workers.dev` is a separate service running on Cloudflare Workers. When you call `POST /extract`, the request body travels over HTTPS to Cloudflare's edge and is parsed there. The Worker does not persist request bodies. Standard Cloudflare access logs (IP, request path, response code, timestamps) apply as for any service on their network.
+
+The other endpoints (`/validate`, `/generate`, `/range`, `/prefix`) only process the SSCC digits passed in the URL — no business data is involved.
+
+If in doubt, use the web app.
+
+---
+
 
 ## 🛠 Tech Stack
 

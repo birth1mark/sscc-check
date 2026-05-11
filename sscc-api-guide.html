@@ -40,6 +40,9 @@
         .note-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;}
         .note-label{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:3px;}
         .note-value{font-size:13px;font-weight:600;color:var(--text);}
+        .privacy-callout{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:16px 18px;margin:0 0 36px;font-size:14px;color:var(--muted);}
+        .privacy-callout strong{color:#f59e0b;display:block;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;}
+        .privacy-callout a{color:var(--primary);}
         h2{font-size:18px;font-weight:600;margin:40px 0 4px;padding-top:40px;border-top:1px solid var(--border);scroll-margin-top:80px;display:flex;align-items:center;gap:10px;}
         h2:first-of-type{border-top:none;padding-top:0;margin-top:0;}
         .method{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:5px;flex-shrink:0;}
@@ -122,6 +125,11 @@
         <div class="note-card"><div class="note-label">Format</div><div class="note-value">JSON</div></div>
         <div class="note-card"><div class="note-label">Max range</div><div class="note-value">500 codes</div></div>
         <div class="note-card"><div class="note-label">Runtime</div><div class="note-value">CF edge</div></div>
+    </div>
+
+    <div class="privacy-callout">
+        <strong>Privacy note</strong>
+        Unlike the <a href="index.html">web app</a> — which processes everything locally in your browser — this REST API receives the data you send to <code>POST /extract</code> at Cloudflare's edge. The service does not persist request bodies, but standard Cloudflare access logs apply. The other endpoints only operate on SSCC digits in the URL and carry no business data. If you're handling sensitive shipment data, prefer the web app.
     </div>
 
     <!-- /validate -->

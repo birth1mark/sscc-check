@@ -1,13 +1,104 @@
-<section class="info-panel">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' https://unpkg.com 'unsafe-inline';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src https://fonts.gstatic.com;
+        img-src 'self' data:;
+        connect-src 'self' https://sscc.birth1mark.workers.dev https://unpkg.com;
+        media-src 'self' blob:;
+        worker-src 'self';
+        base-uri 'self';
+        form-action 'self';
+    ">
+
+    <title>SSCC Pro Vision | Validator & API</title>
+    <link rel="icon" href="data:,">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary:    #3b82f6;
+            --success:    #10b981;
+            --danger:     #ef4444;
+            --bg:         #0f172a;
+            --card-bg:    #1e293b;
+            --text-main:  #f8fafc;
+            --text-muted: #94a3b8;
+            --border:     #334155;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 12px; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 500px; padding-bottom: 24px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); }
+        header { margin-bottom: 14px; text-align: center; }
+        h1 { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; color: var(--primary); }
+        h1 span { color: var(--text-main); }
+
+        #viewport-wrap { width: 100%; height: 220px; border-radius: 16px; overflow: hidden; border: 2px solid var(--primary); margin-bottom: 12px; background: #000; position: relative; display: none; }
+        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        textarea { width: 100%; height: 110px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; resize: vertical; }
+
+        .drop-zone { width: 100%; box-sizing: border-box; border: 1.5px dashed var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); }
+        .drop-zone:hover { border-color: var(--primary); background: rgba(59, 130, 246, 0.05); color: var(--text-main); }
+
+        .btn-stack { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+        .btn-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .main-btn { width: 100%; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; color: white; cursor: pointer; text-transform: uppercase; }
+        .btn-live  { background: var(--primary); }
+        .btn-audit { background: #334155; }
+        .btn-clear { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+
+        .results { background: #0f172a; border-radius: 10px; padding: 6px; border: 1px solid var(--border); min-height: 80px; }
+        .result-row { padding: 8px 10px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .info-panel { margin-top: 14px; background: rgba(15,23,42,0.5); border-radius: 12px; border: 1px solid var(--border); padding: 18px; font-size: 12px; }
+        .info-panel h2 { font-size: 13px; color: var(--primary); margin: 0 0 8px 0; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 12px; }
+        summary { font-weight: 700; color: var(--text-muted); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        summary::after { content: '＋'; color: var(--primary); }
+        
+        .sscc-cd.cd-valid { color: var(--success); font-weight: bold; }
+        .sscc-cd.cd-invalid { color: var(--danger); text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <main class="card">
+        <header><h1>SSCC <span>PRO VISION</span></h1></header>
+        <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
+        <textarea id="input" placeholder="Scan or enter SSCC..."></textarea>
+        <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+            <i data-lucide="upload" style="width:18px;height:18px;margin-right:10px;opacity:0.6;"></i>
+            <span>Drop file or <u>browse</u> — EDIFACT, XML, CSV</span>
+            <input type="file" id="file-input" style="display:none;">
+        </div>
+        <div id="file-banner" style="display:none;"></div>
+        <div class="btn-stack">
+            <button class="main-btn btn-live" onclick="toggleScanner()">START SCANNER</button>
+            <div class="btn-grid">
+                <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
+                <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
+            </div>
+        </div>
+        <div class="results" id="output"></div>
+    </main>
+
+    <section class="info-panel">
         <h2>How to Use</h2>
-        <p style="font-size:12px; margin-bottom:12px;">
-            New to SSCC? Read the <a href="guide.html" style="color:var(--primary);">complete guide →</a>
-            &nbsp;·&nbsp;
-            <a href="sscc-api-guide.html" style="color:var(--primary);">API documentation →</a>
-        </p>
-        <p style="color:var(--text-muted); font-size:12px; margin:0 0 8px 0;">
-            Scan barcodes, validate or generate SSCCs, expand ranges, or upload EDIFACT/XML/CSV files.
-        </p>
+        <p style="color:var(--text-muted); font-size:12px; margin:0 0 8px 0;">Scan barcodes, validate SSCCs, or upload EDIFACT/XML files.</p>
         
         <p style="color:var(--success); font-size:12px; font-weight:600; margin:12px 0; display:flex; align-items:center; gap:6px;">
             <i data-lucide="shield-check" style="width:16px; height:16px;"></i>
@@ -16,13 +107,19 @@
 
         <details>
             <summary>Show all instructions</summary>
-            ```
+            <ul style="margin-top:10px; padding-left:18px;">
+                <li><strong>Scan</strong>: Ativa o scanner e aponta para o código.</li>
+                <li><strong>Manual</strong>: Insere 17 ou 18 dígitos e clica em Audit.</li>
+            </ul>
+        </details>
+    </section>
+</div>
 
-### Por que isto é importante:
-1.  **Transparência**: Reforça o que já está no teu `parser.js` — que o processamento é puramente local.
-2.  **Diferenciação**: Separa claramente a experiência da Web App (privada e local) da REST API (processamento no servidor).
-3.  **Confiança**: Utilizadores corporativos sentem-se mais seguros ao saberem que os seus ficheiros EDIFACT ou XML nunca saem do browser.
-
-Como o teu **`init.js`** já faz a chamada `lucide.createIcons()`, o novo ícone de escudo aparecerá automaticamente assim que atualizares o ficheiro.
-
-Gostarias que acrescentasse algo semelhante na zona de upload de ficheiros para ser ainda mais explícito?
+<script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="app.js"></script>
+<script src="scanner.js"></script>
+<script src="parser.js"></script>
+<script src="init.js"></script>
+</body>
+</html>

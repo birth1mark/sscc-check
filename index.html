@@ -71,6 +71,9 @@
         h1 { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; color: var(--primary); }
         h1 span { color: var(--text-main); }
 
+        #viewport-wrap { width: 100%; height: 220px; border-radius: 16px; overflow: hidden; border: 2px solid var(--primary); margin-bottom: 12px; background: #000; position: relative; display: none; }
+        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
         textarea { width: 100%; height: 110px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; resize: vertical; }
 
         .drop-zone { width: 100%; box-sizing: border-box; border: 1.5px dashed var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); }
@@ -83,35 +86,13 @@
         .btn-audit { background: #334155; }
         .btn-clear { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
 
-        /* Resultados e Botão de Copiar Ajustados */
         .results { background: #0f172a; border-radius: 10px; padding: 6px; border: 1px solid var(--border); min-height: 80px; max-height: 400px; overflow-y: auto; }
-        .result-row { padding: 8px 12px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .result-row { padding: 10px 12px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
         .result-row:last-child { border-bottom: none; }
         
-        .result-meta { display: flex; align-items: center; gap: 10px; }
-
-        .btn-copy { 
-            background: rgba(255, 255, 255, 0.05); 
-            border: 1px solid var(--border); 
-            border-radius: 6px; 
-            color: var(--text-muted); 
-            padding: 5px 8px; 
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-        }
-        .btn-copy:hover { 
-            background: rgba(59, 130, 246, 0.1); 
-            border-color: var(--primary); 
-            color: var(--primary); 
-        }
-        .btn-copy.copied { 
-            background: rgba(16, 185, 129, 0.1); 
-            color: var(--success); 
-            border-color: var(--success); 
-        }
+        .btn-copy { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); padding: 5px 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .btn-copy:hover { background: rgba(59, 130, 246, 0.1); border-color: var(--primary); color: var(--primary); }
+        .btn-copy.copied { background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: var(--success); }
 
         .sscc-ai  { color: var(--text-muted); opacity: 0.6; }
         .sscc-ext { color: var(--primary); font-weight: 700; }
@@ -139,25 +120,40 @@
 
 <div class="container">
     <main class="card">
-        <header><h1>SSCC <span>PRO VISION</span></h1></header>
-        <textarea id="input" placeholder="Scan or enter codes..."></textarea>
+        <header><h1>SSCC <span>PRO VISION</span> <small style="opacity:0.5; font-size:10px;">v5.5.5</small></h1></header>
+        
+        <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
+        
+        <textarea id="input" placeholder="Scan a barcode or enter codes..."></textarea>
+
         <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
             <i data-lucide="upload" style="width:18px;height:18px;margin-right:10px;opacity:0.6;"></i>
             <span>Drop file or <u>browse</u>. EDIFACT, XML, CSV, TXT</span>
             <input type="file" id="file-input" style="display:none;">
         </div>
+
         <div class="btn-stack">
-            <button class="main-btn btn-live" onclick="toggleScanner()">START SCANNER</button>
+            <button class="main-btn btn-live" id="btnToggle" onclick="toggleScanner()">START SCANNER</button>
             <div class="btn-grid">
                 <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
                 <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
             </div>
         </div>
-        <div class="results" id="output"></div>
+
+        <div class="results" id="output">
+            <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Scan a barcode or enter an SSCC</div>
+        </div>
     </main>
 
     <section class="info-panel">
         <h2>How to Use</h2>
+        
+        <p style="font-size:12px; margin-bottom:12px;">
+            New to SSCC? Read the <a href="guide.html" style="color:var(--primary); font-weight:600;">complete guide →</a>
+            &nbsp;·&nbsp;
+            <a href="sscc-api-guide.html" style="color:var(--primary); font-weight:600;">API documentation →</a>
+        </p>
+
         <p style="color:var(--success); font-size:12px; font-weight:600; margin:12px 0; display:flex; align-items:center; gap:6px;">
             <i data-lucide="shield-check" style="width:16px; height:16px;"></i>
             Privacy first. This app works offline and never transmits your shipping data.
@@ -174,19 +170,22 @@
         <details>
             <summary>Show all instructions</summary>
             <ul style="margin-top:10px; padding-left:18px; color:var(--text-muted); line-height:1.8;">
-                <li><strong>Barcode Scanning</strong>. Deteta códigos GS1 128 automaticamente com confirmação por vibração e som.</li>
-                <li><strong>Manual Validation</strong>. Valida a integridade de códigos completos. Realça erros no dígito de controlo.</li>
-                <li><strong>Range Expansion</strong>. Gera sequências automáticas até 500 códigos a partir de dois limites.</li>
-                <li><strong>File Extraction</strong>. Extrai SSCCs de ficheiros EDIFACT, XML e IDoc através de processamento local.</li>
+                <li><strong>Barcode Scanning</strong>. Use your camera to detect GS1 128 barcodes. Haptic feedback and beeps confirm a successful scan.</li>
+                <li><strong>Manual Validation</strong>. Enter a full 18 digit SSCC. The system validates the check digit and highlights errors in red.</li>
+                <li><strong>Range Expansion</strong>. Generate multiple codes using the <code>START to END</code> format. Supports up to 500 codes per operation.</li>
+                <li><strong>File Extraction</strong>. Upload EDIFACT, XML, IDoc, or CSV files. All data is processed locally in your browser.</li>
+                <li><strong>Export and Copy</strong>. Copy individual codes to your clipboard or download all results as a CSV file.</li>
             </ul>
         </details>
 
         <details>
             <summary>Changelog</summary>
-            <div class="changelog">
-                <p><span class="version">v5.5.5</span> UI Refinement. Improved result row aesthetics and copy button integration.</p>
-                <p><span class="version">v5.5.4</span> Introdução de Dados Estruturados FAQ para otimização em motores de busca.</p>
-                <p><span class="version">v5.5.2</span> Atualização completa dos prefixos GS1 para a especificação de 2025.</p>
+            <div class="changelog" style="margin-top:10px;">
+                <p><span class="version">v5.5.5</span> UI Refinement. Improved result row aesthetics and professional copy button integration.</p>
+                <p><span class="version">v5.5.4</span> SEO Update. Added FAQ Schema to improve visibility in search engine results.</p>
+                <p><span class="version">v5.5.3</span> REST API Release. Public API endpoints available for remote validation and extraction.</p>
+                <p><span class="version">v5.5.2</span> GS1 Specification. Full update of member prefixes for the 2025 GS1 standard.</p>
+                <p><span class="version">v5.5</span> Advanced Parser. Support for EDIFACT, XML, and SAP IDoc file formats.</p>
             </div>
         </details>
     </section>
@@ -198,6 +197,5 @@
 <script src="scanner.js"></script>
 <script src="parser.js"></script>
 <script src="init.js"></script>
-
 </body>
 </html>

@@ -1,13 +1,17 @@
 /**
  * Initialization for SSCC Pro Vision
- * Moved out of inline <script> to allow stricter CSP (no 'unsafe-inline').
+ * Standard version without multilingue overhead.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Inicializa ícones Lucide
     if (window.lucide) lucide.createIcons();
+    
+    // Inicializa lógica de ficheiros do parser.js
     if (typeof initFileUpload === 'function') initFileUpload();
 });
 
+// Registo do Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sscc-check/service-worker.js')

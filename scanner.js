@@ -47,14 +47,16 @@ function extractSSCC(raw) {
 function setScannerUI(active) {
     const wrap = document.getElementById('viewport-wrap');
     const btn  = document.getElementById('btnToggle');
-    wrap.style.display   = active ? 'block' : 'none';
-    btn.style.background = active ? 'var(--danger)' : 'var(--primary)';
+    if (wrap) wrap.style.display   = active ? 'block' : 'none';
+    if (btn) btn.style.background = active ? 'var(--danger)' : 'var(--primary)';
 
-    btn.innerText = active ? 'STOP SCANNER' : 'START SCANNER';
+    if (btn) btn.innerText = active ? 'STOP SCANNER' : 'START SCANNER';
 }
 
 function setStatus(msg) {
-    document.getElementById('scan-status').textContent = msg;
+    // Correção de segurança: verifica se o elemento existe antes de tentar escrever nele
+    const el = document.getElementById('scan-status');
+    if (el) el.textContent = msg;
 }
 
 // ─── Scanner Control ──────────────────────────────────────────────────────────
@@ -118,7 +120,9 @@ async function startScanner() {
                 beep();
 
                 stopScanner();
-                process();
+                
+                // Executa o processamento do app.js se a função estiver disponível
+                if (typeof process === 'function') process();
             }
         );
 

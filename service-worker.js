@@ -1,8 +1,12 @@
-const CACHE = 'sscc-v13';
+const CACHE = 'sscc-v14';
 const ASSETS = [
   '/sscc-check/',
   '/sscc-check/index.html',
   '/sscc-check/guide.html',
+  '/sscc-check/app.js',
+  '/sscc-check/scanner.js',
+  '/sscc-check/parser.js',
+  '/sscc-check/init.js',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
   'https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'
 ];

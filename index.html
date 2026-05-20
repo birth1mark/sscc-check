@@ -18,28 +18,46 @@
     ">
 
     <title>SSCC Validator and Check Digit Calculator | SSCC Pro Vision</title>
-    
+    <meta name="description" content="Free online SSCC validator and check digit calculator. Scan GS1-128 barcodes with your camera, validate 18-digit SSCC codes, generate check digits, and extract SSCCs from EDIFACT, IDoc, XML or CSV files. 100% client-side, no signup.">
+    <meta name="keywords" content="SSCC validator, SSCC check digit, SSCC generator, GS1-128 scanner, SSCC API, EDIFACT SSCC, IDoc SSCC, serial shipping container code, logistics barcode">
+    <meta name="author" content="birth1mark">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://birth1mark.github.io/sscc-check/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SSCC Validator and Check Digit Calculator | SSCC Pro Vision">
+    <meta property="og:description" content="Free SSCC validator and GS1-128 barcode scanner. 100% client-side, no signup.">
+    <meta property="og:url" content="https://birth1mark.github.io/sscc-check/">
+    <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SSCC Validator and Check Digit Calculator">
+    <meta name="twitter:description" content="Free SSCC validator and GS1-128 barcode scanner. 100% client-side, no signup.">
+    <meta name="twitter:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What does SSCC stand for?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "SSCC stands for Serial Shipping Container Code. It is an 18 digit number used to uniquely identify logistics units."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How is SSCC related to GS1?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "The SSCC is a core GS1 standard for logistics. It uses a GS1 Company Prefix to ensure global uniqueness."
-          }
-        }
+      "@type": "WebApplication",
+      "name": "SSCC Pro Vision",
+      "url": "https://birth1mark.github.io/sscc-check/",
+      "description": "Free SSCC validator, check digit calculator and GS1-128 barcode scanner. Validates 18-digit Serial Shipping Container Codes, generates check digits, and extracts SSCCs from EDIFACT, IDoc, XML and CSV files.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "featureList": [
+        "Validate 18-digit SSCC codes",
+        "Calculate GS1 check digits",
+        "Scan GS1-128 barcodes via camera",
+        "Extract SSCCs from EDIFACT, IDoc, XML and CSV files",
+        "Free REST API",
+        "Works offline as PWA",
+        "100% client-side processing"
       ]
     }
     </script>
@@ -90,9 +108,29 @@
         .result-row { padding: 10px 12px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
         .result-row:last-child { border-bottom: none; }
         
-        .btn-copy { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); padding: 5px 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
-        .btn-copy:hover { background: rgba(59, 130, 246, 0.1); border-color: var(--primary); color: var(--primary); }
-        .btn-copy.copied { background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: var(--success); }
+        /* CORRECAO: Visual estetico integrado sem fundo branco */
+        .btn-copy { 
+            background: rgba(255, 255, 255, 0.05) !important; 
+            border: 1px solid var(--border) !important; 
+            border-radius: 6px; 
+            color: var(--text-muted); 
+            padding: 6px 9px; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .btn-copy:hover { 
+            background: rgba(59, 130, 246, 0.1) !important; 
+            border-color: var(--primary) !important; 
+            color: var(--primary); 
+        }
+        .btn-copy.copied { 
+            background: rgba(16, 185, 129, 0.1) !important; 
+            color: var(--success) !important; 
+            border-color: var(--success) !important; 
+        }
 
         .sscc-ai  { color: var(--text-muted); opacity: 0.6; }
         .sscc-ext { color: var(--primary); font-weight: 700; }
@@ -114,13 +152,17 @@
         .badge-gen  { background: rgba(59,130,246,0.15); color: var(--primary); }
         .version { font-weight: 700; color: var(--success); margin-right: 6px; }
         .changelog p { margin: 10px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+        .tagline { font-size: 13px; color: var(--text-muted); margin: 4px 0 0 0; font-weight: 400; letter-spacing: 0.01em; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <main class="card">
-        <header><h1>SSCC <span>PRO VISION</span> <small style="opacity:0.5; font-size:10px;">v5.5.5</small></h1></header>
+        <header>
+            <h1>SSCC <span>Pro Vision</span> <small style="opacity:0.5; font-size:10px;">v5.5.5</small></h1>
+            <p class="tagline">Free SSCC validator, check digit calculator and GS1-128 barcode scanner</p>
+        </header>
         
         <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
         

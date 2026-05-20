@@ -1,6 +1,6 @@
 /**
  * SSCC Pro Vision — REST API
- * Cloudflare Worker — v1.2.1
+ * Cloudflare Worker — v1.2.2
  *
  * Fusão da versão 1.2.0 com os patches de segurança 1.0.1.
  *
@@ -11,18 +11,14 @@
  *   GET  /prefix?sscc=356012345600000016
  *   POST /extract           (body: EDIFACT, IDoc, XML, CSV or TXT content)
  *   GET  /health
+ *   GET  /robots.txt
  *
- * ─── Mudanças nesta versão ───────────────────────────────────────────────────
- *   • Flag da Geórgia corrigida (🇰🇪 → 🇬🇪).
- *   • VALID_GS1_RANGES derivado de GS1_COUNTRIES + ranges não-país explícitos.
- *   • parseXML restaurado com tags SAP IDoc (EXIDV, EXIDV2, VHILM_KU, etc.).
- *   • parseEDIFACT com leitura de UNA e qualifiers específicos (BJ, SI, AAK).
- *   • try/catch global no router.
- *   • handlePrefix valida length.
- *   • /extract com deteção de binários e validação dupla de tamanho.
- *   • tryAddSSCC devolve JSON completo (formatted, checkDigit, gs1).
- *   • GET /extract devolve 405.
- *   • Dedup via Set (O(N) em vez de O(N²)).
+ * ─── Mudanças desde v1.2.1 ───────────────────────────────────────────────────
+ *   • Prefixos 200-299, 758, 950-952, 977-984, 990-999 com entrada própria
+ *     (deixam de aparecer como "Unknown" / "❓"). Range 759 = Venezuela, preservado.
+ *   • NON_COUNTRY_RANGES removido — uma única fonte de verdade (GS1_COUNTRIES).
+ *   • Endpoint /robots.txt dedicado (antes caía no default e devolvia JSON).
+ *   • console.error no catch global para visibilidade em CF Workers Logs.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -60,6 +56,7 @@ const GS1_COUNTRIES = [
     [[1,19],'US','🇺🇸','United States'],
     [[30,39],'US','🇺🇸','United States'],
     [[60,139],'US','🇺🇸','United States'],
+    [[200,299],null,'🏢','Company internal use'],
     [[300,379],'FR','🇫🇷','France'],
     [[380,380],'BG','🇧🇬','Bulgaria'],
     [[383,383],'SI','🇸🇮','Slovenia'],
@@ -146,6 +143,7 @@ const GS1_COUNTRIES = [
     [[746,746],'DO','🇩🇴','Dominican Republic'],
     [[750,750],'MX','🇲🇽','Mexico'],
     [[754,755],'CA','🇨🇦','Canada'],
+    [[758,758],null,'🌐','GS1 Reserved'],
     [[759,759],'VE','🇻🇪','Venezuela'],
     [[760,769],'CH','🇨🇭','Switzerland'],
     [[770,771],'CO','🇨🇴','Colombia'],
@@ -356,10 +354,17 @@ function handlePrefix(url) {
     });
 }
 
+function handleRobots() {
+    return new Response(
+        'User-agent: *\nAllow: /\n',
+        { headers: { 'Content-Type': 'text/plain; charset=utf-8', ...CORS } }
+    );
+}
+
 function handleHealth() {
     return json({
         status:  'ok',
-        version: '1.2.1',
+        version: '1.2.2',
         endpoints: [
             'GET  /validate?sscc=<18-digit SSCC>',
             'GET  /generate?body=<17-digit body>',
@@ -367,20 +372,16 @@ function handleHealth() {
             'GET  /prefix?sscc=<18-digit SSCC>',
             'POST /extract  (body: EDIFACT/IDoc/XML/CSV/TXT)',
             'GET  /health',
+            'GET  /robots.txt',
         ],
     });
 }
 
 // ─── SSCC Quality Filters ────────────────────────────────────────────────────
 
-// Ranges válidos = todos os ranges com país + ranges reservados sem país atribuído
-// (uso interno empresarial / coupons / outros).
-const NON_COUNTRY_RANGES = [
-    [200, 299],   // uso interno empresarial
-    [758, 759],   // reservado
-];
-
-const VALID_GS1_RANGES = [...GS1_COUNTRIES.map(c => c[0]), ...NON_COUNTRY_RANGES];
+// Ranges válidos = todos os ranges em GS1_COUNTRIES.
+// Inclui ranges de uso interno empresarial e reservados (com flag distinta).
+const VALID_GS1_RANGES = GS1_COUNTRIES.map(c => c[0]);
 
 function isValidGS1Prefix(sscc18) {
     const prefix = parseInt(sscc18.substring(1, 4));
@@ -576,8 +577,9 @@ async function handleExtract(request) {
 
 export default {
     async fetch(request, env) {
+        let url;
         try {
-            const url = new URL(request.url);
+            url = new URL(request.url);
 
             if (request.method === 'OPTIONS') {
                 return new Response(null, { status: 204, headers: CORS });
@@ -597,16 +599,17 @@ export default {
             }
 
             switch (url.pathname) {
-                case '/validate': return handleValidate(url);
-                case '/generate': return handleGenerate(url);
-                case '/range':    return handleRange(url);
-                case '/prefix':   return handlePrefix(url);
-                case '/health':   return handleHealth();
-                case '/extract':  return error('Use POST /extract with file content in the request body', 405);
+                case '/validate':   return handleValidate(url);
+                case '/generate':   return handleGenerate(url);
+                case '/range':      return handleRange(url);
+                case '/prefix':     return handlePrefix(url);
+                case '/health':     return handleHealth();
+                case '/robots.txt': return handleRobots();
+                case '/extract':    return error('Use POST /extract with file content in the request body', 405);
                 default:
                     return json({
                         name:    'SSCC Pro Vision API',
-                        version: '1.2.1',
+                        version: '1.2.2',
                         docs:    'https://birth1mark.github.io/sscc-check/sscc-api-guide.html',
                         endpoints: {
                             validate: '/validate?sscc=356012345600000016',
@@ -615,11 +618,13 @@ export default {
                             prefix:   '/prefix?sscc=356012345600000016',
                             extract:  'POST /extract (body: EDIFACT, IDoc, XML, CSV or TXT content)',
                             health:   '/health',
+                            robots:   '/robots.txt',
                         },
                     });
             }
         } catch (err) {
-            // Catch global — qualquer exceção devolve JSON com CORS em vez de página 500 da CF.
+            // Log para CF Workers Logs (visível no dashboard).
+            console.error('worker error:', err && err.message, url && url.pathname, err && err.stack);
             return error('Internal server error', 500);
         }
     },

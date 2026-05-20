@@ -230,10 +230,10 @@ function isValidGS1Prefix(body18) {
  *   - Sequential runs (e.g. 012345678901234567)
  */
 function isTrivialSequence(digits) {
-    // More than 10 identical consecutive digits anywhere
-    if (/(\d){10,}/.test(digits)) return true;
-    // All same digit
-    if (/^(\d)+$/.test(digits)) return true;
+    // More than 10 identical consecutive digits anywhere (e.g. 00000000000228820)
+    if (/(\d)\1{9,}/.test(digits)) return true;
+    // String is entirely one repeated digit (e.g. 111111111111111111)
+    if (/^(\d)\1+$/.test(digits)) return true;
     return false;
 }
 
@@ -390,8 +390,8 @@ function showFileResult(filename, format, results) {
     const count    = results.length;
 
     if (!count) {
-        banner.innerHTML = `<span class="file-banner-name">📄 ${filename}</span>
-            <span class="file-banner-info" style="color:var(--danger)">No SSCCs found (${fmtLabel})</span>`;
+        banner.innerHTML = `<span class="file-banner-name">📄 ${escapeHTML(filename)}</span>
+            <span class="file-banner-info" style="color:var(--danger)">No SSCCs found (${escapeHTML(fmtLabel)})</span>`;
     } else {
         const valid   = results.filter(r => r.status === 'valid').length;
         const invalid = results.filter(r => r.status === 'invalid').length;

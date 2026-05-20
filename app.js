@@ -1,11 +1,10 @@
-// ─── State ────────────────────────────────────────────────────────────────────
+// State
 let store = [];
 
-// ─── GS1 Prefix → Country Flag ───────────────────────────────────────────────
-// GS1 prefix → country flag (source: GS1 General Specifications 2025)
+// GS1 Prefix Country Flag (source: GS1 General Specifications 2025)
 const GS1_FLAGS = [
-    [[1,19],'🇺🇸'],[[30,39],'🇺🇸'],[[60,139],'🇺🇸'],  // USA
-    [[300,379],'🇫🇷'],                                    // France & Monaco
+    [[1,19],'🇺🇸'],[[30,39],'🇺🇸'],[[60,139],'🇺🇸'],
+    [[300,379],'🇫🇷'],
     [[380,380],'🇧🇬'],[[383,383],'🇸🇮'],[[385,385],'🇭🇷'],
     [[387,387],'🇧🇦'],[[389,389],'🇽🇰'],[[390,390],'🇲🇪'],
     [[400,440],'🇩🇪'],
@@ -23,7 +22,7 @@ const GS1_FLAGS = [
     [[560,560],'🇵🇹'],[[569,569],'🇮🇸'],[[570,579],'🇩🇰'],
     [[590,590],'🇵🇱'],[[594,594],'🇷🇴'],[[599,599],'🇭🇺'],
     [[600,601],'🇿🇦'],[[603,603],'🇬🇭'],[[604,604],'🇸🇳'],
-    [[605,605],'🇺🇬'],[[606,606],'🇦🇴'],[[607,607],'🇴🇲'],
+    [[605,605],'🇺🇬'],[[606,606],'🇦重'],[[607,607],'🇴🇲'],
     [[608,608],'🇧🇭'],[[609,609],'🇲🇺'],[[611,611],'🇲🇦'],
     [[613,613],'🇩🇿'],[[615,615],'🇳🇬'],[[616,616],'🇰🇪'],
     [[617,617],'🇨🇲'],[[618,618],'🇨🇮'],[[619,619],'🇹🇳'],
@@ -35,13 +34,13 @@ const GS1_FLAGS = [
     [[680,681],'🇨🇳'],[[690,699],'🇨🇳'],
     [[700,709],'🇳🇴'],[[729,729],'🇮🇱'],[[730,739],'🇸🇪'],
     [[740,740],'🇬🇹'],[[741,741],'🇸🇻'],[[742,742],'🇭🇳'],
-    [[743,743],'🇳🇮'],[[744,744],'🇨🇷'],[[745,745],'🇵🇦'],[[746,746],'🇩🇴'],
+    [[743,743],'🇳icarágua'],[[744,744],'🇨🇷'],[[745,745],'🇵🇦'],[[746,746],'🇩🇴'],
     [[750,750],'🇲🇽'],[[754,755],'🇨🇦'],[[758,758],'🌐'],[[759,759],'🇻🇪'],
     [[760,769],'🇨🇭'],[[770,771],'🇨🇴'],[[773,773],'🇺🇾'],
     [[775,775],'🇵🇪'],[[777,777],'🇧🇴'],[[778,779],'🇦🇷'],
     [[780,780],'🇨🇱'],[[784,784],'🇵🇾'],[[786,786],'🇪🇨'],[[789,790],'🇧🇷'],
     [[800,839],'🇮🇹'],
-    [[840,849],'🇪🇸'],  // Spain ← includes 842
+    [[840,849],'🇪🇸'],
     [[850,850],'🇨🇺'],[[858,858],'🇸🇰'],[[859,859],'🇨🇿'],
     [[860,860],'🇷🇸'],[[865,865],'🇲🇳'],[[867,867],'🇰🇵'],
     [[868,869],'🇹🇷'],[[870,879],'🇳🇱'],
@@ -51,7 +50,7 @@ const GS1_FLAGS = [
     [[900,919],'🇦🇹'],
     [[930,939],'🇦🇺'],[[940,949],'🇳🇿'],
     [[950,952],'🌐'],[[955,955],'🇲🇾'],[[958,958],'🇲🇴'],
-    [[977,984],'🌐'],[[990,999],'🌐'],
+    [[977,984],'🌐'],[[990,999],'🌐']
 ];
 
 function getFlag(sscc18) {
@@ -79,8 +78,6 @@ function toBody(raw) {
     return null;
 }
 
-// ─── Range expansion ──────────────────────────────────────────────────────────
-
 const MAX_RANGE = 500;
 
 function parseRangeLine(line) {
@@ -105,8 +102,6 @@ function expandRange(bodyA, bodyB) {
     return results;
 }
 
-// ─── SSCC Formatter ───────────────────────────────────────────────────────────
-
 function formatSSCC(body17, cd, provided = null) {
     const ext     = body17[0];
     const ref     = body17.substring(1);
@@ -121,13 +116,11 @@ function formatSSCC(body17, cd, provided = null) {
            `<span class="sscc-cd ${cdClass}">${cdDigit}</span>`;
 }
 
-/** Returns the plain 18-digit SSCC string for clipboard/CSV */
 function plainSSCC(body17, cd) {
     return `00${body17}${cd}`;
 }
 
-// ─── Copy to clipboard ────────────────────────────────────────────────────────
-
+// CORRECAO: Lógica de feedback com injeção de classes corrigida
 function copyCode(plain, btn) {
     const checkIcon = '<i data-lucide="check" style="width:13px;height:13px;vertical-align:middle;"></i>';
     const copyIcon  = '<i data-lucide="copy"  style="width:13px;height:13px;vertical-align:middle;"></i>';
@@ -155,8 +148,6 @@ function copyCode(plain, btn) {
     });
 }
 
-// ─── Export CSV ───────────────────────────────────────────────────────────────
-
 function exportCSV() {
     if (!store.length) return;
 
@@ -177,8 +168,6 @@ function exportCSV() {
     URL.revokeObjectURL(url);
 }
 
-// ─── Process ──────────────────────────────────────────────────────────────────
-
 function process() {
     const lines = document.getElementById('input').value.split('\n');
     store = [];
@@ -187,7 +176,6 @@ function process() {
         const trimmed = line.trim();
         if (!trimmed) return;
 
-        // Range?
         const rangeParts = parseRangeLine(trimmed);
         if (rangeParts) {
             const [bodyA, bodyB] = rangeParts;
@@ -210,7 +198,6 @@ function process() {
             return;
         }
 
-        // Single code
         const val = trimmed.replace(/\D/g, '');
 
         if (val.length === 18 || (val.length === 20 && val.startsWith('00'))) {
@@ -243,8 +230,6 @@ function process() {
     render();
 }
 
-// ─── Render ───────────────────────────────────────────────────────────────────
-
 function render() {
     const out = document.getElementById('output');
 
@@ -264,7 +249,6 @@ function render() {
         return;
     }
 
-    // Summary line
     const valid   = store.filter(i => i.status === 'valid').length;
     const invalid = store.filter(i => i.status === 'invalid').length;
     const gen     = store.filter(i => i.status === 'gen').length;

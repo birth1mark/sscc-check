@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools</title>
-    <meta name="description" content="Complete guide to SSCC validation: structure, GS1-128 format, check digit algorithm with worked example, JavaScript implementation, and how to extract SSCCs from EDIFACT files.">
-    <meta name="keywords" content="SSCC validation, SSCC check digit, GS1-128 format, serial shipping container code, EDI DESADV SSCC, SSCC algorithm, check digit calculator, logistics barcode">
+    <meta name="description" content="Complete guide to SSCC validation: structure, GS1 128 format, check digit algorithm with worked example, JavaScript implementation, and how to extract SSCCs from EDIFACT files.">
+    <meta name="keywords" content="SSCC validation, SSCC check digit, GS1 128 format, serial shipping container code, EDI DESADV SSCC, SSCC algorithm, check digit calculator, logistics barcode">
     <meta name="author" content="SSCC Pro Vision">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://birth1mark.github.io/sscc-check/guide.html">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
 
+    <!-- Open Graph -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://birth1mark.github.io/sscc-check/guide.html">
     <meta property="og:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
@@ -19,17 +20,19 @@
     <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
     <meta property="og:site_name" content="SSCC Pro Vision">
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
     <meta name="twitter:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
     <meta name="twitter:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
 
+    <!-- Schema.org Technical Article -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "TechArticle",
       "headline": "How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools",
-      "description": "Complete guide to SSCC validation: structure, GS1-128 format, check digit algorithm with worked example, and JavaScript implementation.",
+      "description": "Complete guide to SSCC validation: structure, GS1 128 format, check digit algorithm with worked example, and JavaScript implementation.",
       "url": "https://birth1mark.github.io/sscc-check/guide.html",
       "author": { "@type": "Organization", "name": "SSCC Pro Vision" },
       "publisher": { "@type": "Organization", "name": "SSCC Pro Vision" },
@@ -37,6 +40,7 @@
     }
     </script>
 
+    <!-- Schema.org Breadcrumbs -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -58,6 +62,7 @@
     }
     </script>
 
+    <!-- Schema.org FAQ Page for SEO -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -65,10 +70,10 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Why does my scanner read a 20-digit SSCC?",
+          "name": "Why does my scanner read a 20 digit SSCC?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Most GS1-128 barcode scanners include the Application Identifier 00 at the beginning. An SSCC is strictly 18 digits long. Always remove the first two zeros before processing or validating the check digit."
+            "text": "Most GS1 128 barcode scanners include the Application Identifier 00 at the beginning. An SSCC is strictly 18 digits long. Always remove the first two zeros before processing or validating the check digit."
           }
         },
         {
@@ -84,7 +89,23 @@
           "name": "Is the SSCC check digit algorithm the same as the GTIN?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. Both utilize the standard GS1 Modulo-10 algorithm. However, because the total length is different (18 digits for SSCC vs 13 or 14 for GTIN), the alternating multipliers of 3 and 1 will align differently starting from the rightmost digit."
+            "text": "Yes. Both utilize the standard GS1 Modulo 10 algorithm. However, because the total length is different (18 digits for SSCC vs 13 or 14 for GTIN), the alternating multipliers of 3 and 1 will align differently starting from the rightmost digit."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between an SSCC and a GTIN?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A GTIN (Global Trade Item Number) identifies a specific class of trade item like a specific model of a laptop. An SSCC identifies a unique physical logistics unit like a specific pallet containing fifty of those laptops. Every SSCC is globally unique to that exact physical shipment."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I reuse an SSCC number?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "According to GS1 General Specifications, an SSCC must not be reallocated within one year of the shipment date. However, to ensure pristine global traceability and avoid conflicts in modern tracking systems, many companies choose to never reuse their serial references."
           }
         }
       ]
@@ -266,13 +287,14 @@
         .segment-table td:first-child { font-family: 'IBM Plex Mono', monospace; color: var(--primary); font-size: 13px; }
         .segment-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
 
-        /* FAQ Styling */
-        .faq-container { margin: 20px 0 24px; }
-        .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
-        .faq-item summary { font-weight: 600; color: var(--text); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; }
-        .faq-item summary::after { content: '＋'; color: var(--primary); }
-        .faq-item[open] summary::after { content: '－'; }
-        .faq-answer { margin-top: 10px; color: var(--muted); font-size: 14.5px; }
+        /* FAQ Styling Robust */
+        .faq-container { margin: 20px 0 24px; display: flex; flex-direction: column; gap: 12px; }
+        .faq-container details { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; }
+        .faq-container summary { font-weight: 600; color: var(--text); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        .faq-container summary::-webkit-details-marker { display: none; }
+        .faq-container summary::after { content: '＋'; color: var(--primary); font-size: 16px; }
+        .faq-container details[open] summary::after { content: '－'; }
+        .faq-answer { margin-top: 12px; color: var(--muted); font-size: 14.5px; line-height: 1.6; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 12px; }
 
         .cta-box {
             background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(99,102,241,0.1));
@@ -313,7 +335,7 @@
     <header class="article-header">
         <span class="article-tag">Technical Guide</span>
         <h1>How to Validate <em>SSCC Codes</em> — Format, Algorithm &amp; Tools</h1>
-        <p class="article-meta">GS1-128 · Check Digit · EDIFACT · JavaScript</p>
+        <p class="article-meta">GS1 128 . Check Digit . EDIFACT . JavaScript</p>
     </header>
 
     <nav class="toc" aria-label="Table of contents">
@@ -331,13 +353,13 @@
     </nav>
 
     <h2 id="what-is-sscc">What is an SSCC?</h2>
-    <p>The <strong>Serial Shipping Container Code (SSCC)</strong> is an 18-digit GS1 identifier used in logistics to uniquely identify a physical shipping unit — a pallet, box, roll cage, or any other logistic unit. It is the primary identifier used in supply chain transactions between trading partners.</p>
+    <p>The <strong>Serial Shipping Container Code (SSCC)</strong> is an 18 digit GS1 identifier used in logistics to uniquely identify a physical shipping unit, a pallet, box, roll cage, or any other logistic unit. It is the primary identifier used in supply chain transactions between trading partners.</p>
     <p>SSCCs appear in two main contexts:</p>
     <ul>
-        <li><strong>Physically</strong> — encoded in a <strong>GS1-128 barcode</strong> (a variant of Code 128) printed on pallet labels</li>
-        <li><strong>Electronically</strong> — transmitted in EDI messages such as <strong>DESADV</strong> (Despatch Advice / ASN) and <strong>IFTMIN</strong> (Forwarding Instruction) in segments like <code>GIN+BJ</code></li>
+        <li><strong>Physically</strong>, encoded in a <strong>GS1 128 barcode</strong> (a variant of Code 128) printed on pallet labels</li>
+        <li><strong>Electronically</strong>, transmitted in EDI messages such as <strong>DESADV</strong> (Despatch Advice / ASN) and <strong>IFTMIN</strong> (Forwarding Instruction) in segments like <code>GIN+BJ</code></li>
     </ul>
-    <p>The SSCC is always accompanied by the <strong>Application Identifier (AI) 00</strong>, which signals to any GS1-compliant system that what follows is an SSCC.</p>
+    <p>The SSCC is always accompanied by the <strong>Application Identifier (AI) 00</strong>, which signals to any GS1 compliant system that what follows is an SSCC.</p>
 
     <h2 id="structure">SSCC Structure</h2>
     <p>An SSCC has exactly <strong>18 digits</strong>, structured as follows:</p>
@@ -361,7 +383,7 @@
             <tr>
                 <td class="label">not stored</td>
                 <td class="label">1 digit</td>
-                <td class="label" colspan="2">7–10 digits</td>
+                <td class="label" colspan="2">7 to 10 digits</td>
                 <td class="label">variable</td>
                 <td class="label">1 digit</td>
             </tr>
@@ -369,11 +391,11 @@
     </div>
 
     <ul>
-        <li><strong>AI (00)</strong> — Application Identifier. Always <code>(00)</code> for SSCCs. Not part of the 18 digits — it is a label that precedes them.</li>
-        <li><strong>Extension digit</strong> — A single digit (0–9) assigned by the company to extend the numbering capacity.</li>
-        <li><strong>GS1 Company Prefix</strong> — Issued by the local GS1 member organisation to the company. Length varies from 7 to 10 digits depending on the prefix allocation. The first 3 digits identify the issuing GS1 member country.</li>
-        <li><strong>Serial reference</strong> — Assigned sequentially or randomly by the company to uniquely identify each logistic unit. Length varies inversely with the GCP length.</li>
-        <li><strong>Check digit</strong> — Calculated from the preceding 17 digits using the GS1 modulo-10 algorithm. Used to detect transcription errors.</li>
+        <li><strong>AI (00)</strong>, Application Identifier. Always <code>(00)</code> for SSCCs. Not part of the 18 digits, it is a label that precedes them.</li>
+        <li><strong>Extension digit</strong>, A single digit (0 to 9) assigned by the company to extend the numbering capacity.</li>
+        <li><strong>GS1 Company Prefix</strong>, Issued by the local GS1 member organisation to the company. Length varies from 7 to 10 digits depending on the prefix allocation. The first 3 digits identify the issuing GS1 member country.</li>
+        <li><strong>Serial reference</strong>, Assigned sequentially or randomly by the company to uniquely identify each logistic unit. Length varies inversely with the GCP length.</li>
+        <li><strong>Check digit</strong>, Calculated from the preceding 17 digits using the GS1 modulo 10 algorithm. Used to detect transcription errors.</li>
     </ul>
 
     <div class="callout">
@@ -381,11 +403,11 @@
     </div>
 
     <h2 id="algorithm">Check Digit Algorithm</h2>
-    <p>The SSCC check digit uses the standard <strong>GS1 Modulo-10</strong> algorithm. Given the 17-digit body:</p>
+    <p>The SSCC check digit uses the standard <strong>GS1 Modulo 10</strong> algorithm. Given the 17-digit body:</p>
     <ol>
         <li>Starting from the <strong>rightmost digit</strong>, multiply alternating digits by <strong>3</strong> and <strong>1</strong></li>
         <li>Sum all products</li>
-        <li>Check digit = <code>(10 − (sum mod 10)) mod 10</code></li>
+        <li>Check digit = <code>(10 . (sum mod 10)) mod 10</code></li>
     </ol>
 
     <h3>Worked Example</h3>
@@ -413,37 +435,37 @@
             <td>4</td><td>9</td><td>2</td><td>3</td><td>0</td><td>18</td><td>5</td><td>9</td>
         </tr>
         <tr class="total">
-            <td colspan="18">Sum = 68 → Check digit = (10 − (68 mod 10)) mod 10 = (10 − 8) mod 10 = <strong>2</strong></td>
+            <td colspan="18">Sum = 68 . Check digit = (10 . (68 mod 10)) mod 10 = (10 . 8) mod 10 = <strong>2</strong></td>
         </tr>
     </table>
 
     <p>Full SSCC: <code>(00) 35601234500000001 2</code></p>
 
     <div class="callout success">
-        <strong>Quick check:</strong> If the result of <code>(sum + check_digit) mod 10 === 0</code>, the SSCC is valid. This is the fastest way to validate an existing 18-digit SSCC.
+        <strong>Quick check:</strong> If the result of <code>(sum + check_digit) mod 10 === 0</code>, the SSCC is valid. This is the fastest way to validate an existing 18 digit SSCC.
     </div>
 
     <h2 id="common-mistakes">Common Mistakes</h2>
 
     <h3>1. Confusing the AI with the SSCC digits</h3>
-    <p>The AI <code>(00)</code> is a label, not part of the 18 digits. When a barcode is scanned with a GS1-128 reader, the raw output is often <code>00</code> followed by the 18 digits — giving 20 characters total. Always strip the leading <code>00</code> before validating the check digit.</p>
+    <p>The AI <code>(00)</code> is a label, not part of the 18 digits. When a barcode is scanned with a GS1 128 reader, the raw output is often <code>00</code> followed by the 18 digits, giving 20 characters total. Always strip the leading <code>00</code> before validating the check digit.</p>
 
     <h3>2. Wrong digit count</h3>
-    <p>An SSCC body is always exactly <strong>17 digits</strong> (before the check digit) or <strong>18 digits</strong> (including it). Numbers with 19, 20 or more digits are either GTINs, IBANs, or other identifiers — not SSCCs.</p>
+    <p>An SSCC body is always exactly <strong>17 digits</strong> (before the check digit) or <strong>18 digits</strong> (including it). Numbers with 19, 20 or more digits are either GTINs, IBANs, or other identifiers, not SSCCs.</p>
 
     <h3>3. Padding zeros</h3>
-    <p>Some ERP systems store SSCCs in fixed-width fields padded with leading zeros. A 20-character field starting with <code>00</code> followed by an 18-digit SSCC, or a 21-character field where the last character is a line number — always extract exactly 18 digits for the SSCC.</p>
+    <p>Some ERP systems store SSCCs in fixed width fields padded with leading zeros. A 20 character field starting with <code>00</code> followed by an 18 digit SSCC, or a 21 character field where the last character is a line number, always extract exactly 18 digits for the SSCC.</p>
 
     <h3>4. GS1 prefix vs country of origin</h3>
-    <p>The GS1 prefix (first 3 digits of the SSCC after the extension digit) identifies the GS1 member organisation that issued the company prefix — <strong>not</strong> the country where the goods were made or shipped from. A company registered in Portugal (<code>560</code>) may ship from a warehouse in Spain.</p>
+    <p>The GS1 prefix (first 3 digits of the SSCC after the extension digit) identifies the GS1 member organisation that issued the company prefix, <strong>not</strong> the country where the goods were made or shipped from. A company registered in Portugal (<code>560</code>) may ship from a warehouse in Spain.</p>
 
     <h2 id="javascript">JavaScript Implementation</h2>
-    <p>Here is a complete, dependency-free JavaScript implementation for validating and generating SSCC check digits. It uses <code>BigInt</code> to safely handle the large numbers involved.</p>
+    <p>Here is a complete, independent JavaScript implementation for validating and generating SSCC check digits. It uses <code>BigInt</code> to safely handle the large numbers involved.</p>
 
 <pre><code><span class="comment">/**
- * Calculate the GS1 check digit for a 17-digit SSCC body.
- * @param {string} body17 - 17-digit string (no check digit)
- * @returns {number} check digit (0-9)
+ * Calculate the GS1 check digit for a 17 digit SSCC body.
+ * @param {string} body17 . 17 digit string (no check digit)
+ * @returns {number} check digit (0 to 9)
  */</span>
 <span class="kw">function</span> <span class="fn">getCheckDigit</span>(<span class="var">body17</span>) {
     <span class="kw">let</span> <span class="var">sum</span> = <span class="num">0</span>;
@@ -455,8 +477,8 @@
 }
 
 <span class="comment">/**
- * Validate an 18-digit SSCC string.
- * @param {string} sscc18 - 18-digit SSCC (without AI prefix)
+ * Validate an 18 digit SSCC string.
+ * @param {string} sscc18 . 18 digit SSCC (without AI prefix)
  * @returns {{ valid: boolean, expected: number, provided: number }}
  */</span>
 <span class="kw">function</span> <span class="fn">validateSSCC</span>(<span class="var">sscc18</span>) {
@@ -471,7 +493,7 @@
 }
 
 <span class="comment">/**
- * Normalise any SSCC input to an 18-digit string.
+ * Normalise any SSCC input to an 18 digit string.
  * Handles: 17 digits (generates CD), 18 digits, 20 digits with AI "00".
  */</span>
 <span class="kw">function</span> <span class="fn">normaliseSSCC</span>(<span class="var">raw</span>) {
@@ -482,7 +504,7 @@
     <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`Unexpected length: ${d.length}`</span>);
 }
 
-<span class="comment">// Examples</span>
+// Examples
 <span class="fn">validateSSCC</span>(<span class="str">'356012345000000012'</span>);  <span class="comment">// { valid: true, expected: 2, provided: 2 }</span>
 <span class="fn">validateSSCC</span>(<span class="str">'356012345000000019'</span>);  <span class="comment">// { valid: false, expected: 2, provided: 9 }</span>
 <span class="fn">normaliseSSCC</span>(<span class="str">'00356012345000000012'</span>); <span class="comment">// '356012345000000012' (strips AI)</span>
@@ -514,7 +536,7 @@
         </tr>
         <tr>
             <td>PAC</td>
-            <td>Package segment — SSCC sometimes embedded</td>
+            <td>Package segment, SSCC sometimes embedded</td>
             <td><code>PAC+1++09:356012345000000012'</code></td>
         </tr>
     </table>
@@ -538,7 +560,8 @@
     }
 
     <span class="kw">const</span> <span class="var">segments</span> = <span class="var">text</span>
-        .<span class="fn">replace</span>(<span class="str">/\r?\n/g</span>, <span class="str">''</span>)
+        .<span class="fn">replace</span>(<span class="str">/?
+/g</span>, <span class="str">''</span>)
         .<span class="fn">split</span>(<span class="var">segTerm</span>)
         .<span class="fn">map</span>(<span class="var">s</span> => <span class="var">s</span>.<span class="fn">trim</span>())
         .<span class="fn">filter</span>(<span class="var">Boolean</span>);
@@ -559,19 +582,19 @@
 }</code></pre>
 
     <div class="callout">
-        <strong>Note on custom delimiters:</strong> EDIFACT allows trading partners to define custom component, element and segment separators in the UNA service string. Always read the UNA header before parsing — defaulting to <code>: + '</code> will silently fail on non-standard files.
+        <strong>Note on custom delimiters:</strong> EDIFACT allows trading partners to define custom component, element and segment separators in the UNA service string. Always read the UNA header before parsing, defaulting to <code>: + '</code> will silently fail on non-standard files.
     </div>
 
     <h2 id="faq">Frequently Asked Questions</h2>
     <div class="faq-container">
-        <details class="faq-item">
-            <summary>Why does my scanner read a 20-digit SSCC?</summary>
+        <details>
+            <summary>Why does my scanner read a 20 digit SSCC?</summary>
             <div class="faq-answer">
-                <p>Most GS1-128 barcode scanners read the Application Identifier <code>00</code> along with the 18-digit code. Always remove the first two zeros before processing or validating the check digit.</p>
+                <p>Most GS1 128 barcode scanners are configured to read the Application Identifier <code>00</code> along with the code itself. An SSCC is strictly 18 digits long. You must always strip the first two zeros before processing the data or validating the check digit.</p>
             </div>
         </details>
 
-        <details class="faq-item">
+        <details>
             <summary>Can the GS1 Company Prefix length vary?</summary>
             <div class="faq-answer">
                 <p>Yes. Depending on the capacity assigned to the company by the local GS1 member organization, the company prefix can range from 7 to 10 digits. The Serial Reference length adjusts automatically so that the total code length remains exactly 18 digits.</p>
@@ -581,7 +604,21 @@
         <details>
             <summary>Is the SSCC check digit algorithm the same as the GTIN?</summary>
             <div class="faq-answer">
-                <p>Yes. Both use the standard GS1 Modulo-10 algorithm. However, because the total length is different (18 digits for SSCC vs 13 or 14 for GTIN), the alternating multipliers of 3 and 1 will align differently starting from the rightmost digit.</p>
+                <p>Yes. Both use the standard GS1 Modulo 10 algorithm. However, because the total length is different (18 digits for SSCC vs 13 or 14 for GTIN), the alternating multipliers of 3 and 1 will align differently starting from the rightmost digit.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>What is the difference between an SSCC and a GTIN?</summary>
+            <div class="faq-answer">
+                <p>A GTIN (Global Trade Item Number) identifies a specific class of trade item like a specific model of a laptop. An SSCC identifies a unique physical logistics unit like a specific pallet containing fifty of those laptops. Every SSCC is globally unique to that exact physical shipment.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>Can I reuse an SSCC number?</summary>
+            <div class="faq-answer">
+                <p>According to GS1 General Specifications, an SSCC must not be reallocated within one year of the shipment date. However, to ensure pristine global traceability and avoid conflicts in modern tracking systems, many companies choose to never reuse their serial references.</p>
             </div>
         </details>
     </div>
@@ -590,16 +627,16 @@
     <p>If you need to validate SSCCs without writing code, <strong>SSCC Pro Vision</strong> is a free, open-source tool that runs entirely in the browser. No installation, no backend, no data leaves your device.</p>
 
     <ul>
-        <li>Scan GS1-128 barcodes directly with your phone camera</li>
+        <li>Scan GS1 128 barcodes directly with your phone camera</li>
         <li>Validate or generate check digits for single or batch SSCCs</li>
         <li>Expand SSCC ranges to generate every code between two values</li>
-        <li>Upload EDIFACT, IDoc SAP, XML, CSV or TXT files — all SSCCs extracted automatically</li>
+        <li>Upload EDIFACT, IDoc SAP, XML, CSV or TXT files, all SSCCs extracted automatically</li>
         <li>Installs as a PWA on Android and iOS</li>
     </ul>
 
     <div class="cta-box">
         <h3>Try SSCC Pro Vision</h3>
-        <p>Free, open-source SSCC validator and check digit calculator — runs entirely in your browser.</p>
+        <p>Free, open-source SSCC validator and check digit calculator, runs entirely in your browser.</p>
         <a class="cta-btn" href="/sscc-check/">Open Validator →</a>
     </div>
 

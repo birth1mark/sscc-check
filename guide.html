@@ -12,7 +12,6 @@
     <link rel="canonical" href="https://birth1mark.github.io/sscc-check/guide.html">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
 
-    <!-- Open Graph -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://birth1mark.github.io/sscc-check/guide.html">
     <meta property="og:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
@@ -20,13 +19,11 @@
     <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
     <meta property="og:site_name" content="SSCC Pro Vision">
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
     <meta name="twitter:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
     <meta name="twitter:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
 
-    <!-- Schema.org Article -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -61,6 +58,39 @@
     }
     </script>
 
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why does my scanner read a 20-digit SSCC?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most GS1-128 barcode scanners include the Application Identifier 00 at the beginning. An SSCC is strictly 18 digits long. Always remove the first two zeros before processing or validating the check digit."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can the GS1 Company Prefix length vary?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Depending on the capacity assigned to the company by the local GS1 member organization, the company prefix can range from 7 to 10 digits. The Serial Reference length adjusts automatically so that the total code length remains exactly 18 digits."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the SSCC check digit algorithm the same as the GTIN?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Both utilize the standard GS1 Modulo-10 algorithm. However, because the total length is different (18 digits for SSCC vs 13 or 14 for GTIN), the alternating multipliers of 3 and 1 will align differently starting from the rightmost digit."
+          }
+        }
+      ]
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -87,7 +117,6 @@
             font-size: 16px;
         }
 
-        /* ── Nav ── */
         nav {
             border-bottom: 1px solid var(--border);
             padding: 14px 24px;
@@ -103,14 +132,12 @@
         }
         .nav-cta:hover { opacity: 0.85; }
 
-        /* ── Layout ── */
         .wrapper {
             max-width: 760px;
             margin: 0 auto;
             padding: 48px 24px 80px;
         }
 
-        /* ── Header ── */
         .article-header { margin-bottom: 48px; border-bottom: 1px solid var(--border); padding-bottom: 32px; }
         .article-tag {
             display: inline-block;
@@ -127,7 +154,6 @@
         h1 em { color: var(--primary); font-style: normal; }
         .article-meta { font-size: 13px; color: var(--muted); }
 
-        /* ── TOC ── */
         .toc {
             background: var(--surface); border: 1px solid var(--border);
             border-radius: 12px; padding: 20px 24px; margin-bottom: 40px;
@@ -139,7 +165,6 @@
         .toc a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.15s; }
         .toc a:hover { color: var(--primary); }
 
-        /* ── Content ── */
         h2 {
             font-size: 22px; font-weight: 600;
             margin: 48px 0 16px;
@@ -155,7 +180,6 @@
         a { color: var(--primary); text-decoration: none; }
         a:hover { text-decoration: underline; }
 
-        /* ── Code ── */
         pre {
             background: var(--code-bg);
             border: 1px solid var(--border);
@@ -184,7 +208,6 @@
         .num     { color: #fb923c; }
         .var     { color: #f1f5f9; }
 
-        /* ── Structure diagram ── */
         .sscc-diagram {
             background: var(--code-bg);
             border: 1px solid var(--border);
@@ -208,7 +231,6 @@
         .cell-ref  { color: #f1f5f9; }
         .cell-cd   { color: #10b981; font-weight: 600; }
 
-        /* ── Worked example table ── */
         .calc-table {
             width: 100%; border-collapse: collapse;
             font-family: 'IBM Plex Mono', monospace;
@@ -225,7 +247,6 @@
         .calc-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
         .calc-table .total td { background: var(--surface); color: var(--text); font-weight: 600; }
 
-        /* ── Callout ── */
         .callout {
             border-left: 3px solid var(--primary);
             background: rgba(59,130,246,0.06);
@@ -237,7 +258,6 @@
         .callout strong { color: var(--text); }
         .callout.success { border-color: var(--success); background: rgba(16,185,129,0.06); }
 
-        /* ── EDIFACT segments ── */
         .segment-table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
         .segment-table th { background: var(--surface); color: var(--muted); font-size: 12px;
             text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 14px;
@@ -246,7 +266,14 @@
         .segment-table td:first-child { font-family: 'IBM Plex Mono', monospace; color: var(--primary); font-size: 13px; }
         .segment-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
 
-        /* ── CTA ── */
+        /* FAQ Styling */
+        .faq-container { margin: 20px 0 24px; }
+        .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
+        .faq-item summary { font-weight: 600; color: var(--text); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        .faq-item summary::after { content: '＋'; color: var(--primary); }
+        .faq-item[open] summary::after { content: '－'; }
+        .faq-answer { margin-top: 10px; color: var(--muted); font-size: 14.5px; }
+
         .cta-box {
             background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(99,102,241,0.1));
             border: 1px solid rgba(59,130,246,0.25);
@@ -264,7 +291,6 @@
         }
         .cta-btn:hover { opacity: 0.85; text-decoration: none; }
 
-        /* ── Lists ── */
         ul, ol { padding-left: 22px; margin-bottom: 16px; }
         li { margin-bottom: 6px; color: var(--muted); }
         li strong { color: var(--text); }
@@ -299,6 +325,7 @@
             <li><a href="#common-mistakes">Common Mistakes</a></li>
             <li><a href="#javascript">JavaScript Implementation</a></li>
             <li><a href="#edifact">Extracting SSCCs from EDIFACT</a></li>
+            <li><a href="#faq">Frequently Asked Questions</a></li>
             <li><a href="#tool">Free Online Validator</a></li>
         </ol>
     </nav>
@@ -533,6 +560,30 @@
 
     <div class="callout">
         <strong>Note on custom delimiters:</strong> EDIFACT allows trading partners to define custom component, element and segment separators in the UNA service string. Always read the UNA header before parsing — defaulting to <code>: + '</code> will silently fail on non-standard files.
+    </div>
+
+    <h2 id="faq">Frequently Asked Questions</h2>
+    <div class="faq-container">
+        <details class="faq-item">
+            <summary>Why does my scanner read a 20-digit SSCC?</summary>
+            <div class="faq-answer">
+                <p>Most GS1-128 barcode scanners read the Application Identifier <code>00</code> along with the 18-digit code. Always remove the first two zeros before processing or validating the check digit.</p>
+            </div>
+        </details>
+
+        <details class="faq-item">
+            <summary>Can the GS1 Company Prefix length vary?</summary>
+            <div class="faq-answer">
+                <p>Yes. Depending on the capacity assigned to the company by the local GS1 member organization, the company prefix can range from 7 to 10 digits. The Serial Reference length adjusts automatically so that the total code length remains exactly 18 digits.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>Is the SSCC check digit algorithm the same as the GTIN?</summary>
+            <div class="faq-answer">
+                <p>Yes. Both use the standard GS1 Modulo-10 algorithm. However, because the total length is different (18 digits for SSCC vs 13 or 14 for GTIN), the alternating multipliers of 3 and 1 will align differently starting from the rightmost digit.</p>
+            </div>
+        </details>
     </div>
 
     <h2 id="tool">Free Online Validator</h2>

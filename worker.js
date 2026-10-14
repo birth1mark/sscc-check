@@ -119,6 +119,7 @@ const GS1_COUNTRIES = [
     [[620,620],'TZ','🇹🇿','Tanzania'],
     [[621,621],'SY','🇸🇾','Syria'],
     [[622,622],'EG','🇪🇬','Egypt'],
+    [[623,623],null,'🌐','GS1 Reserved'],
     [[624,624],'LY','🇱🇾','Libya'],
     [[625,625],'JO','🇯🇴','Jordan'],
     [[626,626],'IR','🇮🇷','Iran'],
@@ -467,11 +468,15 @@ function parseEDIFACT(text, found, seen) {
         const elements = seg.split(elemSep);
         const tag = elements[0];
         if (tag === 'GIN') {
-            elements.slice(1).forEach(el => {
-                const parts = el.split(compSep);
-                if (parts[0] === 'BJ' && parts[1]) tryAddSSCC(parts[1], found, seen);
-                else if (parts.length === 1)        tryAddSSCC(parts[0], found, seen);
+            const isBJ = elements[1] === 'BJ';
+            const dataElements = isBJ ? elements.slice(2) : elements.slice(1);
+            dataElements.forEach(el => {
+                el.split(compSep).forEach(p => tryAddSSCC(p, found, seen));
             });
+            if (elements[1] && elements[1].includes(compSep)) {
+                const parts = elements[1].split(compSep);
+                if (parts[0] === 'BJ' && parts[1]) tryAddSSCC(parts[1], found, seen);
+            }
         }
         if (tag === 'RFF') {
             elements.slice(1).forEach(el => {

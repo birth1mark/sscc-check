@@ -58,18 +58,21 @@ function parseEDIFACT(text) {
         const elements = seg.split(elemSep);
         const tag      = elements[0];
 
-        // GIN+BJ:<SSCC> — primary location for SSCC in DESADV/IFTMIN
+        // GIN+BJ+<SSCC> or GIN+BJ:<SSCC> — primary location for SSCC in DESADV/IFTMIN
         if (tag === 'GIN') {
-            elements.slice(1).forEach(el => {
-                const parts = el.split(compSep);
-                // qualifier BJ = SSCC
+            const isBJ = elements[1] === 'BJ';
+            const dataElements = isBJ ? elements.slice(2) : elements.slice(1);
+            dataElements.forEach(el => {
+                el.split(compSep).forEach(p => {
+                    tryAddSSCC(p, isBJ ? `GIN+BJ (segment ${idx + 1})` : `GIN (segment ${idx + 1})`, found);
+                });
+            });
+            if (elements[1] && elements[1].includes(compSep)) {
+                const parts = elements[1].split(compSep);
                 if (parts[0] === 'BJ' && parts[1]) {
                     tryAddSSCC(parts[1], `GIN+BJ (segment ${idx + 1})`, found);
-                } else if (parts.length === 1) {
-                    // Some implementations omit qualifier
-                    tryAddSSCC(parts[0], `GIN (segment ${idx + 1})`, found);
                 }
-            });
+            }
         }
 
         // RFF+SI:<SSCC>
@@ -313,8 +316,12 @@ function parseFile(text, filename) {
 }
 
 // ─── File Upload UI ───────────────────────────────────────────────────────────
+let fileUploadInitialized = false;
 
 function initFileUpload() {
+    if (fileUploadInitialized) return;
+    fileUploadInitialized = true;
+
     const zone = document.getElementById('drop-zone');
     const input = document.getElementById('file-input');
     if (!zone || !input) return;
@@ -423,6 +430,3 @@ document.addEventListener('drop', e => {
     e.preventDefault();
     e.stopPropagation();
 });
-
-// Init on DOM ready
-document.addEventListener('DOMContentLoaded', initFileUpload);

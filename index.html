@@ -168,7 +168,7 @@
         
         <textarea id="input" placeholder="Scan a barcode or enter codes..."></textarea>
 
-        <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+        <div id="drop-zone" class="drop-zone">
             <i data-lucide="upload" style="width:18px;height:18px;margin-right:10px;opacity:0.6;"></i>
             <span>Drop file or <u>browse</u>. EDIFACT, XML, CSV, TXT</span>
             <input type="file" id="file-input" style="display:none;">
@@ -214,7 +214,7 @@
             <ul style="margin-top:10px; padding-left:18px; color:var(--text-muted); line-height:1.8;">
                 <li><strong>Barcode Scanning</strong>. Use your camera to detect GS1 128 barcodes. Haptic feedback and beeps confirm a successful scan.</li>
                 <li><strong>Manual Validation</strong>. Enter a full 18 digit SSCC. The system validates the check digit and highlights errors in red.</li>
-                <li><strong>Range Expansion</strong>. Generate multiple codes using the <code>START to END</code> format. Supports up to 500 codes per operation.</li>
+                <li><strong>Range Expansion</strong>. Generate multiple codes using <code>START - END</code> or <code>START to END</code> format. Supports up to 500 codes per operation.</li>
                 <li><strong>File Extraction</strong>. Upload EDIFACT, XML, IDoc, or CSV files. All data is processed locally in your browser.</li>
                 <li><strong>Export and Copy</strong>. Copy individual codes to your clipboard or download all results as a CSV file.</li>
             </ul>

@@ -3,7 +3,7 @@
 > Free, open-source SSCC validator, check digit calculator and REST API. Works in any modern browser, installs as a PWA on Android and iOS — no app store required.
 
 🔗 **Live app**: [birth1mark.github.io/sscc-check](https://birth1mark.github.io/sscc-check/)
-🔗 **Technical guide**: [birth1mark.github.io/sscc-check/sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
+🔗 **Technical guide**: [birth1mark.github.io/sscc-check/guide.html](https://birth1mark.github.io/sscc-check/guide.html)
 🔗 **API documentation**: [birth1mark.github.io/sscc-check/sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
 🔗 **REST API**: [sscc.birth1mark.workers.dev](https://sscc.birth1mark.workers.dev)
 
@@ -246,7 +246,7 @@ A standalone technical article covers:
 - Complete JavaScript implementation
 - EDIFACT segment reference and parsing code
 
-🔗 **[birth1mark.github.io/sscc-check/sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
+🔗 **[birth1mark.github.io/sscc-check/guide.html](https://birth1mark.github.io/sscc-check/guide.html)**
 
 ---
 
@@ -258,9 +258,10 @@ sscc-check/
 ├── app.js                # SSCC logic: validation, generation, range, copy, export, UX
 ├── scanner.js            # Camera: ZXing, device selection, debounce, beep
 ├── parser.js             # File parser: EDIFACT, IDoc SAP, XML, CSV, generic fallback
+├── init.js               # Initialization & SW registration
 ├── manifest.json         # PWA manifest
 ├── service-worker.js     # Offline cache (cache-first strategy)
-├── sscc-api-guide.html            # Technical article: SSCC structure, algorithm, EDIFACT
+├── guide.html            # Technical article: SSCC structure, algorithm, EDIFACT
 ├── sscc-api-guide.html   # API documentation with live playground
 ├── og-image.png          # Social share preview (1200×630px)
 ├── icon-192.png          # PWA icon (home screen)

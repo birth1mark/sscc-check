@@ -1,4 +1,4 @@
-const CACHE = 'sscc-v17';
+const CACHE = 'sscc-v18';
 const ASSETS = [
   '/sscc-check/',
   '/sscc-check/index.html',
@@ -8,7 +8,8 @@ const ASSETS = [
   '/sscc-check/parser.js',
   '/sscc-check/init.js',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
-  'https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js'
+  'https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js',
+  'https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js'
 ];
 
 self.addEventListener('install', e => {

@@ -67,7 +67,7 @@ No authentication required. Full documentation: [sscc-api-guide.html](https://bi
 
 Complete guide to SSCC validation — structure, check digit algorithm, JavaScript implementation and EDIFACT parsing:
 
-🔗 **[birth1mark.github.io/sscc-check/sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
+🔗 **[birth1mark.github.io/sscc-check/guide.html](https://birth1mark.github.io/sscc-check/guide.html)**
 
 ---
 
@@ -79,9 +79,10 @@ sscc-check/
 ├── app.js                # SSCC logic: validation, generation, range expansion, UX
 ├── scanner.js            # Camera: ZXing engine, device selection, debounce, beep
 ├── parser.js             # File parser: EDIFACT, IDoc SAP, XML, CSV, generic
+├── init.js               # Initialization & SW registration
 ├── manifest.json         # PWA manifest
 ├── service-worker.js     # Offline cache
-├── sscc-api-guide.html            # Technical article: SSCC structure, algorithm, EDIFACT
+├── guide.html            # Technical article: SSCC structure, algorithm, EDIFACT
 ├── sscc-api-guide.html   # API documentation with live playground
 ├── og-image.png          # Social share preview (1200×630)
 ├── icon-192.png          # PWA icon

@@ -9,7 +9,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![PWA](https://img.shields.io/badge/PWA-ready-purple)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/birth1mark)
+[![Buy me a coffee](https://img.shields.io/badge/☕_Buy_me_a_coffee-amber?style=flat-square)](https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00)
 
 ---
 
@@ -151,7 +151,7 @@ Everything runs **100% client-side** — no file is ever uploaded to a server.
 
 ## ☕ Support
 
-If SSCC Pro Vision saves you time or helps your logistics workflow, consider [buying me a coffee on Ko-fi](https://ko-fi.com/birth1mark). Contributions help maintain the project open-source, fast and ad-free!
+If SSCC Pro Vision saves you time or helps your logistics workflow, consider [buying me a coffee](https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00). Contributions help maintain the project open-source, fast and ad-free!
 
 ---
 

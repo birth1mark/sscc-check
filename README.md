@@ -5,9 +5,10 @@
 🔗 **[Try it live →](https://pormenores.net/sscc/)**
 🔗 **[API documentation →](https://pormenores.net/sscc/sscc-api-guide.html)**
 
-![Version](https://img.shields.io/badge/version-5.5.3-blue)
+![Version](https://img.shields.io/badge/version-5.6.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![PWA](https://img.shields.io/badge/PWA-ready-purple)
+[![Public APIs PR #9237](https://img.shields.io/badge/Public_APIs-PR_#9237-blue?logo=github)](https://github.com/public-apis/public-apis/pull/9237)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
 [![Buy me a coffee](https://img.shields.io/badge/☕_Buy_me_a_coffee-amber?style=flat-square)](https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00)
 
@@ -23,6 +24,7 @@
 | 🔁 Expand ranges | `SSCC-A - SSCC-B` generates every code in between (max 500) |
 | 📂 File upload | Drop any EDIFACT, IDoc SAP, XML, CSV or TXT — SSCCs extracted automatically |
 | 🌍 Country detection | Flag emoji from GS1 company prefix (GS1 2025 spec) |
+| 🏷️ GS1 Logistics Label | Pure vector SVG GS1-128 barcode + Zebra ZPL export for 4x6" / A5 direct thermal printing |
 | ⎘ Copy & Export | Copy single SSCCs or export all results as CSV |
 | 🔌 REST API | Free public API for programmatic access — no auth required |
 | 📱 Install as app | PWA — no Play Store needed, works on Android and iOS |
@@ -123,6 +125,7 @@ Everything runs **100% client-side** — no file is ever uploaded to a server.
 
 ## 🛠 Tech Stack
 
+- **GS1-128 Vector Engine** — Native client-side SVG Code 128 Subset C with FNC1 start pattern + Zebra ZPL-II generator
 - **Vanilla JS** — no frameworks, no build step
 - **[ZXing](https://github.com/zxing-js/library)** — Code 128 / GS1-128 barcode scanning
 - **[Lucide Icons](https://lucide.dev)** — lightweight SVG icon set
@@ -137,6 +140,7 @@ Everything runs **100% client-side** — no file is ever uploaded to a server.
 
 | Version | Highlights |
 |---|---|
+| **v5.6.0** | GS1 Logistics Label Generator (pure SVG + Zebra ZPL-II thermal export), visual harmonization with pormenores.net dark carbon theme, mobile-first responsive print styling |
 | **v5.5.3** | Free REST API on Cloudflare Workers — validate, generate, range, extract |
 | **v5.5.2** | GS1 2025 prefix table, fixed-width ERP file support, binary file rejection |
 | **v5.5** | File upload — EDIFACT, IDoc, XML, CSV, TXT with smart format detection |

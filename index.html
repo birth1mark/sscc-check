@@ -65,53 +65,325 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#0b0e14">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary:    #3b82f6;
-            --success:    #10b981;
-            --danger:     #ef4444;
-            --bg:         #0f172a;
-            --card-bg:    #1e293b;
-            --text-main:  #f8fafc;
-            --text-muted: #94a3b8;
-            --border:     #334155;
+            --bg:                 #0b0e14;
+            --surface:            #121722;
+            --surface-hover:      #182030;
+            --surface-card:       #0f141f;
+            --border:             #222c3d;
+            --border-hover:       #f59e0b;
+            --text-main:          #f8fafc;
+            --text-muted:         #94a3b8;
+            --text-dim:           #64748b;
+            --primary:            #f59e0b;
+            --primary-hover:      #fbbf24;
+            --accent-cyan:        #38bdf8;
+            --success:            #10b981;
+            --danger:             #ef4444;
+            --font-mono:          'JetBrains Mono', monospace;
+            --font-sans:          'Plus Jakarta Sans', -apple-system, sans-serif;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 12px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 500px; padding-bottom: 24px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border); }
-        header { margin-bottom: 14px; text-align: center; }
-        h1 { font-size: 18px; font-weight: 700; margin: 0; text-transform: uppercase; color: var(--primary); }
-        h1 span { color: var(--text-main); }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        #viewport-wrap { width: 100%; height: 220px; border-radius: 16px; overflow: hidden; border: 2px solid var(--primary); margin-bottom: 12px; background: #000; position: relative; display: none; }
-        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
 
-        textarea { width: 100%; height: 110px; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; resize: vertical; }
+        /* Grelha sutil de fundo retro-terminal (em sintonia com pormenores.net) */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+            background-size: 36px 36px;
+            pointer-events: none;
+            z-index: -1;
+        }
 
-        .drop-zone { width: 100%; box-sizing: border-box; border: 1.5px dashed var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); }
-        .drop-zone:hover { border-color: var(--primary); background: rgba(59, 130, 246, 0.05); color: var(--text-main); }
+        /* Header de Marca Minimalista Pormenores */
+        .site-header {
+            border-bottom: 1px solid var(--border);
+            padding: 0.85rem 1.25rem;
+            position: sticky;
+            top: 0;
+            background: rgba(11, 14, 20, 0.94);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.15s ease;
+        }
+        .brand:hover {
+            opacity: 0.85;
+        }
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px var(--success);
+        }
+        .brand-sep {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+        .brand-sub {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+        .nav-pill {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 500;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .nav-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.06);
+        }
 
-        .btn-stack { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-        .btn-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .main-btn { width: 100%; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; color: white; cursor: pointer; text-transform: uppercase; }
-        .btn-live  { background: var(--primary); }
-        .btn-audit { background: #334155; }
-        .btn-clear { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+        .container {
+            width: 100%;
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 24px 16px 48px;
+        }
 
-        .results { background: #0f172a; border-radius: 10px; padding: 6px; border: 1px solid var(--border); min-height: 80px; max-height: 400px; overflow-y: auto; }
-        .result-row { padding: 10px 12px; border-bottom: 1px solid #1e293b; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
-        .result-row:last-child { border-bottom: none; }
+        .card {
+            background: var(--surface-card);
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border);
+            transition: border-color 0.2s ease;
+        }
+        .card:hover {
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+
+        .card-header {
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        h1 {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.01em;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        h1 span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+        .version-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--primary);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .tagline {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 6px 0 0;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        #viewport-wrap {
+            width: 100%;
+            height: 220px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            margin-bottom: 12px;
+            background: #000;
+            position: relative;
+            display: none;
+            box-shadow: 0 0 24px rgba(245, 158, 11, 0.18);
+        }
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 110px;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            color: #f8fafc;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+        }
+
+        .drop-zone {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1.5px dashed var(--border);
+            border-radius: 8px;
+            padding: 13px;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.015);
+        }
+        .drop-zone:hover {
+            border-color: var(--primary);
+            background: rgba(245, 158, 11, 0.04);
+            color: var(--text-main);
+        }
+
+        .btn-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .main-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: all 0.2s ease;
+        }
+        .btn-live {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+        .btn-live:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+        }
+        .btn-audit {
+            background: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+        .btn-audit:hover {
+            border-color: var(--primary);
+            background: rgba(245, 158, 11, 0.06);
+        }
+        .btn-clear {
+            background: rgba(239, 68, 68, 0.08);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+        .btn-clear:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .results {
+            background: #080a0f;
+            border-radius: 8px;
+            padding: 6px;
+            border: 1px solid var(--border);
+            min-height: 80px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result-row {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(34, 44, 61, 0.6);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
         
-        /* CORRECAO: Visual estetico integrado sem fundo branco */
         .btn-copy { 
-            background: rgba(255, 255, 255, 0.05) !important; 
+            background: rgba(255, 255, 255, 0.03) !important; 
             border: 1px solid var(--border) !important; 
             border-radius: 6px; 
             color: var(--text-muted); 
@@ -123,7 +395,7 @@
             justify-content: center; 
         }
         .btn-copy:hover { 
-            background: rgba(59, 130, 246, 0.1) !important; 
+            background: rgba(245, 158, 11, 0.1) !important; 
             border-color: var(--primary) !important; 
             color: var(--primary); 
         }
@@ -133,27 +405,61 @@
             border-color: var(--success) !important; 
         }
 
-        .sscc-ai  { color: var(--text-muted); opacity: 0.6; }
+        .sscc-ai  { color: var(--text-dim); }
         .sscc-ext { color: var(--primary); font-weight: 700; }
         .sscc-ref { color: var(--text-main); }
         .sscc-cd  { font-weight: 700; }
         .sscc-cd.cd-valid   { color: var(--success); }
         .sscc-cd.cd-invalid { color: var(--danger); text-decoration: underline; }
 
-        .info-panel { margin-top: 14px; background: rgba(15,23,42,0.5); border-radius: 12px; border: 1px solid var(--border); padding: 18px; font-size: 12px; }
-        .info-panel h2 { font-size: 13px; color: var(--primary); margin: 0 0 8px 0; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-        details { cursor: pointer; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 12px; }
-        summary { font-weight: 700; color: var(--text-muted); list-style: none; display: flex; align-items: center; justify-content: space-between; }
-        summary::after { content: '＋'; color: var(--primary); }
-        details[open] summary::after { content: '－'; }
+        .info-panel {
+            margin-top: 18px;
+            background: rgba(15, 20, 31, 0.55);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 18px;
+            font-size: 13px;
+        }
+        .info-panel h2 {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        details {
+            cursor: pointer;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+            margin-top: 12px;
+        }
+        summary {
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-muted);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        summary::after {
+            content: '＋';
+            color: var(--primary);
+        }
+        details[open] summary::after {
+            content: '－';
+        }
 
-        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
-        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); }
-        .badge-fail { background: rgba(239,68,68,0.15);  color: var(--danger);  }
-        .badge-gen  { background: rgba(59,130,246,0.15); color: var(--primary); }
-        .version { font-weight: 700; color: var(--success); margin-right: 6px; }
-        .changelog p { margin: 10px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 11px; color: var(--text-muted); line-height: 1.5; }
-        .tagline { font-size: 13px; color: var(--text-muted); margin: 4px 0 0 0; font-weight: 400; letter-spacing: 0.01em; }
+        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; font-family: var(--font-mono); }
+        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+        .badge-fail { background: rgba(239,68,68,0.15);  color: var(--danger);  border: 1px solid rgba(239,68,68,0.3); }
+        .badge-gen  { background: rgba(245,158,11,0.15); color: var(--primary); border: 1px solid rgba(245,158,11,0.3); }
+        .version { font-weight: 700; color: var(--primary); margin-right: 6px; font-family: var(--font-mono); }
+        .changelog p { margin: 10px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
     </style>
     <!-- Auto-Redirect GitHub Pages to pormenores.net/sscc/ -->
     <script>
@@ -165,12 +471,28 @@
 </head>
 <body>
 
+<header class="site-header">
+    <div class="header-inner">
+        <a href="https://pormenores.net/" class="brand" title="Voltar a pormenores.net">
+            <span class="brand-dot"></span>
+            <span>pormenores.net</span>
+            <span class="brand-sep">/</span>
+            <span class="brand-sub">sscc</span>
+        </a>
+        <nav class="header-nav">
+            <a href="guide.html" class="nav-pill">Guide</a>
+            <a href="sscc-api-guide.html" class="nav-pill">API</a>
+            <a href="openapi.yaml" download class="nav-pill">OpenAPI</a>
+        </nav>
+    </div>
+</header>
+
 <div class="container">
     <main class="card">
-        <header>
-            <h1>SSCC <span>Pro Vision</span> <small style="opacity:0.5; font-size:10px;">v5.5.5</small></h1>
-            <p class="tagline">Free SSCC validator, check digit calculator and GS1-128 barcode scanner</p>
-        </header>
+        <div class="card-header">
+            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.5.5</span></h1>
+            <p class="tagline">GS1-128 barcode vision &amp; logistics check digit engine</p>
+        </div>
         
         <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
         
@@ -240,10 +562,12 @@
         </details>
     </section>
 
-    <footer style="margin-top:20px; text-align:center; font-size:12px; color:var(--text-muted); display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap;">
+    <footer style="margin-top:28px; text-align:center; font-size:12px; color:var(--text-dim); display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; font-family:var(--font-mono);">
+        <a href="https://pormenores.net/" style="color:var(--text-muted); text-decoration:none;">pormenores.net</a>
+        <span>•</span>
         <span>Free &amp; Open Source</span>
         <span>•</span>
-        <a href="https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00" target="_blank" rel="noopener noreferrer" style="color:#fbbf24; text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:600; padding:3px 10px; border-radius:12px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); transition:all 0.2s;" title="Buy me a coffee">
+        <a href="https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00" target="_blank" rel="noopener noreferrer" style="color:var(--primary); text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:600; padding:3px 10px; border-radius:12px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); transition:all 0.2s;" title="Buy me a coffee">
             ☕ Buy me a coffee
         </a>
         <span>•</span>

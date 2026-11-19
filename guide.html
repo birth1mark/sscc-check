@@ -9,22 +9,22 @@
     <meta name="keywords" content="SSCC validation, SSCC check digit, GS1 128 format, serial shipping container code, EDI DESADV SSCC, SSCC algorithm, check digit calculator, logistics barcode">
     <meta name="author" content="SSCC Pro Vision">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://birth1mark.github.io/sscc-check/guide.html">
+    <link rel="canonical" href="https://pormenores.net/sscc/guide.html">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
 
     <!-- Open Graph -->
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://birth1mark.github.io/sscc-check/guide.html">
+    <meta property="og:url" content="https://pormenores.net/sscc/guide.html">
     <meta property="og:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
     <meta property="og:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
-    <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+    <meta property="og:image" content="https://pormenores.net/sscc/og-image.png">
     <meta property="og:site_name" content="SSCC Pro Vision">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
     <meta name="twitter:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
-    <meta name="twitter:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+    <meta name="twitter:image" content="https://pormenores.net/sscc/og-image.png">
 
     <!-- Schema.org Technical Article -->
     <script type="application/ld+json">
@@ -33,10 +33,10 @@
       "@type": "TechArticle",
       "headline": "How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools",
       "description": "Complete guide to SSCC validation: structure, GS1 128 format, check digit algorithm with worked example, and JavaScript implementation.",
-      "url": "https://birth1mark.github.io/sscc-check/guide.html",
+      "url": "https://pormenores.net/sscc/guide.html",
       "author": { "@type": "Organization", "name": "SSCC Pro Vision" },
       "publisher": { "@type": "Organization", "name": "SSCC Pro Vision" },
-      "mainEntityOfPage": "https://birth1mark.github.io/sscc-check/guide.html"
+      "mainEntityOfPage": "https://pormenores.net/sscc/guide.html"
     }
     </script>
 
@@ -50,13 +50,13 @@
           "@type": "ListItem",
           "position": 1,
           "name": "SSCC Pro Vision",
-          "item": "https://birth1mark.github.io/sscc-check/"
+          "item": "https://pormenores.net/sscc/"
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "How to Validate SSCC Codes",
-          "item": "https://birth1mark.github.io/sscc-check/guide.html"
+          "item": "https://pormenores.net/sscc/guide.html"
         }
       ]
     }
@@ -322,12 +322,19 @@
             h2 { font-size: 19px; }
         }
     </style>
+    <!-- Auto-Redirect GitHub Pages to pormenores.net/sscc/ -->
+    <script>
+    if (window.location.hostname.includes('github.io')) {
+        var path = window.location.pathname.replace(/^\/sscc-check\//, '');
+        window.location.replace('https://pormenores.net/sscc/' + path + window.location.search + window.location.hash);
+    }
+    </script>
 </head>
 <body>
 
 <nav>
-    <a class="nav-brand" href="/sscc-check/">← SSCC Pro Vision</a>
-    <a class="nav-cta" href="/sscc-check/">Open Validator</a>
+    <a class="nav-brand" href="./">← SSCC Pro Vision</a>
+    <a class="nav-cta" href="./">Open Validator</a>
 </nav>
 
 <div class="wrapper">
@@ -560,7 +567,8 @@
     }
 
     <span class="kw">const</span> <span class="var">segments</span> = <span class="var">text</span>
-        .<span class="fn">replace</span>(<span class="str">/?
+        .<span class="fn">replace</span>(<span class="str">/
+?
 /g</span>, <span class="str">''</span>)
         .<span class="fn">split</span>(<span class="var">segTerm</span>)
         .<span class="fn">map</span>(<span class="var">s</span> => <span class="var">s</span>.<span class="fn">trim</span>())
@@ -637,7 +645,7 @@
     <div class="cta-box">
         <h3>Try SSCC Pro Vision</h3>
         <p>Free, open-source SSCC validator and check digit calculator, runs entirely in your browser.</p>
-        <a class="cta-btn" href="/sscc-check/">Open Validator →</a>
+        <a class="cta-btn" href="./">Open Validator →</a>
     </div>
 
 </div>

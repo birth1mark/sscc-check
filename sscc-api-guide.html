@@ -7,15 +7,15 @@
     <meta name="description" content="Free REST API for SSCC validation, check digit generation, range expansion and file extraction. Built on Cloudflare Workers. No auth required.">
     <meta name="keywords" content="SSCC API, SSCC REST API, GS1 API, check digit API, SSCC validation API, EDIFACT SSCC extract">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://birth1mark.github.io/sscc-check/sscc-api-guide.html">
+    <link rel="canonical" href="https://pormenores.net/sscc/sscc-api-guide.html">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://birth1mark.github.io/sscc-check/sscc-api-guide.html">
+    <meta property="og:url" content="https://pormenores.net/sscc/sscc-api-guide.html">
     <meta property="og:title" content="SSCC API — Free REST API for SSCC Validation">
     <meta property="og:description" content="Free REST API for SSCC validation, check digit generation, range expansion and file extraction. No auth required.">
-    <meta property="og:image" content="https://birth1mark.github.io/sscc-check/og-image.png">
+    <meta property="og:image" content="https://pormenores.net/sscc/og-image.png">
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"TechArticle","headline":"SSCC API — Free REST API for SSCC Validation","url":"https://birth1mark.github.io/sscc-check/sscc-api-guide.html"}
+    {"@context":"https://schema.org","@type":"TechArticle","headline":"SSCC API — Free REST API for SSCC Validation","url":"https://pormenores.net/sscc/sscc-api-guide.html"}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -98,12 +98,19 @@
 
         @media(max-width:600px){.wrapper{padding:28px 16px 60px;}.nav-links{gap:12px;}}
     </style>
+    <!-- Auto-Redirect GitHub Pages to pormenores.net/sscc/ -->
+    <script>
+    if (window.location.hostname.includes('github.io')) {
+        var path = window.location.pathname.replace(/^\/sscc-check\//, '');
+        window.location.replace('https://pormenores.net/sscc/' + path + window.location.search + window.location.hash);
+    }
+    </script>
 </head>
 <body>
 <nav>
-    <a class="nav-brand" href="/sscc-check/">← SSCC Pro Vision</a>
+    <a class="nav-brand" href="./">← SSCC Pro Vision</a>
     <div class="nav-links">
-        <a class="nav-cta" href="/sscc-check/">Open App</a>
+        <a class="nav-cta" href="./">Open App</a>
     </div>
 </nav>
 
@@ -261,7 +268,7 @@ GIN+BJ:356012345600000030'</textarea>
     <div class="cta-box">
         <h3>Prefer a visual interface?</h3>
         <p>SSCC Pro Vision runs entirely in the browser — scan barcodes, validate codes, upload EDIFACT files and export results as CSV.</p>
-        <a class="cta-btn" href="/sscc-check/">Open SSCC Pro Vision →</a>
+        <a class="cta-btn" href="./">Open SSCC Pro Vision →</a>
     </div>
 </div>
 

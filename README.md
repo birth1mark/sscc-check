@@ -2,8 +2,8 @@
 
 **Free, open-source SSCC validator, check digit calculator and REST API — runs entirely in the browser, installs as a PWA on Android and iOS.**
 
-🔗 **[Try it live →](https://birth1mark.github.io/sscc-check/)**
-🔗 **[API documentation →](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
+🔗 **[Try it live →](https://pormenores.net/sscc/)**
+🔗 **[API documentation →](https://pormenores.net/sscc/sscc-api-guide.html)**
 
 ![Version](https://img.shields.io/badge/version-5.5.3-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -35,7 +35,7 @@
 No installation needed. Open the link and use it:
 
 ```
-https://birth1mark.github.io/sscc-check/
+https://pormenores.net/sscc/
 ```
 
 **Install on Android**: open in Chrome → tap ⋮ → *Add to Home screen*
@@ -60,7 +60,7 @@ https://sscc.birth1mark.workers.dev
 | `GET /prefix?sscc=<18 digits>` | GS1 country lookup |
 | `POST /extract` | Extract SSCCs from file content |
 
-No authentication required. Full documentation: [sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
+No authentication required. Full documentation: [sscc-api-guide.html](https://pormenores.net/sscc/sscc-api-guide.html)
 
 ---
 
@@ -68,7 +68,7 @@ No authentication required. Full documentation: [sscc-api-guide.html](https://bi
 
 Complete guide to SSCC validation — structure, check digit algorithm, JavaScript implementation and EDIFACT parsing:
 
-🔗 **[birth1mark.github.io/sscc-check/guide.html](https://birth1mark.github.io/sscc-check/guide.html)**
+🔗 **[birth1mark.github.io/sscc-check/guide.html](https://pormenores.net/sscc/guide.html)**
 
 ---
 

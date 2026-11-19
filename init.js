@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Registo do Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sscc-check/service-worker.js')
+        navigator.serviceWorker.register('./service-worker.js')
             .catch(err => console.warn('SW registration failed:', err));
     });
 }

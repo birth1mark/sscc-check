@@ -1,0 +1,324 @@
+openapi: 3.1.0
+info:
+  title: SSCC Pro Vision REST API
+  version: 1.2.2
+  description: |
+    Free, high-performance REST API for Serial Shipping Container Code (SSCC-18) validation,
+    check digit calculation (GS1 Modulo 10), range expansion, country/company prefix lookup,
+    and multi-format file extraction (UN/EDIFACT, SAP IDoc, XML, CSV, TXT).
+    Powered by Cloudflare Workers. Zero authentication required.
+  contact:
+    name: birth1mark
+    url: https://pormenores.net/sscc/
+  license:
+    name: MIT
+    url: https://github.com/birth1mark/sscc-check/blob/main/LICENSE
+servers:
+  - url: https://sscc.birth1mark.workers.dev
+    description: Production Serverless Edge API (Cloudflare Workers)
+
+paths:
+  /validate:
+    get:
+      summary: Validate SSCC-18 Code
+      description: |
+        Validates an 18-digit SSCC or 20-digit code with Application Identifier (00).
+        Calculates the GS1 Modulo 10 check digit and returns prefix country metadata.
+      parameters:
+        - name: sscc
+          in: query
+          required: true
+          description: 18-digit SSCC or 20-digit SSCC with leading 00
+          schema:
+            type: string
+            example: "356012345600000016"
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+        '400':
+          description: Invalid input length or format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /generate:
+    get:
+      summary: Generate Check Digit for 17-digit Body
+      description: Computes the GS1 Modulo 10 check digit for a 17-digit SSCC payload and returns the full 18-digit SSCC.
+      parameters:
+        - name: body
+          in: query
+          required: true
+          description: 17-digit SSCC payload without check digit
+          schema:
+            type: string
+            example: "35601234560000001"
+      responses:
+        '200':
+          description: Generation result with full SSCC
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationResponse'
+        '400':
+          description: Invalid body length
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /range:
+    get:
+      summary: Generate Sequential Range of SSCCs
+      description: Expands a consecutive range of SSCC numbers (up to 500 codes per request) with calculated check digits.
+      parameters:
+        - name: from
+          in: query
+          required: true
+          description: Starting 17-digit payload or 18-digit SSCC
+          schema:
+            type: string
+            example: "35601234560000001"
+        - name: to
+          in: query
+          required: true
+          description: Ending 17-digit payload or 18-digit SSCC
+          schema:
+            type: string
+            example: "35601234560000020"
+      responses:
+        '200':
+          description: List of sequential SSCCs with check digits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RangeResponse'
+        '400':
+          description: Invalid range or count exceeds 500
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /prefix:
+    get:
+      summary: Lookup GS1 Prefix & Country
+      description: Returns the GS1 member organization / country corresponding to the SSCC prefix.
+      parameters:
+        - name: sscc
+          in: query
+          required: true
+          description: 18-digit SSCC
+          schema:
+            type: string
+            example: "356012345600000016"
+      responses:
+        '200':
+          description: Prefix metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrefixResponse'
+        '400':
+          description: Invalid SSCC
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /extract:
+    post:
+      summary: Extract SSCCs from Raw Text / File
+      description: |
+        Parses UN/EDIFACT (DESADV, ORDERS), SAP IDoc (DELVRY, INVOIC), XML, CSV, or plain text
+        payloads (up to 1 MB) and extracts all detected SSCC codes with validation status.
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: "UNA:+.? 'UNB+UNOC:3...GIN+BJ+356012345600000016'..."
+      responses:
+        '200':
+          description: Extraction summary with all found SSCCs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractResponse'
+        '400':
+          description: Empty request body or payload exceeds limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health:
+    get:
+      summary: Service Health Check
+      description: Returns API status, version, and available endpoints.
+      responses:
+        '200':
+          description: Service status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  version:
+                    type: string
+                    example: "1.2.2"
+                  endpoints:
+                    type: array
+                    items:
+                      type: string
+
+components:
+  schemas:
+    ValidationResponse:
+      type: object
+      properties:
+        input:
+          type: string
+          example: "356012345600000016"
+        sscc:
+          type: string
+          example: "356012345600000016"
+        formatted:
+          type: string
+          example: "(00)356012345600000016"
+        valid:
+          type: boolean
+          example: true
+        checkDigit:
+          type: object
+          properties:
+            provided:
+              type: integer
+              example: 6
+            expected:
+              type: integer
+              example: 6
+        gs1:
+          $ref: '#/components/schemas/GS1Metadata'
+
+    GenerationResponse:
+      type: object
+      properties:
+        input:
+          type: string
+          example: "35601234560000001"
+        body:
+          type: string
+          example: "35601234560000001"
+        checkDigit:
+          type: integer
+          example: 6
+        sscc:
+          type: string
+          example: "356012345600000016"
+        formatted:
+          type: string
+          example: "(00)356012345600000016"
+        gs1:
+          $ref: '#/components/schemas/GS1Metadata'
+
+    RangeResponse:
+      type: object
+      properties:
+        from:
+          type: string
+          example: "35601234560000001"
+        to:
+          type: string
+          example: "35601234560000020"
+        count:
+          type: integer
+          example: 20
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              sscc:
+                type: string
+                example: "356012345600000016"
+              formatted:
+                type: string
+                example: "(00)356012345600000016"
+              checkDigit:
+                type: integer
+                example: 6
+
+    PrefixResponse:
+      type: object
+      properties:
+        sscc:
+          type: string
+          example: "356012345600000016"
+        prefix:
+          type: string
+          example: "560"
+        country:
+          type: string
+          example: "Portugal"
+        countryCode:
+          type: string
+          example: "PT"
+        flag:
+          type: string
+          example: "🇵🇹"
+
+    ExtractResponse:
+      type: object
+      properties:
+        format:
+          type: string
+          example: "edifact"
+        found:
+          type: integer
+          example: 1
+        valid:
+          type: integer
+          example: 1
+        invalid:
+          type: integer
+          example: 0
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationResponse'
+
+    GS1Metadata:
+      type: object
+      properties:
+        extensionDigit:
+          type: integer
+          example: 3
+        prefix:
+          type: string
+          example: "560"
+        country:
+          type: string
+          example: "Portugal"
+        countryCode:
+          type: string
+          example: "PT"
+        flag:
+          type: string
+          example: "🇵🇹"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid length: expected 18 digits (or 20 with AI prefix), got 15"

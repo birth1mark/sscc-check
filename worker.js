@@ -615,7 +615,7 @@ export default {
                     return json({
                         name:    'SSCC Pro Vision API',
                         version: '1.2.2',
-                        docs:    'https://birth1mark.github.io/sscc-check/sscc-api-guide.html',
+                        docs:    'https://pormenores.net/sscc/sscc-api-guide.html',
                         endpoints: {
                             validate: '/validate?sscc=356012345600000016',
                             generate: '/generate?body=35601234560000001',

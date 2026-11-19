@@ -22,4 +22,11 @@
     <priority>0.8</priority>
   </url>
 
+  <url>
+    <loc>https://pormenores.net/sscc/openapi.yaml</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>

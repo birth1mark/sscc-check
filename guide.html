@@ -109,6 +109,22 @@
             "@type": "Answer",
             "text": "According to GS1 General Specifications, an SSCC must not be reallocated within one year of the shipment date. However, to ensure pristine global traceability and avoid conflicts in modern tracking systems, many companies choose to never reuse their serial references."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Where is the SSCC located in SAP IDocs?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In SAP Outbound Deliveries (such as IDoc types DELVRY03, DELVRY07, or DESADV01), the 18-digit SSCC is stored under the Handling Unit Item segment E1EDL44 in the field EXIDV (External Handling Unit Identification), as well as in the Handling Unit Header segment E1EDL37."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How to calculate the GS1 SSCC check digit in Python?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "To calculate the GS1 Modulo 10 check digit in Python, reverse the 17-digit payload string, multiply odd-positioned digits (0-indexed even) by 3 and even-positioned digits by 1, sum the products, and compute (10 - (sum % 10)) % 10."
+          }
         }
       ]
     }
@@ -355,7 +371,9 @@
             <li><a href="#algorithm">Check Digit Algorithm</a></li>
             <li><a href="#common-mistakes">Common Mistakes</a></li>
             <li><a href="#javascript">JavaScript Implementation</a></li>
+            <li><a href="#python">Python Implementation</a></li>
             <li><a href="#edifact">Extracting SSCCs from EDIFACT</a></li>
+            <li><a href="#sap-idoc">SSCC in SAP IDocs (E1EDL44 / EXIDV)</a></li>
             <li><a href="#faq">Frequently Asked Questions</a></li>
             <li><a href="#tool">Free Online Validator</a></li>
         </ol>
@@ -519,6 +537,38 @@
 <span class="fn">normaliseSSCC</span>(<span class="str">'00356012345000000012'</span>); <span class="comment">// '356012345000000012' (strips AI)</span>
 <span class="fn">normaliseSSCC</span>(<span class="str">'35601234500000001'</span>);   <span class="comment">// '356012345000000012' (generates CD)</span></code></pre>
 
+    <h2 id="python">Python Implementation: Check Digit &amp; Batch Validation</h2>
+    <p>For data pipelines, ERP extractors, and backend services, here is the clean Python 3 implementation of the GS1 Modulo 10 check digit calculation and SSCC validator:</p>
+
+<pre><code><span class="kw">def</span> <span class="fn">calculate_sscc_check_digit</span>(<span class="var">body17</span>: <span class="str">str</span>) -&gt; <span class="str">int</span>:
+    <span class="str">"""
+    Calculates the GS1 Modulo 10 check digit for a 17-digit SSCC payload.
+    """</span>
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="var">body17</span>) != <span class="num">17</span> <span class="kw">or not</span> <span class="var">body17</span>.<span class="fn">isdigit</span>():
+        <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">"SSCC payload must be exactly 17 digits"</span>)
+    
+    <span class="comment"># Alternate multipliers 3 and 1 starting from the rightmost digit</span>
+    <span class="var">digits</span> = [<span class="fn">int</span>(<span class="var">d</span>) <span class="kw">for</span> <span class="var">d</span> <span class="kw">in</span> <span class="fn">reversed</span>(<span class="var">body17</span>)]
+    <span class="var">total</span> = <span class="fn">sum</span>(<span class="var">d</span> * (<span class="num">3</span> <span class="kw">if</span> <span class="var">i</span> % <span class="num">2</span> == <span class="num">0</span> <span class="kw">else</span> <span class="num">1</span>) <span class="kw">for</span> <span class="var">i</span>, <span class="var">d</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="var">digits</span>))
+    <span class="kw">return</span> (<span class="num">10</span> - (<span class="var">total</span> % <span class="num">10</span>)) % <span class="num">10</span>
+
+
+<span class="kw">def</span> <span class="fn">validate_sscc</span>(<span class="var">raw</span>: <span class="str">str</span>) -&gt; <span class="str">bool</span>:
+    <span class="str">"""
+    Validates any SSCC string (18 digits or 20 digits with leading (00)).
+    """</span>
+    <span class="var">clean</span> = <span class="str">""</span>.<span class="fn">join</span>(<span class="var">ch</span> <span class="kw">for</span> <span class="var">ch</span> <span class="kw">in</span> <span class="var">raw</span> <span class="kw">if</span> <span class="var">ch</span>.<span class="fn">isdigit</span>())
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="var">clean</span>) == <span class="num">20</span> <span class="kw">and</span> <span class="var">clean</span>.<span class="fn">startswith</span>(<span class="str">"00"</span>):
+        <span class="var">clean</span> = <span class="var">clean</span>[<span class="num">2</span>:]
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="var">clean</span>) != <span class="num">18</span>:
+        <span class="kw">return False</span>
+    <span class="kw">return</span> <span class="fn">int</span>(<span class="var">clean</span>[-<span class="num">1</span>]) == <span class="fn">calculate_sscc_check_digit</span>(<span class="var">clean</span>[:<span class="num">17</span>])
+
+<span class="comment"># Examples:</span>
+<span class="fn">print</span>(<span class="fn">validate_sscc</span>(<span class="str">"356012345000000012"</span>))    <span class="comment"># True</span>
+<span class="fn">print</span>(<span class="fn">validate_sscc</span>(<span class="str">"(00)356012345000000012"</span>))<span class="comment"># True</span>
+<span class="fn">print</span>(<span class="fn">validate_sscc</span>(<span class="str">"356012345000000019"</span>))    <span class="comment"># False (Invalid CD)</span></code></pre>
+
     <h2 id="edifact">Extracting SSCCs from EDIFACT Files</h2>
     <p>In EDIFACT messages, SSCCs appear in several segments. The most common is <code>GIN</code> with qualifier <code>BJ</code> (Goods Identity Number, SSCC), used in <strong>DESADV</strong> (Despatch Advice) and <strong>IFTMIN</strong> (Forwarding Instruction).</p>
 
@@ -595,6 +645,45 @@
         <strong>Note on custom delimiters:</strong> EDIFACT allows trading partners to define custom component, element and segment separators in the UNA service string. Always read the UNA header before parsing, defaulting to <code>: + '</code> will silently fail on non-standard files.
     </div>
 
+    <h2 id="sap-idoc">SSCC in SAP IDocs (E1EDL44 / EXIDV)</h2>
+    <p>In SAP ERP, ECC, and S/4HANA environments (modules SD, LE, WM, and EWM), SSCC numbers are handled as <strong>External Handling Unit Identifiers (HU)</strong>. They are exchanged in Outbound Delivery, Despatch Advice, and Shipment IDocs like <code>DELVRY03</code>, <code>DELVRY07</code>, and <code>DESADV01</code>.</p>
+
+    <table class="segment-table">
+        <tr>
+            <th>Segment</th>
+            <th>Field</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>E1EDL37</td>
+            <td>EXIDV</td>
+            <td>Handling Unit Header: External Handling Unit Identification (18-digit SSCC)</td>
+        </tr>
+        <tr>
+            <td>E1EDL44</td>
+            <td>EXIDV</td>
+            <td>Handling Unit Item: SSCC associated with packed delivery items</td>
+        </tr>
+        <tr>
+            <td>E1EDL37</td>
+            <td>VHILM_KU</td>
+            <td>Customer Packaging Material / Pallet Type code (e.g. EURO PALLET)</td>
+        </tr>
+    </table>
+
+    <p>Sample XML IDoc segment structure representing a logistics handling unit with SSCC:</p>
+
+<pre><code><span class="kw">&lt;E1EDL37</span> <span class="var">SEGMENT</span>=<span class="str">"1"</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;EXIDV&gt;</span>356012345000000012<span class="kw">&lt;/EXIDV&gt;</span>
+    <span class="kw">&lt;VHILM_KU&gt;</span>CHEP-01<span class="kw">&lt;/VHILM_KU&gt;</span>
+    <span class="kw">&lt;E1EDL44</span> <span class="var">SEGMENT</span>=<span class="str">"1"</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;VELIN&gt;</span>1<span class="kw">&lt;/VELIN&gt;</span>
+        <span class="kw">&lt;EXIDV&gt;</span>356012345000000012<span class="kw">&lt;/EXIDV&gt;</span>
+    <span class="kw">&lt;/E1EDL44&gt;</span>
+<span class="kw">&lt;/E1EDL37&gt;</span></code></pre>
+
+    <p>Both <strong>SSCC Pro Vision</strong> and its REST API natively parse these XML IDoc tags as well as flat text IDoc streams up to 1 MB without requiring intermediate transformations.</p>
+
     <h2 id="faq">Frequently Asked Questions</h2>
     <div class="faq-container">
         <details>
@@ -629,6 +718,20 @@
             <summary>Can I reuse an SSCC number?</summary>
             <div class="faq-answer">
                 <p>According to GS1 General Specifications, an SSCC must not be reallocated within one year of the shipment date. However, to ensure pristine global traceability and avoid conflicts in modern tracking systems, many companies choose to never reuse their serial references.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>Where is the SSCC located in SAP IDocs?</summary>
+            <div class="faq-answer">
+                <p>In SAP Outbound Deliveries (such as IDoc types DELVRY03, DELVRY07, or DESADV01), the 18-digit SSCC is stored under the Handling Unit Item segment <code>E1EDL44</code> in field <code>EXIDV</code> (External Handling Unit Identification), as well as in the Handling Unit Header segment <code>E1EDL37</code>.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>How to calculate the GS1 SSCC check digit in Python?</summary>
+            <div class="faq-answer">
+                <p>Reverse the 17-digit payload string, multiply digits at odd indices (0-indexed even) by 3 and even indices by 1, sum the products, and calculate <code>(10 - (sum % 10)) % 10</code>. See our Python Implementation section above for the full function.</p>
             </div>
         </details>
     </div>

@@ -270,6 +270,9 @@ function render() {
         const copyBtn  = item.plain
             ? `<button class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy SSCC"><i data-lucide="copy" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
             : '';
+        const labelBtn = (item.status === 'valid' || item.status === 'gen') && item.plain
+            ? `<button class="btn-copy" onclick="openLabelModal('${item.plain}')" title="Gerar Etiqueta GS1 (Print / ZPL)"><i data-lucide="tag" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
+            : '';
 
         return `
         <div class="result-row" style="${rowStyle}">
@@ -278,6 +281,7 @@ function render() {
                 <span class="flag">${item.flag || ''}</span>
                 <span class="badge ${badgeClass}">${item.label}</span>
                 ${copyBtn}
+                ${labelBtn}
             </span>
         </div>`;
     }).join('');

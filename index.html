@@ -460,6 +460,264 @@
         .badge-gen  { background: rgba(245,158,11,0.15); color: var(--primary); border: 1px solid rgba(245,158,11,0.3); }
         .version { font-weight: 700; color: var(--primary); margin-right: 6px; font-family: var(--font-mono); }
         .changelog p { margin: 10px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+        /* ─── Modal Etiqueta Logística GS1 (Mobile-First) ─── */
+        .label-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            animation: fadeIn 0.2s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .label-modal {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 94vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .label-modal-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--surface-card);
+            z-index: 10;
+        }
+        .label-modal-title {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .label-modal-close {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .label-modal-close:hover {
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .label-modal-body {
+            padding: 14px 16px;
+            overflow-y: auto;
+        }
+        .label-modal-footer {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            background: var(--surface-card);
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        /* Folha da Etiqueta Física GS1 (Visual Realista e Alto Contraste) */
+        .gs1-label-sheet {
+            background: #ffffff;
+            color: #000000;
+            border: 2.5px solid #000000;
+            border-radius: 4px;
+            padding: 14px;
+            font-family: Arial, Helvetica, sans-serif;
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0 0 14px 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        .lbl-row {
+            border-bottom: 2px solid #000000;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .lbl-field-tag {
+            display: block;
+            font-size: 8.5px;
+            font-weight: 800;
+            color: #333333;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+        .lbl-company {
+            font-size: 13px;
+            font-weight: 800;
+            color: #000000;
+            line-height: 1.25;
+            text-transform: uppercase;
+        }
+        .lbl-subtext {
+            font-size: 10.5px;
+            color: #555555;
+            margin-top: 2px;
+        }
+        .lbl-meta-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: #000000;
+        }
+        .lbl-sscc-section {
+            border-bottom: none;
+            padding: 10px 0 2px;
+            text-align: center;
+            display: block;
+        }
+        .lbl-sscc-title {
+            display: block;
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+            color: #000000;
+        }
+        .lbl-sscc-hri {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14.5px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+        .lbl-barcode-wrap {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            background: #ffffff;
+            padding: 4px 0;
+        }
+
+        /* Formulário de Personalização da Etiqueta */
+        .label-edit-details {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .label-edit-details summary {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .label-edit-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .lbl-input-group label {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-bottom: 3px;
+        }
+        .lbl-input-group input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: #f8fafc;
+            font-size: 12px;
+            font-family: var(--font-mono);
+            transition: border-color 0.15s;
+        }
+        .lbl-input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .lbl-input-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        /* Regras de Impressão Nativa (A5 / Térmica) */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            body::before, .site-header, .container, .label-modal-header, .label-edit-details, .label-modal-footer, .label-modal-close {
+                display: none !important;
+            }
+            .label-modal-backdrop {
+                position: static !important;
+                padding: 0 !important;
+                background: transparent !important;
+                display: block !important;
+            }
+            .label-modal {
+                border: none !important;
+                box-shadow: none !important;
+                max-width: 100% !important;
+                max-height: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: transparent !important;
+            }
+            .label-modal-body {
+                padding: 0 !important;
+            }
+            #print-label-area {
+                border: 3px solid #000000 !important;
+                width: 100% !important;
+                max-width: 148mm !important;
+                margin: 0 auto !important;
+                box-sizing: border-box !important;
+                page-break-inside: avoid !important;
+                box-shadow: none !important;
+            }
+            @page {
+                size: A5 portrait;
+                margin: 6mm;
+            }
+        }
     </style>
     <!-- Auto-Redirect GitHub Pages to pormenores.net/sscc/ -->
     <script>
@@ -578,6 +836,7 @@
 <script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 <script src="app.js"></script>
+<script src="label.js"></script>
 <script src="scanner.js"></script>
 <script src="parser.js"></script>
 <script src="init.js"></script>

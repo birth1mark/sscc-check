@@ -1,13 +1,14 @@
-const CACHE = 'sscc-v18';
+const CACHE = 'sscc-v19';
 const ASSETS = [
   './',
   './index.html',
   './guide.html',
   './app.js',
+  './label.js',
   './scanner.js',
   './parser.js',
   './init.js',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
+  'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap',
   'https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js',
   'https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js'
 ];

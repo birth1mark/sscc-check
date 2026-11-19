@@ -9,6 +9,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![PWA](https://img.shields.io/badge/PWA-ready-purple)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/birth1mark)
 
 ---
 
@@ -145,6 +146,12 @@ Everything runs **100% client-side** — no file is ever uploaded to a server.
 | **v5.1** | Fix GS1-128 AI `(00)` prefix extraction, debounce |
 | **v5.0** | Replaced QuaggaJS with ZXing for reliable scanning |
 | **v2.0** | `BigInt` arithmetic for 18-digit precision |
+
+---
+
+## ☕ Support
+
+If SSCC Pro Vision saves you time or helps your logistics workflow, consider [buying me a coffee on Ko-fi](https://ko-fi.com/birth1mark). Contributions help maintain the project open-source, fast and ad-free!
 
 ---
 

@@ -17,47 +17,84 @@
         form-action 'self';
     ">
 
-    <title>SSCC Validator and Check Digit Calculator | SSCC Pro Vision</title>
-    <meta name="description" content="Free online SSCC validator and check digit calculator. Scan GS1-128 barcodes with your camera, validate 18-digit SSCC codes, generate check digits, and extract SSCCs from EDIFACT, IDoc, XML or CSV files. 100% client-side, no signup.">
-    <meta name="keywords" content="SSCC validator, SSCC check digit, SSCC generator, GS1-128 scanner, SSCC API, EDIFACT SSCC, IDoc SSCC, serial shipping container code, logistics barcode">
+    <title>SSCC Validator, Barcode Scanner &amp; GS1 Pallet Label Generator | SSCC Pro Vision</title>
+    <meta name="description" content="Free online SSCC validator, check digit calculator, GS1-128 barcode scanner and GS1 pallet label generator (ZPL &amp; PDF). Extract SSCCs from EDIFACT, IDoc, XML or CSV files. 100% client-side, offline PWA.">
+    <meta name="keywords" content="SSCC validator, GS1 pallet label generator, ZPL label export, SSCC check digit, SSCC generator, GS1-128 scanner, SSCC API, EDIFACT SSCC, IDoc SSCC, serial shipping container code, logistics barcode">
     <meta name="author" content="birth1mark">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://pormenores.net/sscc/">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="SSCC Validator and Check Digit Calculator | SSCC Pro Vision">
-    <meta property="og:description" content="Free SSCC validator and GS1-128 barcode scanner. 100% client-side, no signup.">
+    <meta property="og:title" content="SSCC Validator, Barcode Scanner &amp; GS1 Pallet Label Generator | SSCC Pro Vision">
+    <meta property="og:description" content="Free SSCC validator, GS1-128 barcode scanner, and GS1 logistics pallet label generator (Print / ZPL). 100% client-side, offline PWA.">
     <meta property="og:url" content="https://pormenores.net/sscc/">
     <meta property="og:image" content="https://pormenores.net/sscc/og-image.png">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="SSCC Validator and Check Digit Calculator">
-    <meta name="twitter:description" content="Free SSCC validator and GS1-128 barcode scanner. 100% client-side, no signup.">
+    <meta name="twitter:title" content="SSCC Validator, Barcode Scanner &amp; GS1 Pallet Label Generator">
+    <meta name="twitter:description" content="Free SSCC validator, GS1-128 barcode scanner, and GS1 logistics pallet label generator (Print / ZPL). 100% client-side, offline PWA.">
     <meta name="twitter:image" content="https://pormenores.net/sscc/og-image.png">
 
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "SSCC Pro Vision",
-      "url": "https://pormenores.net/sscc/",
-      "description": "Free SSCC validator, check digit calculator and GS1-128 barcode scanner. Validates 18-digit Serial Shipping Container Codes, generates check digits, and extracts SSCCs from EDIFACT, IDoc, XML and CSV files.",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Any",
-      "browserRequirements": "Requires JavaScript",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "EUR"
-      },
-      "featureList": [
-        "Validate 18-digit SSCC codes",
-        "Calculate GS1 check digits",
-        "Scan GS1-128 barcodes via camera",
-        "Extract SSCCs from EDIFACT, IDoc, XML and CSV files",
-        "Free REST API",
-        "Works offline as PWA",
-        "100% client-side processing"
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "SSCC Pro Vision",
+          "url": "https://pormenores.net/sscc/",
+          "description": "Free SSCC validator, check digit calculator, GS1-128 barcode scanner and GS1 pallet label generator (ZPL and PDF/Print). Validates 18-digit Serial Shipping Container Codes, generates check digits, and extracts SSCCs from EDIFACT, IDoc, XML and CSV files.",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Any",
+          "browserRequirements": "Requires JavaScript",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+          },
+          "featureList": [
+            "Validate 18-digit SSCC codes",
+            "Calculate GS1 check digits",
+            "Scan GS1-128 barcodes via camera",
+            "Generate and Print GS1 Logistics Pallet Labels (A5, A6, 4x6 inch thermal)",
+            "Batch ZPL export for industrial Zebra thermal printers",
+            "Extract SSCCs from EDIFACT, IDoc, XML and CSV files",
+            "Hardware laser barcode scanner listener support",
+            "Offline audit history persistence",
+            "Free REST API",
+            "Works offline as PWA",
+            "100% client-side processing"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What does SSCC stand for?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "SSCC stands for Serial Shipping Container Code. It is an 18-digit GS1 standard number used to uniquely identify logistics units such as pallets, containers, or cartons across global supply chains."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How is the GS1 check digit calculated?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The check digit is calculated using the official GS1 Modulo 10 algorithm. Starting from the right (excluding the check digit), alternate digits are multiplied by 3 and 1, summed together, and subtracted from the next highest multiple of 10."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I print GS1 pallet labels directly from the browser?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, SSCC Pro Vision generates standard GS1 logistics pallet labels (A5, A6, and 4x6 thermal format) with GS1-128 vector barcodes, human-readable interpretation, and allows instant printing or batch export to Zebra ZPL."
+              }
+            }
+          ]
+        }
       ]
     }
     </script>
@@ -671,47 +708,149 @@
             outline: none;
             border-color: var(--primary);
         }
+        .lbl-input-group select {
+            width: 100%;
+            box-sizing: border-box;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: #f8fafc;
+            font-size: 12px;
+            font-family: var(--font-mono);
+            transition: border-color 0.15s;
+        }
+        .lbl-input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
         .lbl-input-row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
+        .lbl-input-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
 
-        /* Regras de Impressão Nativa (A5 / Térmica) */
+        /* Batch Navigation */
+        .lbl-batch-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+        }
+        .btn-batch-nav {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+        }
+        .btn-batch-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+        .lbl-batch-counter { font-size: 11.5px; font-weight: 700; color: var(--primary); font-family: var(--font-mono); }
+
+        /* History & Counter Badge */
+        .count-pill {
+            background: var(--primary);
+            color: #000;
+            border-radius: 10px;
+            padding: 1px 6px;
+            font-size: 9.5px;
+            font-weight: 700;
+            margin-left: 3px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .history-date { font-size: 12px; font-weight: 700; color: var(--text-main); font-family: var(--font-mono); }
+        .history-meta { font-size: 11px; color: var(--text-muted); }
+        .history-actions { display: flex; gap: 6px; }
+
+        /* Sequencial Button */
+        .btn-seq {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--primary);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            margin-top: 8px;
+            width: 100%;
+        }
+        .btn-seq:hover {
+            background: rgba(245, 158, 11, 0.22);
+            border-color: var(--primary);
+        }
+
+        /* Format variations */
+        .gs1-label-sheet.format-a6 { max-width: 380px; margin: 0 auto 14px; }
+        .gs1-label-sheet.format-thermal { max-width: 360px; margin: 0 auto 14px; }
+
+        /* Toast Notifications */
+        .app-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(30px);
+            background: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-family: var(--font-mono);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+        }
+        .app-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .app-toast.type-warn { border-color: var(--primary); color: var(--primary); }
+        .app-toast.type-success { border-color: var(--success); color: var(--success); }
+
+        .print-only-container { display: none; }
+
+        /* Regras de Impressão Nativa (A5 / Térmica Multi-Página) */
         @media print {
             body {
                 background: #ffffff !important;
                 color: #000000 !important;
             }
-            body::before, .site-header, .container, .label-modal-header, .label-edit-details, .label-modal-footer, .label-modal-close {
+            body::before, .site-header, .container, .label-modal-backdrop, .app-toast {
                 display: none !important;
             }
-            .label-modal-backdrop {
-                position: static !important;
-                padding: 0 !important;
-                background: transparent !important;
+            .print-only-container {
                 display: block !important;
             }
-            .label-modal {
-                border: none !important;
+            .gs1-label-sheet {
                 box-shadow: none !important;
-                max-width: 100% !important;
-                max-height: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: transparent !important;
-            }
-            .label-modal-body {
-                padding: 0 !important;
-            }
-            #print-label-area {
                 border: 3px solid #000000 !important;
-                width: 100% !important;
-                max-width: 148mm !important;
-                margin: 0 auto !important;
-                box-sizing: border-box !important;
-                page-break-inside: avoid !important;
-                box-shadow: none !important;
+                margin: 0 auto 15mm !important;
+                page-break-after: always !important;
+                break-after: page !important;
+            }
+            .gs1-label-sheet:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
             }
             @page {
                 size: A5 portrait;
@@ -738,9 +877,18 @@
             <span class="brand-sub">sscc</span>
         </a>
         <nav class="header-nav">
+            <a href="calculator.html" class="nav-pill" title="Calculadora Universal GS1">Calculator</a>
             <a href="guide.html" class="nav-pill">Guide</a>
             <a href="sscc-api-guide.html" class="nav-pill">API</a>
-            <a href="openapi.yaml" download class="nav-pill">OpenAPI</a>
+            <button class="nav-pill" onclick="openHistoryModal()" title="Histórico de Sessões">
+                <i data-lucide="clock" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>Histórico <span id="history-count-badge" class="count-pill" style="display:none;">0</span>
+            </button>
+            <button class="nav-pill" onclick="openSettingsModal()" title="Definições GS1 da Empresa">
+                <i data-lucide="settings" style="width:12px;height:12px;vertical-align:middle;"></i>
+            </button>
+            <button id="btn-pwa-install" class="nav-pill" onclick="triggerPWAInstall()" style="display:none;color:var(--primary);" title="Instalar como App PWA">
+                <i data-lucide="download" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>Instalar
+            </button>
         </nav>
     </div>
 </header>
@@ -748,13 +896,13 @@
 <div class="container">
     <main class="card">
         <div class="card-header">
-            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.5.5</span></h1>
+            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.6.0</span></h1>
             <p class="tagline">GS1-128 barcode vision &amp; logistics check digit engine</p>
         </div>
         
         <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
         
-        <textarea id="input" placeholder="Scan a barcode or enter codes..."></textarea>
+        <textarea id="input" placeholder="Scan a barcode, drop file, or enter codes..."></textarea>
 
         <div id="drop-zone" class="drop-zone">
             <i data-lucide="upload" style="width:18px;height:18px;margin-right:10px;opacity:0.6;"></i>
@@ -768,6 +916,9 @@
                 <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
                 <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
             </div>
+            <button class="main-btn btn-seq" onclick="generateNextSSCC()" title="Gerar próximo SSCC sequencial com o prefixo GS1 da sua empresa">
+                <i data-lucide="sparkles" style="width:14px;height:14px;margin-right:6px;vertical-align:middle;"></i>+ NOVO SSCC SEQUENCIAL
+            </button>
         </div>
 
         <div class="results" id="output">
@@ -780,6 +931,8 @@
         
         <p style="font-size:12px; margin-bottom:12px;">
             New to SSCC? Read the <a href="guide.html" style="color:var(--primary); font-weight:600;">complete guide →</a>
+            &nbsp;·&nbsp;
+            <a href="calculator.html" style="color:var(--primary); font-weight:600;">GS1 Check Digit Calculator →</a>
             &nbsp;·&nbsp;
             <a href="sscc-api-guide.html" style="color:var(--primary); font-weight:600;">API documentation →</a>
         </p>
@@ -794,23 +947,26 @@
             <div style="margin-top:10px; color:var(--text-muted); line-height:1.6;">
                 <p><strong>What does SSCC stand for?</strong><br>Serial Shipping Container Code. It is an 18 digit number used to uniquely identify logistics units.</p>
                 <p><strong>How is SSCC related to GS1?</strong><br>The SSCC is a core GS1 standard for logistics. It uses a GS1 Company Prefix to ensure global uniqueness.</p>
+                <p><strong>Can I print pallet labels or export to Zebra printers?</strong><br>Yes! Click the tag icon next to any code, or click "Etiquetas" in the results bar to print batch A5/A6 labels or download ready-to-use Zebra ZPL files.</p>
             </div>
         </details>
 
         <details>
             <summary>Show all instructions</summary>
             <ul style="margin-top:10px; padding-left:18px; color:var(--text-muted); line-height:1.8;">
-                <li><strong>Barcode Scanning</strong>. Use your camera to detect GS1 128 barcodes. Haptic feedback and beeps confirm a successful scan.</li>
+                <li><strong>Barcode Scanning</strong>. Use your camera or hardware laser scanner (Bluetooth/USB wedge). Haptic feedback and beeps confirm a successful scan.</li>
                 <li><strong>Manual Validation</strong>. Enter a full 18 digit SSCC. The system validates the check digit and highlights errors in red.</li>
+                <li><strong>Pallet Labels &amp; ZPL</strong>. Generate GS1 Logistics Labels in A5, A6 or 4x6" thermal format with vector barcodes. Export single or batch ZPL code.</li>
                 <li><strong>Range Expansion</strong>. Generate multiple codes using <code>START - END</code> or <code>START to END</code> format. Supports up to 500 codes per operation.</li>
                 <li><strong>File Extraction</strong>. Upload EDIFACT, XML, IDoc, or CSV files. All data is processed locally in your browser.</li>
-                <li><strong>Export and Copy</strong>. Copy individual codes to your clipboard or download all results as a CSV file.</li>
+                <li><strong>Export &amp; Share</strong>. Download CSV or share your current batch instantly with colleagues via URL hash.</li>
             </ul>
         </details>
 
         <details>
             <summary>Changelog</summary>
             <div class="changelog" style="margin-top:10px;">
+                <p><span class="version">v5.6.0</span> Major Release. Batch GS1 Pallet Label printing &amp; multi-label ZPL export, Universal Check Digit Calculator, Offline Session History, Laser Scanner listener &amp; Serverless URL sharing.</p>
                 <p><span class="version">v5.5.5</span> UI Refinement. Improved result row aesthetics and professional copy button integration.</p>
                 <p><span class="version">v5.5.4</span> SEO Update. Added FAQ Schema to improve visibility in search engine results.</p>
                 <p><span class="version">v5.5.3</span> REST API Release. Public API endpoints available for remote validation and extraction.</p>
@@ -829,6 +985,68 @@
             ☕ Buy me a coffee
         </a>
         <span>•</span>
+        <a href="https://github.com/birth1mark/sscc-check" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:none;">GitHub</a>
+    </footer>
+</div>
+
+<!-- Modal Histórico Local -->
+<div id="history-modal-backdrop" class="label-modal-backdrop" style="display:none;" onclick="if(event.target===this)closeHistoryModal()">
+    <div class="label-modal">
+        <div class="label-modal-header">
+            <div class="label-modal-title">
+                <i data-lucide="clock" style="width:16px;height:16px;color:var(--primary);"></i>
+                <span>Histórico Local de Auditorias</span>
+            </div>
+            <button class="label-modal-close" onclick="closeHistoryModal()" title="Fechar">✕</button>
+        </div>
+        <div class="label-modal-body">
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">Os seus lotes são guardados exclusivamente no armazenamento local do seu dispositivo (100% privado).</p>
+            <div id="history-list-box"></div>
+        </div>
+        <div class="label-modal-footer">
+            <button class="main-btn btn-clear" onclick="clearAllHistory()">LIMPAR TUDO</button>
+            <button class="main-btn btn-audit" onclick="closeHistoryModal()">FECHAR</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Definições GS1 da Empresa -->
+<div id="settings-modal-backdrop" class="label-modal-backdrop" style="display:none;" onclick="if(event.target===this)closeSettingsModal()">
+    <div class="label-modal">
+        <div class="label-modal-header">
+            <div class="label-modal-title">
+                <i data-lucide="settings" style="width:16px;height:16px;color:var(--primary);"></i>
+                <span>Definições GS1 da Empresa</span>
+            </div>
+            <button class="label-modal-close" onclick="closeSettingsModal()" title="Fechar">✕</button>
+        </div>
+        <div class="label-modal-body">
+            <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;">
+                Configure o seu <strong>Prefixo de Empresa GS1 (GCP)</strong> para permitir gerar números de palete sequenciais válidos com um clique.
+            </p>
+            <div class="label-edit-grid">
+                <div class="lbl-input-group">
+                    <label>Prefixo de Empresa GS1 (GCP)</label>
+                    <input type="text" id="cfg-prefix" placeholder="Ex: 5601234 (7 a 10 dígitos)">
+                </div>
+                <div class="lbl-input-row-2">
+                    <div class="lbl-input-group">
+                        <label>Dígito de Extensão (0-9)</label>
+                        <input type="text" id="cfg-ext" value="0" maxlength="1">
+                    </div>
+                    <div class="lbl-input-group">
+                        <label>Último Número de Série</label>
+                        <input type="number" id="cfg-serial" value="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="label-modal-footer">
+            <button class="main-btn btn-audit" onclick="closeSettingsModal()">CANCELAR</button>
+            <button class="main-btn btn-live" onclick="saveSettingsForm()">GUARDAR</button>
+        </div>
+    </div>
+</div>
         <a href="https://github.com/birth1mark/sscc-check" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:none;">GitHub</a>
     </footer>
 </div>

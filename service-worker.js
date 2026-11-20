@@ -1,7 +1,8 @@
-const CACHE = 'sscc-v19';
+const CACHE = 'sscc-v20';
 const ASSETS = [
   './',
   './index.html',
+  './calculator.html',
   './guide.html',
   './app.js',
   './label.js',

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Universal GS1 Check Digit Calculator — GTIN-8, GTIN-12, GTIN-13, GTIN-14 &amp; SSCC</title>
+    <meta name="description" content="Free online universal GS1 check digit calculator. Calculate and verify check digits for GTIN-8, GTIN-12 (UPC), GTIN-13 (EAN), GTIN-14, GLN, and SSCC pallet codes. Interactive step-by-step Modulo 10 algorithm.">
+    <meta name="keywords" content="GS1 check digit calculator, GTIN check digit, EAN 13 check digit, UPC check digit, SSCC check digit, modulo 10 algorithm, GS1-128 calculator, barcode check digit">
+    <meta name="author" content="birth1mark">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://pormenores.net/sscc/calculator.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Universal GS1 Check Digit Calculator — GTIN, EAN, UPC &amp; SSCC">
+    <meta property="og:description" content="Interactive Modulo 10 GS1 check digit calculator with step-by-step visual multiplier table. 100% free and client-side.">
+    <meta property="og:url" content="https://pormenores.net/sscc/calculator.html">
+    <meta property="og:image" content="https://pormenores.net/sscc/og-image.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Universal GS1 Check Digit Calculator">
+    <meta name="twitter:description" content="Calculate and verify check digits for GTIN, EAN, UPC, and SSCC barcodes.">
+    <meta name="twitter:image" content="https://pormenores.net/sscc/og-image.png">
+
+    <!-- Schema.org WebApplication & HowTo -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "Universal GS1 Check Digit Calculator",
+          "url": "https://pormenores.net/sscc/calculator.html",
+          "description": "Calculate and verify official GS1 Modulo 10 check digits for GTIN-8, GTIN-12, GTIN-13, GTIN-14, and SSCC logistics codes.",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Any",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+        },
+        {
+          "@type": "HowTo",
+          "name": "How to Calculate a GS1 Check Digit",
+          "description": "Step-by-step explanation of the GS1 Modulo 10 check digit calculation.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "Multiply Digits",
+              "text": "Starting from the right-hand digit (excluding the check digit position), multiply alternate digits by 3 and 1."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Sum Products",
+              "text": "Sum all the multiplied values together."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Determine Check Digit",
+              "text": "Subtract the sum from the nearest equal or higher multiple of 10. The result is your check digit."
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b0e14">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg:            #0b0e14;
+            --surface:       #121722;
+            --surface-hover: #182030;
+            --surface-card:  #0f141f;
+            --border:        #222c3d;
+            --border-hover:  #f59e0b;
+            --text-main:     #f8fafc;
+            --text-muted:    #94a3b8;
+            --text-dim:      #64748b;
+            --primary:       #f59e0b;
+            --primary-hover: #fbbf24;
+            --success:       #10b981;
+            --danger:        #ef4444;
+            --font-mono:     'JetBrains Mono', monospace;
+            --font-sans:     'Plus Jakarta Sans', -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+            background-size: 36px 36px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .site-header {
+            border-bottom: 1px solid var(--border);
+            padding: 0.85rem 1.25rem;
+            position: sticky;
+            top: 0;
+            background: rgba(11, 14, 20, 0.94);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 680px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px var(--success);
+        }
+        .brand-sep { color: var(--text-dim); }
+        .brand-sub { color: var(--primary); font-weight: 600; }
+
+        .header-nav { display: flex; align-items: center; gap: 0.5rem; }
+        .nav-pill {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 500;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.06);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 24px 16px 56px;
+        }
+
+        .card {
+            background: var(--surface-card);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h1 {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        h1 span { color: var(--primary); }
+        .tagline {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        /* Type Selector Tabs */
+        .type-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+        .type-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .type-btn:hover {
+            border-color: var(--primary);
+            color: #fff;
+        }
+        .type-btn.active {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .calc-input-box {
+            margin-bottom: 16px;
+        }
+        .calc-input-box label {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .calc-input {
+            width: 100%;
+            background: #080a0f;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #f8fafc;
+            font-family: var(--font-mono);
+            font-size: 18px;
+            letter-spacing: 0.08em;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .calc-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+        }
+
+        .result-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 16px;
+            display: none;
+        }
+        .result-panel.show { display: block; }
+
+        .result-highlight {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 14px;
+        }
+        .result-code-large {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+            word-break: break-all;
+        }
+        .cd-pill {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: var(--success);
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 8px;
+            margin-left: 12px;
+        }
+
+        /* Step-by-step Math Table */
+        .math-table-wrap {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        .math-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-align: center;
+        }
+        .math-table th, .math-table td {
+            padding: 5px 4px;
+            border: 1px solid var(--border);
+        }
+        .math-table th {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+        .math-table .row-weight { color: var(--primary); font-weight: 700; }
+        .math-table .row-prod { color: #38bdf8; font-weight: 700; }
+
+        .summary-formula {
+            margin-top: 14px;
+            padding: 10px 12px;
+            background: #080a0f;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+        .summary-formula strong { color: var(--text-main); }
+
+        .btn-copy-full {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .btn-copy-full:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(56, 189, 248, 0.05) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-top: 24px;
+        }
+        .cta-box h3 {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .cta-box p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .cta-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+        .cta-btn:hover { background: var(--primary-hover); }
+
+        .seo-article {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+        .seo-article h2 {
+            font-size: 15px;
+            color: var(--text-main);
+            margin: 16px 0 8px;
+            font-family: var(--font-mono);
+        }
+        .seo-article h2:first-child { margin-top: 0; }
+        .seo-article p { margin-bottom: 10px; }
+        .seo-article ul { padding-left: 20px; margin-bottom: 12px; }
+        .seo-article li { margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+        <a href="index.html" class="brand" title="Voltar ao SSCC Pro Vision">
+            <span class="brand-dot"></span>
+            <span>pormenores.net</span>
+            <span class="brand-sep">/</span>
+            <span class="brand-sub">calculator</span>
+        </a>
+        <nav class="header-nav">
+            <a href="index.html" class="nav-pill">Vision Tool</a>
+            <a href="calculator.html" class="nav-pill active">Calculator</a>
+            <a href="guide.html" class="nav-pill">Guide</a>
+            <a href="sscc-api-guide.html" class="nav-pill">API</a>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <main class="card">
+        <div class="card-header">
+            <h1>GS1 <span>CHECK DIGIT</span> CALCULATOR</h1>
+            <p class="tagline">Universal Modulo 10 calculator for GTIN-8, 12, 13, 14, GLN &amp; SSCC</p>
+        </div>
+
+        <div class="type-tabs">
+            <button class="type-btn active" onclick="setType('sscc', 17, 'SSCC-18 (Paletes)', '35601234560000001')">SSCC-18</button>
+            <button class="type-btn" onclick="setType('gtin13', 12, 'GTIN-13 / EAN-13', '560123456789')">GTIN-13 (EAN)</button>
+            <button class="type-btn" onclick="setType('gtin12', 11, 'GTIN-12 / UPC-A', '01234567890')">GTIN-12 (UPC)</button>
+            <button class="type-btn" onclick="setType('gtin14', 13, 'GTIN-14 (Caixas)', '1560123456789')">GTIN-14</button>
+            <button class="type-btn" onclick="setType('gtin8', 7, 'GTIN-8 / EAN-8', '5601234')">GTIN-8</button>
+            <button class="type-btn" onclick="setType('gln', 12, 'GLN (Localizações)', '560123400001')">GLN-13</button>
+        </div>
+
+        <div class="calc-input-box">
+            <label>
+                <span id="type-label">Corpo do código (sem o dígito final):</span>
+                <span id="len-label" style="color:var(--primary);">17 dígitos</span>
+            </label>
+            <input type="text" id="calc-input" class="calc-input" placeholder="Insere os dígitos..." value="35601234560000001" oninput="calculate()">
+        </div>
+
+        <div id="result-panel" class="result-panel show">
+            <div class="result-highlight">
+                <div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;font-family:var(--font-mono);">CÓDIGO COMPLETO VERIFICADO:</div>
+                    <div id="res-full-code" class="result-code-large">356012345600000016</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;font-family:var(--font-mono);">CHECK DIGIT:</div>
+                    <span id="res-cd-val" class="cd-pill">6</span>
+                </div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:11.5px;font-weight:700;font-family:var(--font-mono);">Demonstração Passo a Passo (Algoritmo GS1):</span>
+                <button class="btn-copy-full" onclick="copyFullResult()">
+                    <i data-lucide="copy" style="width:13px;height:13px;"></i>
+                    <span>Copiar Código</span>
+                </button>
+            </div>
+
+            <div class="math-table-wrap">
+                <table class="math-table">
+                    <thead>
+                        <tr id="math-header"></tr>
+                    </thead>
+                    <tbody>
+                        <tr id="math-digits"></tr>
+                        <tr id="math-weights"></tr>
+                        <tr id="math-products"></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="summary-formula" class="summary-formula"></div>
+        </div>
+
+        <div class="cta-box">
+            <h3>Precisa de ler códigos de barras ou imprimir etiquetas de palete?</h3>
+            <p>O SSCC Pro Vision inclui leitor de câmara GS1-128, gerador de etiquetas A5/4x6" e exportador ZPL industrial.</p>
+            <a href="index.html" class="cta-btn">
+                <i data-lucide="printer" style="width:14px;height:14px;"></i>
+                <span>Abrir SSCC Pro Vision</span>
+            </a>
+        </div>
+    </main>
+
+    <article class="seo-article">
+        <h2>Como Funciona o Algoritmo Módulo 10 da GS1?</h2>
+        <p>O dígito de controlo (Check Digit) é o último dígito de qualquer identificador GS1 (como GTIN-13, GTIN-14 ou SSCC-18). Ele garante que o número lido pelo leitor de código de barras ou inserido manualmente não sofreu erros de inversão de algarismos ou digitação.</p>
+        
+        <h2>Regras de Multiplicação:</h2>
+        <ul>
+            <li><strong>Passo 1:</strong> A partir do dígito imediatamente anterior ao dígito de controlo (da direita para a esquerda), multiplicam-se os algarismos alternadamente por <strong>3</strong> e <strong>1</strong>.</li>
+            <li><strong>Passo 2:</strong> Somam-se todos os produtos parciais obtidos.</li>
+            <li><strong>Passo 3:</strong> Subtrai-se essa soma ao múltiplo de 10 igual ou imediatamente superior. O resultado dessa subtração é o dígito de controlo.</li>
+        </ul>
+
+        <h2>Fórmula Matemática:</h2>
+        <p><code>Dígito = (10 - (Soma % 10)) % 10</code>. Se o resto da divisão por 10 for 0, o dígito de controlo é 0.</p>
+    </article>
+</div>
+
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script>
+let currentExpectedLen = 17;
+let currentTypeName = 'SSCC-18';
+
+function setType(type, reqLen, typeName, sampleVal) {
+    currentExpectedLen = reqLen;
+    currentTypeName = typeName;
+    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    document.getElementById('type-label').textContent = `${typeName} (sem o dígito final):`;
+    document.getElementById('len-label').textContent = `${reqLen} dígitos`;
+    const input = document.getElementById('calc-input');
+    input.value = sampleVal;
+    calculate();
+}
+
+function calculate() {
+    const raw = document.getElementById('calc-input').value.replace(/\D/g, '');
+    const panel = document.getElementById('result-panel');
+
+    if (!raw) {
+        panel.classList.remove('show');
+        return;
+    }
+
+    panel.classList.add('show');
+
+    // Multipliers alternate 3, 1 from right to left
+    const digits = raw.split('');
+    const reversed = [...digits].reverse();
+    const weightsReversed = [];
+    const productsReversed = [];
+    let sum = 0;
+
+    for (let i = 0; i < reversed.length; i++) {
+        const w = (i % 2 === 0) ? 3 : 1;
+        const d = parseInt(reversed[i], 10);
+        const p = d * w;
+        weightsReversed.push(w);
+        productsReversed.push(p);
+        sum += p;
+    }
+
+    const weights = [...weightsReversed].reverse();
+    const products = [...productsReversed].reverse();
+    const cd = (10 - (sum % 10)) % 10;
+    const fullCode = raw + cd;
+
+    document.getElementById('res-full-code').innerHTML = `${raw}<span style="color:var(--success);font-weight:800;">${cd}</span>`;
+    document.getElementById('res-cd-val').textContent = cd;
+
+    // Render table
+    let th = '<th>Posição</th>';
+    let tdD = '<td>Dígito</td>';
+    let tdW = '<td class="row-weight">Peso (×)</td>';
+    let tdP = '<td class="row-prod">Produto</td>';
+
+    digits.forEach((d, idx) => {
+        th += `<th>P${idx + 1}</th>`;
+        tdD += `<td><strong>${d}</strong></td>`;
+        tdW += `<td class="row-weight">${weights[idx]}</td>`;
+        tdP += `<td class="row-prod">${products[idx]}</td>`;
+    });
+
+    document.getElementById('math-header').innerHTML = th;
+    document.getElementById('math-digits').innerHTML = tdD;
+    document.getElementById('math-weights').innerHTML = tdW;
+    document.getElementById('math-products').innerHTML = tdP;
+
+    const next10 = Math.ceil(sum / 10) * 10;
+    document.getElementById('summary-formula').innerHTML = `
+        <strong>1. Soma dos Produtos:</strong> ${products.join(' + ')} = <strong>${sum}</strong><br>
+        <strong>2. Múltiplo de 10 superior:</strong> ${next10}<br>
+        <strong>3. Cálculo do Dígito:</strong> ${next10} - ${sum} = <span style="color:var(--success);font-weight:800;font-size:13px;">${cd}</span>
+        ${raw.length !== currentExpectedLen ? `<br><span style="color:var(--primary);">Nota: O tamanho atual inserido (${raw.length}) difere do padrão ${currentTypeName} (${currentExpectedLen}).</span>` : ''}
+    `;
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function copyFullResult() {
+    const raw = document.getElementById('calc-input').value.replace(/\D/g, '');
+    const cd = document.getElementById('res-cd-val').textContent;
+    navigator.clipboard.writeText(raw + cd).then(() => {
+        alert('Código copiado para a área de transferência: ' + raw + cd);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    if (window.lucide) lucide.createIcons();
+});
+</script>
+
+</body>
+</html>

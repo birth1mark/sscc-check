@@ -140,7 +140,8 @@ Everything runs **100% client-side** — no file is ever uploaded to a server.
 
 | Version | Highlights |
 |---|---|
-| **v5.6.0** | GS1 Logistics Label Generator (pure SVG + Zebra ZPL-II thermal export), visual harmonization with pormenores.net dark carbon theme, mobile-first responsive print styling |
+| **v5.6.0** | Batch GS1 Pallet Label printing & multi-label ZPL export (A5, A6, 4x6" thermal), Universal GS1 Check Digit Calculator, Offline Session History, Laser Scanner Wedge listener & Serverless URL sharing |
+| **v5.5.5** | UI refinement, professional copy feedback, and GS1 label generator baseline |
 | **v5.5.3** | Free REST API on Cloudflare Workers — validate, generate, range, extract |
 | **v5.5.2** | GS1 2025 prefix table, fixed-width ERP file support, binary file rejection |
 | **v5.5** | File upload — EDIFACT, IDoc, XML, CSV, TXT with smart format detection |

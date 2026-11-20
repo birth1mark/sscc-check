@@ -541,6 +541,10 @@ function ensureLabelModalExists() {
                                 <input type="text" id="lbl-expiry" placeholder="e.g. 2026-12-31" oninput="updateLabelPreview()">
                             </div>
                         </div>
+
+                        <div style="font-size:10.5px;color:var(--text-muted);margin-top:8px;padding:6px 10px;background:rgba(245,158,11,0.06);border-left:2px solid var(--primary);border-radius:4px;line-height:1.4;">
+                            <strong>GS1 Compliance:</strong> Commercial pallet labels require an officially registered GS1 Company Prefix (GCP) to prevent logistics rejection.
+                        </div>
                     </div>
                 </details>
             </div>

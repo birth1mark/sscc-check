@@ -501,7 +501,7 @@ function generateNextSSCC() {
     const s = getGCPSettings();
     if (!s.prefix) {
         openSettingsModal();
-        showToast('Please configure your GS1 Company Prefix first.', 'warn');
+        showToast('Registered GS1 Company Prefix required to generate SSCCs.', 'warn');
         return;
     }
 

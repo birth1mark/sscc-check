@@ -158,33 +158,37 @@
             z-index: -1;
         }
 
-        /* Header de Marca Minimalista Pormenores */
+        /* ─── Header de Marca Minimalista Pormenores ─── */
         .site-header {
             border-bottom: 1px solid var(--border);
-            padding: 0.85rem 1.25rem;
+            padding: 0.65rem 1rem;
             position: sticky;
             top: 0;
-            background: rgba(11, 14, 20, 0.94);
-            backdrop-filter: blur(12px);
+            background: rgba(11, 14, 20, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             z-index: 100;
         }
         .header-inner {
-            max-width: 600px;
+            max-width: 540px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 0.75rem;
         }
         .brand {
             font-family: var(--font-mono);
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-main);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.45rem;
             transition: opacity 0.15s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .brand:hover {
             opacity: 0.85;
@@ -200,6 +204,7 @@
         .brand-sep {
             color: var(--text-dim);
             font-weight: 400;
+            margin: 0 1px;
         }
         .brand-sub {
             color: var(--primary);
@@ -208,24 +213,94 @@
         .header-nav {
             display: flex;
             align-items: center;
-            gap: 0.65rem;
+            gap: 0.4rem;
+        }
+        .nav-group-links {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .nav-group-tools {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding-left: 0.4rem;
+            border-left: 1px solid var(--border);
         }
         .nav-pill {
             font-family: var(--font-mono);
-            font-size: 0.76rem;
+            font-size: 0.73rem;
             font-weight: 500;
-            padding: 0.3rem 0.65rem;
+            padding: 0.28rem 0.52rem;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: rgba(255, 255, 255, 0.02);
             color: var(--text-muted);
             text-decoration: none;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            cursor: pointer;
+            line-height: 1.2;
         }
         .nav-pill:hover {
             border-color: var(--primary);
             color: var(--primary);
             background: rgba(245, 158, 11, 0.06);
+        }
+        .nav-pill-primary {
+            border-color: rgba(245, 158, 11, 0.4) !important;
+            background: rgba(245, 158, 11, 0.1) !important;
+            color: var(--primary) !important;
+            font-weight: 600 !important;
+        }
+        .nav-pill-primary:hover {
+            border-color: var(--primary) !important;
+            background: rgba(245, 158, 11, 0.2) !important;
+            color: #fff !important;
+        }
+        .nav-icon-btn {
+            width: 28px;
+            height: 27px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+        .nav-icon-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.08);
+        }
+        .nav-icon-btn .count-pill {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--primary);
+            color: #000;
+            font-size: 8.5px;
+            font-weight: 800;
+            padding: 0 4px;
+            border-radius: 8px;
+            min-width: 13px;
+            text-align: center;
+            line-height: 13px;
+        }
+        @media (max-width: 580px) {
+            .site-header { padding: 0.5rem 0.75rem; }
+            .header-inner { flex-wrap: wrap; gap: 0.45rem; justify-content: space-between; }
+            .header-nav { width: 100%; justify-content: space-between; }
+            .nav-group-links { gap: 0.25rem; }
+            .nav-pill { font-size: 0.7rem; padding: 0.22rem 0.4rem; }
         }
 
         .container {
@@ -819,102 +894,102 @@
             color: #fff !important;
         }
 
-        /* ─── Pallet Label Feature Banner ─── */
-        .label-feature-banner {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(18, 23, 34, 0.85) 100%);
-            border: 1px solid rgba(245, 158, 11, 0.35);
-            border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            transition: all 0.2s ease;
-        }
-        .label-feature-banner:hover {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.13) 0%, rgba(18, 23, 34, 0.95) 100%);
-            box-shadow: 0 4px 18px rgba(245, 158, 11, 0.12);
-        }
-        .banner-left {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            min-width: 0;
-        }
-        .banner-icon-box {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: rgba(245, 158, 11, 0.15);
+        /* ─── GS1 Compliance & Registration Notice ─── */
+        .gs1-compliance-notice {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(18, 23, 34, 0.7) 100%);
             border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 9px 12px;
+            margin-bottom: 14px;
             display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .compliance-badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            flex-shrink: 0;
-        }
-        .banner-texts {
-            min-width: 0;
-        }
-        .banner-heading {
+            gap: 4px;
             font-family: var(--font-mono);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .banner-tag {
             font-size: 9px;
-            font-weight: 700;
-            padding: 1px 5px;
+            font-weight: 800;
+            padding: 2px 6px;
             border-radius: 4px;
             background: var(--primary);
             color: #0b0e14;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 1px;
         }
-        .banner-desc {
-            font-size: 11px;
+        .compliance-text {
+            font-size: 11.5px;
             color: var(--text-muted);
-            margin-top: 2px;
-            line-height: 1.35;
+            line-height: 1.45;
         }
-        .banner-cta {
-            background: var(--primary);
-            color: #0b0e14;
-            border: none;
+        .compliance-text strong {
+            color: var(--text-main);
+        }
+
+        /* ─── Quick Tools Bar ─── */
+        .quick-tools-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .quick-tool-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 8px 12px;
+            padding: 8px 10px;
             font-family: var(--font-mono);
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
             cursor: pointer;
-            white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            letter-spacing: 0.03em;
+            justify-content: center;
+            gap: 6px;
             transition: all 0.2s ease;
-            flex-shrink: 0;
         }
-        .banner-cta:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        .quick-tool-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+            background: rgba(245, 158, 11, 0.06);
         }
-        @media (max-width: 500px) {
-            .label-feature-banner {
-                flex-direction: column;
-                align-items: stretch;
+        @media (max-width: 480px) {
+            .quick-tools-bar {
+                grid-template-columns: 1fr;
             }
-            .banner-cta {
-                justify-content: center;
-                width: 100%;
-            }
+        }
+
+        /* ─── GS1 Warning Card in Settings Modal ─── */
+        .gs1-warning-card {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+        }
+        .gs1-warning-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .gs1-warning-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+        .gs1-warning-text strong {
+            color: var(--text-main);
         }
 
         /* Format variations */
@@ -998,21 +1073,26 @@
             <span class="brand-sub">sscc</span>
         </a>
         <nav class="header-nav">
-            <button class="nav-pill nav-pill-highlight" onclick="openCurrentOrSampleLabel()" title="GS1 Logistics Pallet Label Generator (A5 &amp; Zebra ZPL)">
-                <i data-lucide="tag" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>Pallet Labels
-            </button>
-            <a href="calculator.html" class="nav-pill" title="Universal GS1 Check Digit Calculator">Calculator</a>
-            <a href="guide.html" class="nav-pill">Guide</a>
-            <a href="sscc-api-guide.html" class="nav-pill">API</a>
-            <button class="nav-pill" onclick="openHistoryModal()" title="Audit Session History">
-                <i data-lucide="clock" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>History <span id="history-count-badge" class="count-pill" style="display:none;">0</span>
-            </button>
-            <button class="nav-pill" onclick="openSettingsModal()" title="GS1 Company Prefix Settings">
-                <i data-lucide="settings" style="width:12px;height:12px;vertical-align:middle;"></i>
-            </button>
-            <button id="btn-pwa-install" class="nav-pill" onclick="triggerPWAInstall()" style="display:none;color:var(--primary);" title="Install as PWA App">
-                <i data-lucide="download" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>Install
-            </button>
+            <div class="nav-group-links">
+                <button class="nav-pill nav-pill-primary" onclick="openCurrentOrSampleLabel()" title="GS1 Logistics Pallet Label Generator (A5 &amp; Zebra ZPL)">
+                    <i data-lucide="tag" style="width:11px;height:11px;"></i><span>Labels</span>
+                </button>
+                <a href="calculator.html" class="nav-pill" title="Universal GS1 Check Digit Calculator">Calculator</a>
+                <a href="guide.html" class="nav-pill">Guide</a>
+                <a href="sscc-api-guide.html" class="nav-pill">API</a>
+            </div>
+            <div class="nav-group-tools">
+                <button class="nav-icon-btn" onclick="openHistoryModal()" title="Local Audit History">
+                    <i data-lucide="clock" style="width:13px;height:13px;"></i>
+                    <span id="history-count-badge" class="count-pill" style="display:none;">0</span>
+                </button>
+                <button class="nav-icon-btn" onclick="openSettingsModal()" title="GS1 Company Prefix Settings">
+                    <i data-lucide="settings" style="width:13px;height:13px;"></i>
+                </button>
+                <button id="btn-pwa-install" class="nav-icon-btn" onclick="triggerPWAInstall()" style="display:none;color:var(--primary);" title="Install as PWA App">
+                    <i data-lucide="download" style="width:13px;height:13px;"></i>
+                </button>
+            </div>
         </nav>
     </div>
 </header>
@@ -1024,24 +1104,15 @@
             <p class="tagline">GS1-128 barcode vision &amp; logistics check digit engine</p>
         </div>
         
-        <!-- Prominent Pallet Label Generator Hero Feature -->
-        <div class="label-feature-banner">
-            <div class="banner-left">
-                <div class="banner-icon-box">
-                    <i data-lucide="printer" style="width:18px;height:18px;"></i>
-                </div>
-                <div class="banner-texts">
-                    <div class="banner-heading">
-                        <span>Pallet Label Generator</span>
-                        <span class="banner-tag">GS1-128 / ZPL</span>
-                    </div>
-                    <div class="banner-desc">Print standard A5/4×6" pallet labels or export Zebra ZPL-II code.</div>
-                </div>
+        <!-- Official GS1 Registration Notice -->
+        <div class="gs1-compliance-notice">
+            <div class="compliance-badge">
+                <i data-lucide="shield-alert" style="width:11px;height:11px;"></i>
+                <span>GS1 NOTICE</span>
             </div>
-            <button type="button" class="banner-cta" onclick="openCurrentOrSampleLabel()" title="Open GS1 Pallet Label Generator">
-                <i data-lucide="tag" style="width:13px;height:13px;"></i>
-                <span>CREATE LABEL</span>
-            </button>
+            <div class="compliance-text">
+                Valid SSCC codes can only be generated if your business is registered with <strong>GS1</strong> and holds an authorized <strong>GS1 Company Prefix (GCP)</strong>. Unregistered prefixes are invalid and rejected across supply chains.
+            </div>
         </div>
 
         <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
@@ -1054,6 +1125,17 @@
             <input type="file" id="file-input" style="display:none;">
         </div>
 
+        <div class="quick-tools-bar">
+            <button type="button" class="quick-tool-btn" onclick="openCurrentOrSampleLabel()" title="GS1 Logistics Pallet Label Generator">
+                <i data-lucide="tag" style="width:12px;height:12px;color:var(--primary);"></i>
+                <span>Pallet Label Generator (A5 &amp; ZPL)</span>
+            </button>
+            <a href="calculator.html" class="quick-tool-btn" title="Universal Check Digit Calculator">
+                <i data-lucide="calculator" style="width:12px;height:12px;color:var(--primary);"></i>
+                <span>Check Digit Calculator</span>
+            </a>
+        </div>
+
         <div class="btn-stack">
             <button class="main-btn btn-live" id="btnToggle" onclick="toggleScanner()">START SCANNER</button>
             <div class="btn-grid">
@@ -1061,11 +1143,11 @@
                 <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
             </div>
             <div class="btn-grid">
-                <button class="main-btn btn-seq" onclick="generateNextSSCC()" title="Generate next sequential SSCC with your GS1 Company Prefix">
+                <button class="main-btn btn-seq" onclick="generateNextSSCC()" title="Requires registered GS1 Company Prefix">
                     <i data-lucide="sparkles" style="width:13px;height:13px;margin-right:5px;vertical-align:middle;"></i>+ NEXT SSCC
                 </button>
                 <button class="main-btn btn-label-direct" onclick="openCurrentOrSampleLabel()" title="Generate GS1 Logistics Pallet Label (A5 / 4x6 / ZPL)">
-                    <i data-lucide="printer" style="width:13px;height:13px;margin-right:5px;vertical-align:middle;"></i>PALLET LABEL
+                    <i data-lucide="printer" style="width:13px;height:13px;margin-right:5px;vertical-align:middle;"></i>PALLET LABELS
                 </button>
             </div>
         </div>
@@ -1094,9 +1176,10 @@
         <details>
             <summary>Frequently Asked Questions</summary>
             <div style="margin-top:10px; color:var(--text-muted); line-height:1.6;">
+                <p><strong>Can I generate valid SSCCs without being registered with GS1?</strong><br><strong>No.</strong> Valid, globally unique SSCCs legally require an official <strong>GS1 Company Prefix (GCP)</strong> issued exclusively to your organization by a local GS1 Member Organization (such as GS1 Portugal, GS1 US, GS1 UK). SSCCs created without GS1 registration are not recognized in commercial trade and will be rejected by logistics carriers (DHL, FedEx, UPS) and automated distribution hubs.</p>
                 <p><strong>What does SSCC stand for?</strong><br>Serial Shipping Container Code. It is an 18 digit number used to uniquely identify logistics units.</p>
                 <p><strong>How is SSCC related to GS1?</strong><br>The SSCC is a core GS1 standard for logistics. It uses a GS1 Company Prefix to ensure global uniqueness.</p>
-                <p><strong>Can I print pallet labels or export to Zebra printers?</strong><br>Yes! Click the "PALLET LABEL" button or tag icon next to any code, or click "Pallet Labels" in the results bar to print batch A5/A6 labels or download ready-to-use Zebra ZPL files.</p>
+                <p><strong>Can I print pallet labels or export to Zebra printers?</strong><br>Yes! Click the "PALLET LABELS" button or tag icon next to any code, or click "Pallet Labels" in the results bar to print batch A5/A6 labels or download ready-to-use Zebra ZPL files.</p>
             </div>
         </details>
 
@@ -1170,12 +1253,21 @@
             <button class="label-modal-close" onclick="closeSettingsModal()" title="Close">✕</button>
         </div>
         <div class="label-modal-body">
-            <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;">
-                Configure your <strong>GS1 Company Prefix (GCP)</strong> to generate valid sequential pallet SSCC numbers with one click.
-            </p>
+            <div class="gs1-warning-card">
+                <div class="gs1-warning-title">
+                    <i data-lucide="shield-alert" style="width:14px;height:14px;"></i>
+                    <span>Official GS1 Registration Required</span>
+                </div>
+                <div class="gs1-warning-text">
+                    You can <strong>only</strong> generate valid, supply-chain compliant SSCC barcodes if your company is officially registered with <strong>GS1</strong> (e.g. GS1 US, GS1 UK, GS1 Portugal, GS1 Germany) and holds an authentic <strong>GS1 Company Prefix (GCP)</strong>.
+                    <br><br>
+                    Using random or unauthorized prefixes causes barcode collisions and leads to immediate pallet rejection by logistics carriers, retail distribution centers, and EDI systems.
+                </div>
+            </div>
+
             <div class="label-edit-grid">
                 <div class="lbl-input-group">
-                    <label>GS1 Company Prefix (GCP)</label>
+                    <label>Licensed GS1 Company Prefix (GCP)</label>
                     <input type="text" id="cfg-prefix" placeholder="e.g. 5601234 (7 to 10 digits)">
                 </div>
                 <div class="lbl-input-row-2">
@@ -1192,7 +1284,7 @@
         </div>
         <div class="label-modal-footer">
             <button class="main-btn btn-audit" onclick="closeSettingsModal()">CANCEL</button>
-            <button class="main-btn btn-live" onclick="saveSettingsForm()">SAVE</button>
+            <button class="main-btn btn-live" onclick="saveSettingsForm()">SAVE PREFIX</button>
         </div>
     </div>
 </div>

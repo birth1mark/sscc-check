@@ -740,81 +740,243 @@
 
         /* ─── Pallet Batch Config Card (Sequential Generation) ─── */
         .label-batch-config-card {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.07) 0%, rgba(18, 23, 34, 0.7) 100%);
-            border: 1px solid rgba(245, 158, 11, 0.35);
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, rgba(13, 17, 26, 0.85) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.32);
             border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 12px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
+        .batch-config-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
         }
         .batch-config-title {
             font-family: var(--font-mono);
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: 700;
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 10px;
-            letter-spacing: 0.02em;
+            gap: 7px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .batch-dispatch-pill {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 1px 7px;
+            border-radius: 10px;
+            letter-spacing: 0.04em;
+        }
+        .batch-gs1-advisory {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(245, 158, 11, 0.07);
+            border: 1px solid rgba(245, 158, 11, 0.22);
+            border-radius: 6px;
+            padding: 7px 10px;
+            margin-bottom: 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .batch-gs1-advisory strong {
+            color: #f8fafc;
+            font-weight: 600;
         }
         .batch-config-grid {
             display: grid;
-            grid-template-columns: 1.3fr 1.1fr 1fr 0.8fr;
-            gap: 8px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-        @media (max-width: 520px) {
+        @media (max-width: 480px) {
             .batch-config-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
             }
         }
+        .lbl-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .lbl-input-group label {
+            display: block;
+            height: 18px;
+            line-height: 18px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lbl-input-group input,
+        .lbl-input-group select {
+            width: 100%;
+            height: 38px;
+            box-sizing: border-box;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0 10px;
+            color: #f8fafc;
+            font-size: 12.5px;
+            font-family: var(--font-mono);
+            transition: all 0.15s;
+        }
+        .lbl-input-group input:focus,
+        .lbl-input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
+        }
+        /* Custom Stepper Controls (Increment / Decrement) */
+        .stepper-wrap {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 38px;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            box-sizing: border-box;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .stepper-wrap:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
+        }
+        .stepper-wrap input {
+            border: none !important;
+            background: transparent !important;
+            height: 100% !important;
+            text-align: center;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            font-family: var(--font-mono) !important;
+            color: #f8fafc !important;
+            flex: 1;
+            min-width: 0;
+            padding: 0 4px !important;
+            box-shadow: none !important;
+        }
+        .btn-stepper {
+            background: rgba(245, 158, 11, 0.12);
+            border: none;
+            color: var(--primary);
+            width: 38px;
+            height: 100%;
+            font-size: 17px;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .btn-stepper:hover {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+        .btn-stepper:active {
+            transform: scale(0.92);
+        }
+        /* Hide native spinner arrows */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        /* Quick Presets Bar */
         .batch-quick-presets {
             display: flex;
             align-items: center;
             gap: 6px;
-            margin-top: 10px;
+            margin-top: 12px;
             flex-wrap: wrap;
         }
         .preset-label {
-            font-size: 10px;
+            font-size: 10.5px;
             color: var(--text-muted);
             font-family: var(--font-mono);
-            margin-right: 2px;
+            margin-right: 4px;
         }
         .btn-preset {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 2px 7px;
-            border-radius: 5px;
-            font-size: 10.5px;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            color: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
             font-family: var(--font-mono);
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.15s ease-in-out;
         }
         .btn-preset:hover {
+            background: rgba(245, 158, 11, 0.22);
             border-color: var(--primary);
             color: var(--primary);
-            background: rgba(245, 158, 11, 0.12);
+            transform: translateY(-1px);
         }
+        .btn-preset.active {
+            background: var(--primary);
+            color: #0b0e14;
+            border-color: var(--primary);
+            font-weight: 800;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+        }
+        /* Batch Range Summary */
         .batch-range-summary {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid var(--border);
+            background: rgba(8, 10, 15, 0.75);
+            border: 1px solid rgba(245, 158, 11, 0.25);
             border-radius: 6px;
-            padding: 6px 10px;
-            margin-top: 10px;
+            padding: 8px 12px;
+            margin-top: 12px;
             font-family: var(--font-mono);
+            font-size: 11.5px;
+        }
+        .batch-range-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+        }
+        .range-title {
+            color: var(--text-muted);
             font-size: 11px;
+            font-weight: 600;
+        }
+        .range-code {
+            color: #f8fafc;
+            font-weight: 700;
+            letter-spacing: 0.02em;
         }
         .batch-badge {
             background: var(--primary);
             color: #0b0e14;
-            padding: 1px 7px;
+            padding: 2px 8px;
             border-radius: 10px;
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 800;
             white-space: nowrap;
         }
@@ -906,24 +1068,41 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(8, 10, 15, 0.7);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 8px 12px;
             margin-bottom: 12px;
         }
         .btn-batch-nav {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 4px 10px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--primary);
+            padding: 5px 12px;
             border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
+            font-size: 11.5px;
             font-family: var(--font-mono);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
         }
-        .btn-batch-nav:disabled { opacity: 0.3; cursor: not-allowed; }
-        .lbl-batch-counter { font-size: 11.5px; font-weight: 700; color: var(--primary); font-family: var(--font-mono); }
+        .btn-batch-nav:hover:not(:disabled) {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+        .btn-batch-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+        .lbl-batch-counter {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: var(--font-mono);
+            letter-spacing: 0.02em;
+        }
 
         /* History & Counter Badge */
         .count-pill {
@@ -985,40 +1164,53 @@
             color: #fff !important;
         }
 
-        /* ─── GS1 Compliance & Registration Notice ─── */
-        .gs1-compliance-notice {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(18, 23, 34, 0.7) 100%);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+        /* ─── GS1 Compliance & Registration Frame ─── */
+        .gs1-compliance-frame {
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.07) 0%, rgba(13, 17, 26, 0.8) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.28);
+            border-left: 3px solid var(--primary);
             border-radius: 8px;
-            padding: 9px 12px;
+            padding: 10px 14px;
             margin-bottom: 14px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
         }
-        .compliance-badge {
+        .gs1-frame-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .gs1-frame-title {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+        .gs1-frame-pill {
             font-family: var(--font-mono);
             font-size: 9px;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: var(--primary);
-            color: #0b0e14;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            padding: 1px 7px;
+            border-radius: 10px;
             letter-spacing: 0.04em;
-            white-space: nowrap;
-            flex-shrink: 0;
-            margin-top: 1px;
+            text-transform: uppercase;
         }
-        .compliance-text {
+        .gs1-frame-body {
             font-size: 11.5px;
             color: var(--text-muted);
-            line-height: 1.45;
+            line-height: 1.5;
+            letter-spacing: 0.01em;
         }
-        .compliance-text strong {
-            color: var(--text-main);
+        .gs1-frame-body strong {
+            color: #f1f5f9;
+            font-weight: 600;
         }
 
         /* ─── Quick Tools Bar ─── */
@@ -1195,13 +1387,16 @@
             <p class="tagline">GS1-128 barcode vision &amp; logistics check digit engine</p>
         </div>
         
-        <!-- Official GS1 Registration Notice -->
-        <div class="gs1-compliance-notice">
-            <div class="compliance-badge">
-                <i data-lucide="shield-alert" style="width:11px;height:11px;"></i>
-                <span>GS1 NOTICE</span>
+        <!-- GS1 Regulatory Compliance Frame -->
+        <div class="gs1-compliance-frame">
+            <div class="gs1-frame-header">
+                <div class="gs1-frame-title">
+                    <i data-lucide="shield-alert" style="width:13px;height:13px;"></i>
+                    <span>GS1 REGULATORY REQUIREMENT</span>
+                </div>
+                <span class="gs1-frame-pill">OFFICIAL NOTICE</span>
             </div>
-            <div class="compliance-text">
+            <div class="gs1-frame-body">
                 Valid SSCC codes can only be generated if your business is registered with <strong>GS1</strong> and holds an authorized <strong>GS1 Company Prefix (GCP)</strong>. Unregistered prefixes are invalid and rejected across supply chains.
             </div>
         </div>

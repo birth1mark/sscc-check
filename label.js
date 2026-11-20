@@ -232,6 +232,16 @@ function regenerateBatchSequence() {
         }
     }
 
+    // Update active highlight on preset buttons
+    document.querySelectorAll('.btn-preset').forEach(btn => {
+        const q = parseInt(btn.getAttribute('data-qty'), 10);
+        if (q === qty) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
     updateLabelPreview();
 }
 
@@ -241,6 +251,24 @@ function setBatchQty(n) {
         qtyInput.value = n;
         regenerateBatchSequence();
     }
+}
+
+function adjustBatchQty(delta) {
+    const qtyInput = document.getElementById('batch-qty');
+    if (!qtyInput) return;
+    let val = parseInt(qtyInput.value, 10) || 1;
+    val = Math.max(1, Math.min(500, val + delta));
+    qtyInput.value = val;
+    regenerateBatchSequence();
+}
+
+function adjustBatchStartSerial(delta) {
+    const serialInput = document.getElementById('batch-start-serial');
+    if (!serialInput) return;
+    let val = parseInt(serialInput.value, 10) || 1;
+    val = Math.max(1, val + delta);
+    serialInput.value = val;
+    regenerateBatchSequence();
 }
 
 function updateStoredLastSerialOnDispatch() {
@@ -604,18 +632,26 @@ function ensureLabelModalExists() {
             <div class="label-modal-body">
                 <!-- Pallet Batch Generation Card -->
                 <div class="label-batch-config-card">
-                    <div class="batch-config-title">
-                        <i data-lucide="layers" style="width:14px;height:14px;"></i>
-                        <span>Pallet Batch Parameters (Sequential SSCC)</span>
+                    <div class="batch-config-header">
+                        <div class="batch-config-title">
+                            <i data-lucide="layers" style="width:14px;height:14px;"></i>
+                            <span>Pallet Batch Parameters (Sequential SSCC)</span>
+                        </div>
+                        <span class="batch-dispatch-pill">DISPATCH OUTBOUND</span>
+                    </div>
+
+                    <div class="batch-gs1-advisory">
+                        <i data-lucide="shield-alert" style="width:12px;height:12px;color:var(--primary);flex-shrink:0;"></i>
+                        <span>Valid SSCCs require an authorized <strong>GS1 Company Prefix (GCP)</strong> to clear supply chain gateways.</span>
                     </div>
 
                     <div class="batch-config-grid">
                         <div class="lbl-input-group">
-                            <label>GS1 Company Prefix (GCP)</label>
-                            <input type="text" id="batch-gcp" placeholder="e.g. 5601234" oninput="regenerateBatchSequence()">
+                            <label for="batch-gcp">GS1 Company Prefix (GCP)</label>
+                            <input type="text" id="batch-gcp" placeholder="e.g. 5601234" maxlength="12" oninput="regenerateBatchSequence()">
                         </div>
                         <div class="lbl-input-group">
-                            <label>Extension Digit</label>
+                            <label for="batch-ext">Extension Digit</label>
                             <select id="batch-ext" onchange="regenerateBatchSequence()">
                                 <option value="0">0 — Standard Pallet</option>
                                 <option value="1">1 — Outer Case / Carton</option>
@@ -624,26 +660,37 @@ function ensureLabelModalExists() {
                             </select>
                         </div>
                         <div class="lbl-input-group">
-                            <label>Start Serial Number</label>
-                            <input type="number" id="batch-start-serial" min="1" step="1" oninput="regenerateBatchSequence()">
+                            <label for="batch-start-serial">Start Serial Number</label>
+                            <div class="stepper-wrap">
+                                <button type="button" class="btn-stepper" onclick="adjustBatchStartSerial(-1)" title="Decrement serial">−</button>
+                                <input type="number" id="batch-start-serial" min="1" step="1" oninput="regenerateBatchSequence()">
+                                <button type="button" class="btn-stepper" onclick="adjustBatchStartSerial(1)" title="Increment serial">+</button>
+                            </div>
                         </div>
                         <div class="lbl-input-group">
-                            <label>Pallet Quantity</label>
-                            <input type="number" id="batch-qty" min="1" max="500" value="1" oninput="regenerateBatchSequence()">
+                            <label for="batch-qty">Pallet Quantity</label>
+                            <div class="stepper-wrap">
+                                <button type="button" class="btn-stepper" onclick="adjustBatchQty(-1)" title="Decrement quantity">−</button>
+                                <input type="number" id="batch-qty" min="1" max="500" value="1" oninput="regenerateBatchSequence()">
+                                <button type="button" class="btn-stepper" onclick="adjustBatchQty(1)" title="Increment quantity">+</button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="batch-quick-presets">
-                        <span class="preset-label">Quick Quantities:</span>
-                        <button type="button" class="btn-preset" onclick="setBatchQty(1)">1</button>
-                        <button type="button" class="btn-preset" onclick="setBatchQty(5)">5</button>
-                        <button type="button" class="btn-preset" onclick="setBatchQty(10)">10</button>
-                        <button type="button" class="btn-preset" onclick="setBatchQty(24)" title="20ft Container (~24 pallets)">24 (20' FCL)</button>
-                        <button type="button" class="btn-preset" onclick="setBatchQty(33)" title="Full Semi-Trailer Truckload (33 Euro-pallets)">33 (FTL)</button>
+                        <span class="preset-label">Quick Presets:</span>
+                        <button type="button" class="btn-preset" data-qty="1" onclick="setBatchQty(1)">1 Pallet</button>
+                        <button type="button" class="btn-preset" data-qty="5" onclick="setBatchQty(5)">5 Pallets</button>
+                        <button type="button" class="btn-preset" data-qty="10" onclick="setBatchQty(10)">10 Pallets</button>
+                        <button type="button" class="btn-preset" data-qty="24" onclick="setBatchQty(24)" title="20ft Container (~24 pallets)">24 (20' FCL)</button>
+                        <button type="button" class="btn-preset" data-qty="33" onclick="setBatchQty(33)" title="Full Semi-Trailer Truckload (33 Euro-pallets)">33 (FTL)</button>
                     </div>
 
                     <div class="batch-range-summary" id="batch-range-summary">
-                        <div><strong>Batch Range:</strong> <span id="batch-range-text">...</span></div>
+                        <div class="batch-range-info">
+                            <span class="range-title">SSCC Range:</span>
+                            <span id="batch-range-text" class="range-code">...</span>
+                        </div>
                         <span id="batch-total-tag" class="batch-badge">1 Pallet</span>
                     </div>
                 </div>

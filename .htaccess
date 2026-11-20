@@ -1,0 +1,4 @@
+<IfModule mod_headers.c>
+    # Permite acesso à câmara para o scanner de código de barras GS1-128
+    Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=(), payment=()"
+</IfModule>

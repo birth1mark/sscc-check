@@ -17,19 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verifica partilhas por URL (#share=...)
     if (typeof checkUrlShare === 'function') checkUrlShare();
 
-    // Atualiza contagem de sessões no histórico
+    // Update session audit count in history pill
     if (typeof updateHistoryCount === 'function') updateHistoryCount();
 
-    // Indicador de Online / Offline
+    // Online / Offline Status Indicator
     const updateNetworkStatus = () => {
         const dot = document.querySelector('.brand-dot');
         if (!dot) return;
         if (navigator.onLine) {
             dot.style.background = 'var(--success)';
-            dot.title = 'Online — PWA pronta';
+            dot.title = 'Online — PWA ready';
         } else {
             dot.style.background = '#f59e0b';
-            dot.title = 'Modo Offline Ativo (Cache local)';
+            dot.title = 'Offline Mode Active (Local cache)';
         }
     };
     window.addEventListener('online', updateNetworkStatus);

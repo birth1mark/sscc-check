@@ -414,7 +414,7 @@
 
 <header class="site-header">
     <div class="header-inner">
-        <a href="index.html" class="brand" title="Voltar ao SSCC Pro Vision">
+        <a href="index.html" class="brand" title="Back to SSCC Pro Vision">
             <span class="brand-dot"></span>
             <span>pormenores.net</span>
             <span class="brand-sep">/</span>
@@ -437,26 +437,26 @@
         </div>
 
         <div class="type-tabs">
-            <button class="type-btn active" onclick="setType('sscc', 17, 'SSCC-18 (Paletes)', '35601234560000001')">SSCC-18</button>
+            <button class="type-btn active" onclick="setType('sscc', 17, 'SSCC-18 (Pallets)', '35601234560000001')">SSCC-18</button>
             <button class="type-btn" onclick="setType('gtin13', 12, 'GTIN-13 / EAN-13', '560123456789')">GTIN-13 (EAN)</button>
             <button class="type-btn" onclick="setType('gtin12', 11, 'GTIN-12 / UPC-A', '01234567890')">GTIN-12 (UPC)</button>
-            <button class="type-btn" onclick="setType('gtin14', 13, 'GTIN-14 (Caixas)', '1560123456789')">GTIN-14</button>
+            <button class="type-btn" onclick="setType('gtin14', 13, 'GTIN-14 (Cartons)', '1560123456789')">GTIN-14</button>
             <button class="type-btn" onclick="setType('gtin8', 7, 'GTIN-8 / EAN-8', '5601234')">GTIN-8</button>
-            <button class="type-btn" onclick="setType('gln', 12, 'GLN (Localizações)', '560123400001')">GLN-13</button>
+            <button class="type-btn" onclick="setType('gln', 12, 'GLN-13 (Locations)', '560123400001')">GLN-13</button>
         </div>
 
         <div class="calc-input-box">
             <label>
-                <span id="type-label">Corpo do código (sem o dígito final):</span>
-                <span id="len-label" style="color:var(--primary);">17 dígitos</span>
+                <span id="type-label">Code payload (excluding final check digit):</span>
+                <span id="len-label" style="color:var(--primary);">17 digits</span>
             </label>
-            <input type="text" id="calc-input" class="calc-input" placeholder="Insere os dígitos..." value="35601234560000001" oninput="calculate()">
+            <input type="text" id="calc-input" class="calc-input" placeholder="Enter digits..." value="35601234560000001" oninput="calculate()">
         </div>
 
         <div id="result-panel" class="result-panel show">
             <div class="result-highlight">
                 <div>
-                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;font-family:var(--font-mono);">CÓDIGO COMPLETO VERIFICADO:</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;font-family:var(--font-mono);">VERIFIED FULL CODE:</div>
                     <div id="res-full-code" class="result-code-large">356012345600000016</div>
                 </div>
                 <div style="text-align:right;">
@@ -466,10 +466,10 @@
             </div>
 
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:11.5px;font-weight:700;font-family:var(--font-mono);">Demonstração Passo a Passo (Algoritmo GS1):</span>
+                <span style="font-size:11.5px;font-weight:700;font-family:var(--font-mono);">Step-by-Step Calculation (GS1 Modulo 10):</span>
                 <button class="btn-copy-full" onclick="copyFullResult()">
                     <i data-lucide="copy" style="width:13px;height:13px;"></i>
-                    <span>Copiar Código</span>
+                    <span>Copy Full Code</span>
                 </button>
             </div>
 
@@ -490,28 +490,28 @@
         </div>
 
         <div class="cta-box">
-            <h3>Precisa de ler códigos de barras ou imprimir etiquetas de palete?</h3>
-            <p>O SSCC Pro Vision inclui leitor de câmara GS1-128, gerador de etiquetas A5/4x6" e exportador ZPL industrial.</p>
+            <h3>Need to scan barcodes or print pallet labels?</h3>
+            <p>SSCC Pro Vision includes a GS1-128 camera scanner, A5/4×6" pallet label generator, and industrial Zebra ZPL exporter.</p>
             <a href="index.html" class="cta-btn">
                 <i data-lucide="printer" style="width:14px;height:14px;"></i>
-                <span>Abrir SSCC Pro Vision</span>
+                <span>Open SSCC Pro Vision</span>
             </a>
         </div>
     </main>
 
     <article class="seo-article">
-        <h2>Como Funciona o Algoritmo Módulo 10 da GS1?</h2>
-        <p>O dígito de controlo (Check Digit) é o último dígito de qualquer identificador GS1 (como GTIN-13, GTIN-14 ou SSCC-18). Ele garante que o número lido pelo leitor de código de barras ou inserido manualmente não sofreu erros de inversão de algarismos ou digitação.</p>
+        <h2>How Does the GS1 Modulo 10 Algorithm Work?</h2>
+        <p>The Check Digit is the final digit of any GS1 identification key (such as GTIN-13, GTIN-14, or SSCC-18). It ensures that numbers captured by barcode scanners or entered manually have not suffered transpositions or clerical errors.</p>
         
-        <h2>Regras de Multiplicação:</h2>
+        <h2>Multiplication Rules:</h2>
         <ul>
-            <li><strong>Passo 1:</strong> A partir do dígito imediatamente anterior ao dígito de controlo (da direita para a esquerda), multiplicam-se os algarismos alternadamente por <strong>3</strong> e <strong>1</strong>.</li>
-            <li><strong>Passo 2:</strong> Somam-se todos os produtos parciais obtidos.</li>
-            <li><strong>Passo 3:</strong> Subtrai-se essa soma ao múltiplo de 10 igual ou imediatamente superior. O resultado dessa subtração é o dígito de controlo.</li>
+            <li><strong>Step 1:</strong> Starting from the digit immediately preceding the check digit (moving right to left), multiply alternate digits by <strong>3</strong> and <strong>1</strong>.</li>
+            <li><strong>Step 2:</strong> Sum all partial products together.</li>
+            <li><strong>Step 3:</strong> Subtract this sum from the nearest equal or higher multiple of 10. The result is your check digit.</li>
         </ul>
 
-        <h2>Fórmula Matemática:</h2>
-        <p><code>Dígito = (10 - (Soma % 10)) % 10</code>. Se o resto da divisão por 10 for 0, o dígito de controlo é 0.</p>
+        <h2>Mathematical Formula:</h2>
+        <p><code>Check Digit = (10 - (Sum % 10)) % 10</code>. If the remainder is 0, the check digit is 0.</p>
     </article>
 </div>
 
@@ -526,8 +526,8 @@ function setType(type, reqLen, typeName, sampleVal) {
     document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
 
-    document.getElementById('type-label').textContent = `${typeName} (sem o dígito final):`;
-    document.getElementById('len-label').textContent = `${reqLen} dígitos`;
+    document.getElementById('type-label').textContent = `${typeName} (excluding final check digit):`;
+    document.getElementById('len-label').textContent = `${reqLen} digits`;
     const input = document.getElementById('calc-input');
     input.value = sampleVal;
     calculate();
@@ -569,10 +569,10 @@ function calculate() {
     document.getElementById('res-cd-val').textContent = cd;
 
     // Render table
-    let th = '<th>Posição</th>';
-    let tdD = '<td>Dígito</td>';
-    let tdW = '<td class="row-weight">Peso (×)</td>';
-    let tdP = '<td class="row-prod">Produto</td>';
+    let th = '<th>Position</th>';
+    let tdD = '<td>Digit</td>';
+    let tdW = '<td class="row-weight">Weight (×)</td>';
+    let tdP = '<td class="row-prod">Product</td>';
 
     digits.forEach((d, idx) => {
         th += `<th>P${idx + 1}</th>`;
@@ -588,10 +588,10 @@ function calculate() {
 
     const next10 = Math.ceil(sum / 10) * 10;
     document.getElementById('summary-formula').innerHTML = `
-        <strong>1. Soma dos Produtos:</strong> ${products.join(' + ')} = <strong>${sum}</strong><br>
-        <strong>2. Múltiplo de 10 superior:</strong> ${next10}<br>
-        <strong>3. Cálculo do Dígito:</strong> ${next10} - ${sum} = <span style="color:var(--success);font-weight:800;font-size:13px;">${cd}</span>
-        ${raw.length !== currentExpectedLen ? `<br><span style="color:var(--primary);">Nota: O tamanho atual inserido (${raw.length}) difere do padrão ${currentTypeName} (${currentExpectedLen}).</span>` : ''}
+        <strong>1. Sum of Products:</strong> ${products.join(' + ')} = <strong>${sum}</strong><br>
+        <strong>2. Next Multiple of 10:</strong> ${next10}<br>
+        <strong>3. Check Digit Calculation:</strong> ${next10} - ${sum} = <span style="color:var(--success);font-weight:800;font-size:13px;">${cd}</span>
+        ${raw.length !== currentExpectedLen ? `<br><span style="color:var(--primary);">Note: Current entered length (${raw.length}) differs from standard ${currentTypeName} length (${currentExpectedLen}).</span>` : ''}
     `;
 
     if (window.lucide) lucide.createIcons();
@@ -601,7 +601,7 @@ function copyFullResult() {
     const raw = document.getElementById('calc-input').value.replace(/\D/g, '');
     const cd = document.getElementById('res-cd-val').textContent;
     navigator.clipboard.writeText(raw + cd).then(() => {
-        alert('Código copiado para a área de transferência: ' + raw + cd);
+        alert('Code copied to clipboard: ' + raw + cd);
     });
 }
 

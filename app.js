@@ -264,20 +264,20 @@ function render() {
     
     // Batch Labels Button
     if (validOrGen.length > 0) {
-        summary += `<button class="btn-export btn-batch-labels" onclick="openBatchLabelsModal()" title="Imprimir etiquetas GS1 ou exportar ZPL em lote">
-            <i data-lucide="printer" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Etiquetas (${validOrGen.length})
+        summary += `<button class="btn-export btn-batch-labels" onclick="openBatchLabelsModal()" title="Print GS1 pallet labels or export batch ZPL">
+            <i data-lucide="printer" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Pallet Labels (${validOrGen.length})
         </button>`;
     }
     
     if (total > 1) {
-        summary += `<button class="btn-export" onclick="exportCSV()" title="Exportar tabela para CSV">
+        summary += `<button class="btn-export" onclick="exportCSV()" title="Export results to CSV">
             <i data-lucide="download" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>CSV
         </button>`;
     }
 
     if (total > 0) {
-        summary += `<button class="btn-export" onclick="shareBatch()" title="Partilhar lista via link direto">
-            <i data-lucide="share-2" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Partilhar
+        summary += `<button class="btn-export" onclick="shareBatch()" title="Share batch via direct link">
+            <i data-lucide="share-2" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Share
         </button>`;
     }
 
@@ -292,7 +292,7 @@ function render() {
             ? `<button class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy SSCC"><i data-lucide="copy" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
             : '';
         const labelBtn = (item.status === 'valid' || item.status === 'gen') && item.plain
-            ? `<button class="btn-copy" onclick="openLabelModal('${item.plain}')" title="Gerar Etiqueta GS1 (Print / ZPL)"><i data-lucide="tag" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
+            ? `<button class="btn-copy" onclick="openLabelModal('${item.plain}')" title="Generate GS1 Pallet Label (Print / ZPL)"><i data-lucide="tag" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
             : '';
 
         return `
@@ -322,7 +322,7 @@ function clearAll() {
    FEATURE 3: USABILIDADE, ARMAZENAMENTO & PWA
    ========================================================================== */
 
-// 1. Histórico Local Persistente (LocalStorage)
+// 1. Persistent Local Audit History (LocalStorage)
 const HISTORY_KEY = 'sscc_audit_history_v1';
 
 function getHistory() {
@@ -375,17 +375,17 @@ function openHistoryModal() {
     const history = getHistory();
 
     if (!history.length) {
-        listEl.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:12px;">Nenhum histórico guardado ainda.<br>Os lotes auditados são guardados localmente de forma privada.</div>`;
+        listEl.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:12px;">No audit history saved yet.<br>Validated batches are kept privately in local browser storage.</div>`;
     } else {
         listEl.innerHTML = history.map(item => `
             <div class="history-item">
                 <div class="history-info">
                     <div class="history-date">${escapeHtml(item.date)}</div>
-                    <div class="history-meta">${item.count} códigos (${item.validCount} válidos)</div>
+                    <div class="history-meta">${item.count} codes (${item.validCount} valid)</div>
                 </div>
                 <div class="history-actions">
-                    <button class="btn-export" onclick="restoreHistoryItem(${item.id})">Restaurar</button>
-                    <button class="btn-copy" onclick="deleteHistoryItem(${item.id})" title="Eliminar"><i data-lucide="trash-2" style="width:13px;height:13px;color:var(--danger);"></i></button>
+                    <button class="btn-export" onclick="restoreHistoryItem(${item.id})">Restore</button>
+                    <button class="btn-copy" onclick="deleteHistoryItem(${item.id})" title="Delete"><i data-lucide="trash-2" style="width:13px;height:13px;color:var(--danger);"></i></button>
                 </div>
             </div>
         `).join('');
@@ -414,7 +414,7 @@ function restoreHistoryItem(id) {
     document.getElementById('input').value = item.rawText;
     closeHistoryModal();
     process();
-    showToast(`Sessão restaurada (${item.validCount} paletes).`);
+    showToast(`Session restored (${item.validCount} pallets).`);
 }
 
 function deleteHistoryItem(id) {
@@ -426,7 +426,7 @@ function deleteHistoryItem(id) {
 }
 
 function clearAllHistory() {
-    if (!confirm('Eliminar todo o histórico local?')) return;
+    if (!confirm('Clear all local audit history?')) return;
     localStorage.removeItem(HISTORY_KEY);
     updateHistoryCount();
     openHistoryModal();
@@ -480,7 +480,7 @@ function saveSettingsForm() {
     const lastSerial = parseInt(document.getElementById('cfg-serial')?.value || '1', 10);
 
     if (prefix && (prefix.length < 6 || prefix.length > 11)) {
-        alert('O Prefixo de Empresa GS1 (GCP) tem tipicamente entre 6 e 11 dígitos.');
+        alert('GS1 Company Prefix (GCP) is typically 6 to 11 digits long.');
         return;
     }
 
@@ -491,7 +491,7 @@ function saveSettingsForm() {
     });
 
     closeSettingsModal();
-    showToast('Definições GS1 guardadas.');
+    showToast('GS1 settings saved successfully.');
 }
 
 /**
@@ -501,7 +501,7 @@ function generateNextSSCC() {
     const s = getGCPSettings();
     if (!s.prefix) {
         openSettingsModal();
-        showToast('Configura primeiro o teu Prefixo GS1 da empresa.', 'warn');
+        showToast('Please configure your GS1 Company Prefix first.', 'warn');
         return;
     }
 
@@ -510,7 +510,7 @@ function generateNextSSCC() {
     // Total body digits = 17 = 1 (ext) + prefix.length + serial.length
     const serialLen = 17 - 1 - prefix.length;
     if (serialLen <= 0) {
-        alert('Prefixo da empresa demasiado longo.');
+        alert('GS1 Company Prefix is too long.');
         return;
     }
 
@@ -529,14 +529,14 @@ function generateNextSSCC() {
     process();
 
     if (typeof playBeep === 'function') playBeep();
-    showToast(`Gerado: (00) ${fullSSCC}`);
+    showToast(`Generated: (00) ${fullSSCC}`);
 }
 
 // 3. Partilha Serverless por URL Hash
 function shareBatch() {
     const raw = document.getElementById('input').value.trim();
     if (!raw) {
-        showToast('Nada para partilhar.', 'warn');
+        showToast('Nothing to share.', 'warn');
         return;
     }
 
@@ -544,12 +544,12 @@ function shareBatch() {
         const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(raw))));
         const shareUrl = `${window.location.origin}${window.location.pathname}#share=${encoded}`;
         navigator.clipboard.writeText(shareUrl).then(() => {
-            showToast('🔗 Link de partilha copiado para o clipboard!');
+            showToast('🔗 Shareable batch link copied to clipboard!');
         }).catch(() => {
-            prompt('Copia o teu link de partilha:', shareUrl);
+            prompt('Copy your share link:', shareUrl);
         });
     } catch (e) {
-        alert('Erro ao gerar link de partilha.');
+        alert('Failed to generate share link.');
     }
 }
 
@@ -568,7 +568,7 @@ function checkUrlShare() {
         }
     } catch (e) {}
 
-    // 2. Partilha serverless por hash (#share=...)
+    // 2. Serverless sharing via hash (#share=...)
     if (window.location.hash.startsWith('#share=')) {
         try {
             const rawHash = window.location.hash.substring(7);
@@ -576,11 +576,11 @@ function checkUrlShare() {
             if (decoded) {
                 document.getElementById('input').value = decoded;
                 process();
-                showToast('Lote partilhado carregado com sucesso!');
+                showToast('Shared batch loaded successfully!');
                 history.replaceState(null, null, window.location.pathname);
             }
         } catch (e) {
-            console.warn('Falha ao descodificar share URL:', e);
+            console.warn('Failed to decode share URL:', e);
         }
     }
 }
@@ -591,7 +591,7 @@ let lastKeyTime = 0;
 
 function initHardwareScannerListener() {
     window.addEventListener('keydown', e => {
-        // Se o utilizador estiver a digitar dentro de um input/textarea normal, não interferir
+        // Do not interfere if user is typing in input or textarea
         const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
         if (activeTag === 'input' && document.activeElement.id !== 'file-input') return;
 
@@ -599,7 +599,7 @@ function initHardwareScannerListener() {
         const diff = now - lastKeyTime;
         lastKeyTime = now;
 
-        // Scanners industriais disparam teclas com menos de 45ms entre si
+        // Industrial barcode scanners emit keystrokes < 50ms apart
         if (diff > 55) {
             scannerBuffer = '';
         }
@@ -612,7 +612,7 @@ function initHardwareScannerListener() {
                 input.value = (input.value.trim() ? input.value.trim() + '\n' : '') + trimmed;
                 if (typeof playBeep === 'function') playBeep();
                 process();
-                showToast(`Código lido por scanner: ${trimmed.slice(-8)}`);
+                showToast(`Scanned via hardware: ${trimmed.slice(-8)}`);
             }
             scannerBuffer = '';
             return;

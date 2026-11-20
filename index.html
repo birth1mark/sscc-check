@@ -498,7 +498,7 @@
         .version { font-weight: 700; color: var(--primary); margin-right: 6px; font-family: var(--font-mono); }
         .changelog p { margin: 10px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
-        /* ─── Modal Etiqueta Logística GS1 (Mobile-First) ─── */
+        /* ─── GS1 Logistics Pallet Label Modal (Mobile-First) ─── */
         .label-modal-backdrop {
             position: fixed;
             inset: 0;
@@ -586,7 +586,7 @@
             z-index: 10;
         }
 
-        /* Folha da Etiqueta Física GS1 (Visual Realista e Alto Contraste) */
+        /* GS1 Physical Label Sheet (Realistic High-Contrast Layout) */
         .gs1-label-sheet {
             background: #ffffff;
             color: #000000;
@@ -663,7 +663,7 @@
             padding: 4px 0;
         }
 
-        /* Formulário de Personalização da Etiqueta */
+        /* Label Customization Form */
         .label-edit-details {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border);
@@ -788,12 +788,133 @@
             background: rgba(245, 158, 11, 0.12);
             color: var(--primary);
             border: 1px solid rgba(245, 158, 11, 0.35);
-            margin-top: 8px;
             width: 100%;
         }
         .btn-seq:hover {
             background: rgba(245, 158, 11, 0.22);
             border-color: var(--primary);
+        }
+
+        .btn-label-direct {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            width: 100%;
+        }
+        .btn-label-direct:hover {
+            background: rgba(16, 185, 129, 0.22);
+            border-color: var(--success);
+        }
+
+        .nav-pill-highlight {
+            border-color: rgba(245, 158, 11, 0.45) !important;
+            background: rgba(245, 158, 11, 0.12) !important;
+            color: var(--primary) !important;
+            font-weight: 600 !important;
+            cursor: pointer;
+        }
+        .nav-pill-highlight:hover {
+            border-color: var(--primary) !important;
+            background: rgba(245, 158, 11, 0.22) !important;
+            color: #fff !important;
+        }
+
+        /* ─── Pallet Label Feature Banner ─── */
+        .label-feature-banner {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(18, 23, 34, 0.85) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+        .label-feature-banner:hover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.13) 0%, rgba(18, 23, 34, 0.95) 100%);
+            box-shadow: 0 4px 18px rgba(245, 158, 11, 0.12);
+        }
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 0;
+        }
+        .banner-icon-box {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .banner-texts {
+            min-width: 0;
+        }
+        .banner-heading {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .banner-tag {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 4px;
+            background: var(--primary);
+            color: #0b0e14;
+            letter-spacing: 0.02em;
+        }
+        .banner-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            line-height: 1.35;
+        }
+        .banner-cta {
+            background: var(--primary);
+            color: #0b0e14;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.03em;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .banner-cta:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        @media (max-width: 500px) {
+            .label-feature-banner {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .banner-cta {
+                justify-content: center;
+                width: 100%;
+            }
         }
 
         /* Format variations */
@@ -870,24 +991,27 @@
 
 <header class="site-header">
     <div class="header-inner">
-        <a href="https://pormenores.net/" class="brand" title="Voltar a pormenores.net">
+        <a href="https://pormenores.net/" class="brand" title="Back to pormenores.net">
             <span class="brand-dot"></span>
             <span>pormenores.net</span>
             <span class="brand-sep">/</span>
             <span class="brand-sub">sscc</span>
         </a>
         <nav class="header-nav">
-            <a href="calculator.html" class="nav-pill" title="Calculadora Universal GS1">Calculator</a>
+            <button class="nav-pill nav-pill-highlight" onclick="openCurrentOrSampleLabel()" title="GS1 Logistics Pallet Label Generator (A5 &amp; Zebra ZPL)">
+                <i data-lucide="tag" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>Pallet Labels
+            </button>
+            <a href="calculator.html" class="nav-pill" title="Universal GS1 Check Digit Calculator">Calculator</a>
             <a href="guide.html" class="nav-pill">Guide</a>
             <a href="sscc-api-guide.html" class="nav-pill">API</a>
-            <button class="nav-pill" onclick="openHistoryModal()" title="Histórico de Sessões">
-                <i data-lucide="clock" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>Histórico <span id="history-count-badge" class="count-pill" style="display:none;">0</span>
+            <button class="nav-pill" onclick="openHistoryModal()" title="Audit Session History">
+                <i data-lucide="clock" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>History <span id="history-count-badge" class="count-pill" style="display:none;">0</span>
             </button>
-            <button class="nav-pill" onclick="openSettingsModal()" title="Definições GS1 da Empresa">
+            <button class="nav-pill" onclick="openSettingsModal()" title="GS1 Company Prefix Settings">
                 <i data-lucide="settings" style="width:12px;height:12px;vertical-align:middle;"></i>
             </button>
-            <button id="btn-pwa-install" class="nav-pill" onclick="triggerPWAInstall()" style="display:none;color:var(--primary);" title="Instalar como App PWA">
-                <i data-lucide="download" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>Instalar
+            <button id="btn-pwa-install" class="nav-pill" onclick="triggerPWAInstall()" style="display:none;color:var(--primary);" title="Install as PWA App">
+                <i data-lucide="download" style="width:12px;height:12px;vertical-align:middle;margin-right:3px;"></i>Install
             </button>
         </nav>
     </div>
@@ -900,6 +1024,26 @@
             <p class="tagline">GS1-128 barcode vision &amp; logistics check digit engine</p>
         </div>
         
+        <!-- Prominent Pallet Label Generator Hero Feature -->
+        <div class="label-feature-banner">
+            <div class="banner-left">
+                <div class="banner-icon-box">
+                    <i data-lucide="printer" style="width:18px;height:18px;"></i>
+                </div>
+                <div class="banner-texts">
+                    <div class="banner-heading">
+                        <span>Pallet Label Generator</span>
+                        <span class="banner-tag">GS1-128 / ZPL</span>
+                    </div>
+                    <div class="banner-desc">Print standard A5/4×6" pallet labels or export Zebra ZPL-II code.</div>
+                </div>
+            </div>
+            <button type="button" class="banner-cta" onclick="openCurrentOrSampleLabel()" title="Open GS1 Pallet Label Generator">
+                <i data-lucide="tag" style="width:13px;height:13px;"></i>
+                <span>CREATE LABEL</span>
+            </button>
+        </div>
+
         <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
         
         <textarea id="input" placeholder="Scan a barcode, drop file, or enter codes..."></textarea>
@@ -916,9 +1060,14 @@
                 <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
                 <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
             </div>
-            <button class="main-btn btn-seq" onclick="generateNextSSCC()" title="Gerar próximo SSCC sequencial com o prefixo GS1 da sua empresa">
-                <i data-lucide="sparkles" style="width:14px;height:14px;margin-right:6px;vertical-align:middle;"></i>+ NOVO SSCC SEQUENCIAL
-            </button>
+            <div class="btn-grid">
+                <button class="main-btn btn-seq" onclick="generateNextSSCC()" title="Generate next sequential SSCC with your GS1 Company Prefix">
+                    <i data-lucide="sparkles" style="width:13px;height:13px;margin-right:5px;vertical-align:middle;"></i>+ NEXT SSCC
+                </button>
+                <button class="main-btn btn-label-direct" onclick="openCurrentOrSampleLabel()" title="Generate GS1 Logistics Pallet Label (A5 / 4x6 / ZPL)">
+                    <i data-lucide="printer" style="width:13px;height:13px;margin-right:5px;vertical-align:middle;"></i>PALLET LABEL
+                </button>
+            </div>
         </div>
 
         <div class="results" id="output">
@@ -947,7 +1096,7 @@
             <div style="margin-top:10px; color:var(--text-muted); line-height:1.6;">
                 <p><strong>What does SSCC stand for?</strong><br>Serial Shipping Container Code. It is an 18 digit number used to uniquely identify logistics units.</p>
                 <p><strong>How is SSCC related to GS1?</strong><br>The SSCC is a core GS1 standard for logistics. It uses a GS1 Company Prefix to ensure global uniqueness.</p>
-                <p><strong>Can I print pallet labels or export to Zebra printers?</strong><br>Yes! Click the tag icon next to any code, or click "Etiquetas" in the results bar to print batch A5/A6 labels or download ready-to-use Zebra ZPL files.</p>
+                <p><strong>Can I print pallet labels or export to Zebra printers?</strong><br>Yes! Click the "PALLET LABEL" button or tag icon next to any code, or click "Pallet Labels" in the results bar to print batch A5/A6 labels or download ready-to-use Zebra ZPL files.</p>
             </div>
         </details>
 
@@ -989,66 +1138,63 @@
     </footer>
 </div>
 
-<!-- Modal Histórico Local -->
+<!-- Modal Local Audit History -->
 <div id="history-modal-backdrop" class="label-modal-backdrop" style="display:none;" onclick="if(event.target===this)closeHistoryModal()">
     <div class="label-modal">
         <div class="label-modal-header">
             <div class="label-modal-title">
                 <i data-lucide="clock" style="width:16px;height:16px;color:var(--primary);"></i>
-                <span>Histórico Local de Auditorias</span>
+                <span>Local Audit History</span>
             </div>
-            <button class="label-modal-close" onclick="closeHistoryModal()" title="Fechar">✕</button>
+            <button class="label-modal-close" onclick="closeHistoryModal()" title="Close">✕</button>
         </div>
         <div class="label-modal-body">
-            <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">Os seus lotes são guardados exclusivamente no armazenamento local do seu dispositivo (100% privado).</p>
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">Your audited batches are saved exclusively in your browser's private local storage.</p>
             <div id="history-list-box"></div>
         </div>
         <div class="label-modal-footer">
-            <button class="main-btn btn-clear" onclick="clearAllHistory()">LIMPAR TUDO</button>
-            <button class="main-btn btn-audit" onclick="closeHistoryModal()">FECHAR</button>
+            <button class="main-btn btn-clear" onclick="clearAllHistory()">CLEAR ALL</button>
+            <button class="main-btn btn-audit" onclick="closeHistoryModal()">CLOSE</button>
         </div>
     </div>
 </div>
 
-<!-- Modal Definições GS1 da Empresa -->
+<!-- Modal GS1 Company Prefix Settings -->
 <div id="settings-modal-backdrop" class="label-modal-backdrop" style="display:none;" onclick="if(event.target===this)closeSettingsModal()">
     <div class="label-modal">
         <div class="label-modal-header">
             <div class="label-modal-title">
                 <i data-lucide="settings" style="width:16px;height:16px;color:var(--primary);"></i>
-                <span>Definições GS1 da Empresa</span>
+                <span>GS1 Company Prefix Settings</span>
             </div>
-            <button class="label-modal-close" onclick="closeSettingsModal()" title="Fechar">✕</button>
+            <button class="label-modal-close" onclick="closeSettingsModal()" title="Close">✕</button>
         </div>
         <div class="label-modal-body">
             <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;">
-                Configure o seu <strong>Prefixo de Empresa GS1 (GCP)</strong> para permitir gerar números de palete sequenciais válidos com um clique.
+                Configure your <strong>GS1 Company Prefix (GCP)</strong> to generate valid sequential pallet SSCC numbers with one click.
             </p>
             <div class="label-edit-grid">
                 <div class="lbl-input-group">
-                    <label>Prefixo de Empresa GS1 (GCP)</label>
-                    <input type="text" id="cfg-prefix" placeholder="Ex: 5601234 (7 a 10 dígitos)">
+                    <label>GS1 Company Prefix (GCP)</label>
+                    <input type="text" id="cfg-prefix" placeholder="e.g. 5601234 (7 to 10 digits)">
                 </div>
                 <div class="lbl-input-row-2">
                     <div class="lbl-input-group">
-                        <label>Dígito de Extensão (0-9)</label>
+                        <label>Extension Digit (0-9)</label>
                         <input type="text" id="cfg-ext" value="0" maxlength="1">
                     </div>
                     <div class="lbl-input-group">
-                        <label>Último Número de Série</label>
+                        <label>Last Serial Number</label>
                         <input type="number" id="cfg-serial" value="1">
                     </div>
                 </div>
             </div>
         </div>
         <div class="label-modal-footer">
-            <button class="main-btn btn-audit" onclick="closeSettingsModal()">CANCELAR</button>
-            <button class="main-btn btn-live" onclick="saveSettingsForm()">GUARDAR</button>
+            <button class="main-btn btn-audit" onclick="closeSettingsModal()">CANCEL</button>
+            <button class="main-btn btn-live" onclick="saveSettingsForm()">SAVE</button>
         </div>
     </div>
-</div>
-        <a href="https://github.com/birth1mark/sscc-check" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:none;">GitHub</a>
-    </footer>
 </div>
 
 <script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>

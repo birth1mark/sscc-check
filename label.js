@@ -1,9 +1,9 @@
 /**
- * SSCC Pro Vision — GS1 Logistics Label & Barcode Engine (v5.6.0)
+ * SSCC Pro Vision — GS1 Logistics Pallet Label & Barcode Engine (v5.6.0)
  *
  * Implements:
  * 1. Pure vector GS1-128 (Code 128 Subset C with FNC1) SVG generator.
- * 2. GS1 Logistics Pallet Label layouts (A5, A6 compact, and 4x6" industrial thermal).
+ * 2. GS1 Logistics Pallet Label layouts (A5 standard, A6 compact, 4x6" Zebra thermal).
  * 3. Single and Batch ZPL (Zebra Programming Language) export for industrial printers.
  * 4. Multi-page native print support (one label per sheet/thermal roll).
  * 5. Local storage persistence for company metadata and preferences.
@@ -32,11 +32,11 @@ function getLabelDefaults() {
         if (stored) return JSON.parse(stored);
     } catch (e) {}
     return {
-        sender: 'EMPRESA REMETENTE LDA',
-        recipient: 'CENTRO DE DISTRIBUIÇÃO LOGÍSTICA',
-        contents: 'EURO PALETE (CARGA MISTA)',
-        weight: '420 KG',
-        orderNo: 'ENC-2026/994',
+        sender: 'LOGISTICS DISPATCH SERVICES LTD',
+        recipient: 'CENTRAL DISTRIBUTION HUB',
+        contents: 'EURO PALLET (MIXED CARGO)',
+        weight: '450 KG',
+        orderNo: 'PO-2026-994',
         batchNo: '',
         expiryDate: '',
         format: 'a5'
@@ -98,7 +98,7 @@ function generateGS1BarcodeSVG(sscc18, height = 75) {
 }
 
 /**
- * Generates industrial Zebra ZPL code for a single 4x6" thermal pallet label.
+ * Generates industrial Zebra ZPL-II code for a single 4x6" thermal pallet label.
  */
 function generateGS1ZPL(sscc18, meta) {
     const clean = sscc18.replace(/\D/g, '');
@@ -107,7 +107,7 @@ function generateGS1ZPL(sscc18, meta) {
 
     const sender = (meta.sender || 'EXPEDIDOR').toUpperCase().replace(/[\^~]/g, '');
     const recipient = (meta.recipient || 'DESTINATARIO').toUpperCase().replace(/[\^~]/g, '');
-    const contents = (meta.contents || 'EURO PALETE').toUpperCase().replace(/[\^~]/g, '');
+    const contents = (meta.contents || 'EURO PALLET').toUpperCase().replace(/[\^~]/g, '');
     const weight = (meta.weight || '').toUpperCase().replace(/[\^~]/g, '');
     const orderNo = (meta.orderNo || '').toUpperCase().replace(/[\^~]/g, '');
     const batchNo = (meta.batchNo || '').toUpperCase().replace(/[\^~]/g, '');
@@ -115,23 +115,23 @@ function generateGS1ZPL(sscc18, meta) {
     const today = new Date().toISOString().slice(0, 10);
 
     let extraInfo = '';
-    if (batchNo) extraInfo += `LOTE: ${batchNo}  `;
-    if (expiry) extraInfo += `VAL: ${expiry}  `;
-    if (weight) extraInfo += `PESO: ${weight}`;
+    if (batchNo) extraInfo += `BATCH: ${batchNo}  `;
+    if (expiry) extraInfo += `EXP: ${expiry}  `;
+    if (weight) extraInfo += `WEIGHT: ${weight}`;
 
     return `^XA
 ^PW812
 ^LL1218
 ^FO40,40^GB732,1138,4^FS
-^FO60,65^A0N,24,24^FDEXPEDIDOR / FROM:^FS
+^FO60,65^A0N,24,24^FDCONSIGNOR / FROM:^FS
 ^FO60,98^A0N,28,28^FD${sender}^FS
 ^FO40,175^GB732,0,2^FS
-^FO60,195^A0N,24,24^FDDESTINATARIO / TO:^FS
+^FO60,195^A0N,24,24^FDCONSIGNEE / TO:^FS
 ^FO60,228^A0N,28,28^FD${recipient}^FS
 ^FO40,305^GB732,0,2^FS
-^FO60,325^A0N,22,22^FDCONTEUDO: ${contents}^FS
-^FO60,358^A0N,22,22^FD${extraInfo || `REF/DOC: ${orderNo}`}^FS
-^FO60,390^A0N,20,20^FDDATA: ${today}   |   DOC: ${orderNo}^FS
+^FO60,325^A0N,22,22^FDCONTENTS: ${contents}^FS
+^FO60,358^A0N,22,22^FD${extraInfo || `DOC REF: ${orderNo}`}^FS
+^FO60,390^A0N,20,20^FDDATE: ${today}   |   DOC: ${orderNo}^FS
 ^FO40,430^GB732,0,4^FS
 ^FO60,460^A0N,30,30^FDSSCC (SERIAL SHIPPING CONTAINER CODE):^FS
 ^FO60,505^A0N,38,38^FD${hri}^FS
@@ -145,6 +145,51 @@ let currentBatchSSCCs = [];
 let currentBatchIndex = 0;
 
 /**
+ * Opens label generator immediately for the current input or generates a valid sample.
+ */
+function openCurrentOrSampleLabel() {
+    const inputVal = (document.getElementById('input')?.value || '').trim();
+    const lines = inputVal.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+
+    if (lines.length > 0) {
+        // Try to find the first valid or parseable SSCC
+        for (const line of lines) {
+            const digits = line.replace(/\D/g, '');
+            if (digits.length === 18) {
+                openLabelModal(digits);
+                return;
+            }
+            if (digits.length === 20 && digits.startsWith('00')) {
+                openLabelModal(digits.substring(2));
+                return;
+            }
+            if (digits.length === 17) {
+                const cd = typeof getCD === 'function' ? getCD(digits) : '0';
+                openLabelModal(digits + cd);
+                return;
+            }
+        }
+    }
+
+    // If store already has valid codes
+    if (window.store && window.store.length) {
+        const valids = window.store.filter(i => (i.status === 'valid' || i.status === 'gen') && i.plain);
+        if (valids.length > 1) {
+            openBatchLabelsModal();
+            return;
+        } else if (valids.length === 1) {
+            openLabelModal(valids[0].plain);
+            return;
+        }
+    }
+
+    // Default: generate a valid sample SSCC-18
+    const sampleBody = '35601234560000001';
+    const sampleCD = typeof getCD === 'function' ? getCD(sampleBody) : 6;
+    openLabelModal(sampleBody + sampleCD);
+}
+
+/**
  * Opens modal for a single SSCC.
  */
 function openLabelModal(rawSSCC) {
@@ -154,7 +199,7 @@ function openLabelModal(rawSSCC) {
     if (clean.length === 17 && typeof getCD === 'function') s18 = clean + getCD(clean);
 
     if (s18.length !== 18) {
-        alert('SSCC inválido para geração de etiqueta (requer 18 dígitos).');
+        alert('Invalid SSCC code for label generation (requires 18 digits).');
         return;
     }
 
@@ -178,7 +223,7 @@ function openLabelModal(rawSSCC) {
  */
 function openBatchLabelsModal() {
     if (!window.store || !window.store.length) {
-        alert('Nenhum código para gerar etiquetas.');
+        alert('No codes available to print labels.');
         return;
     }
 
@@ -187,7 +232,7 @@ function openBatchLabelsModal() {
         .map(item => item.plain);
 
     if (!valids.length) {
-        alert('Não existem SSCCs válidos no lote atual.');
+        alert('No valid SSCC codes found in current audit.');
         return;
     }
 
@@ -261,11 +306,11 @@ function persistCurrentFormValues() {
  * Builds HTML markup for a single label sheet.
  */
 function buildLabelSheetHTML(s18, meta, indexInfo = '') {
-    const sender = meta.sender || 'EMPRESA REMETENTE LDA';
-    const recipient = meta.recipient || 'CENTRO DE DISTRIBUIÇÃO LOGÍSTICA';
-    const contents = meta.contents || 'EURO PALETE (CARGA MISTA)';
-    const weight = meta.weight || '420 KG';
-    const orderNo = meta.orderNo || 'ENC-2026/994';
+    const sender = meta.sender || 'LOGISTICS DISPATCH SERVICES LTD';
+    const recipient = meta.recipient || 'CENTRAL DISTRIBUTION HUB';
+    const contents = meta.contents || 'EURO PALLET (MIXED CARGO)';
+    const weight = meta.weight || '450 KG';
+    const orderNo = meta.orderNo || 'PO-2026-994';
     const batchNo = meta.batchNo || '';
     const expiry = meta.expiryDate || '';
     const today = new Date().toISOString().slice(0, 10);
@@ -282,35 +327,35 @@ function buildLabelSheetHTML(s18, meta, indexInfo = '') {
     <div class="gs1-label-sheet format-${meta.format || 'a5'}">
         <div class="lbl-row lbl-header-row">
             <div class="lbl-col lbl-sender-col">
-                <span class="lbl-field-tag">EXPEDIDOR / FROM</span>
+                <span class="lbl-field-tag">CONSIGNOR / FROM</span>
                 <div class="lbl-company">${escapeHtml(sender)}</div>
                 <div class="lbl-subtext">Logistics Dispatch Center</div>
             </div>
             <div class="lbl-col lbl-carrier-col">
-                <span class="lbl-field-tag">DATA / DATE</span>
+                <span class="lbl-field-tag">DATE</span>
                 <div class="lbl-meta-value">${today}</div>
-                <span class="lbl-field-tag" style="margin-top:4px;">ORDEM / DOC</span>
+                <span class="lbl-field-tag" style="margin-top:4px;">ORDER / DOC</span>
                 <div class="lbl-meta-value">${escapeHtml(orderNo)}</div>
             </div>
         </div>
 
         <div class="lbl-row lbl-dest-row">
             <div class="lbl-col" style="width:100%;">
-                <span class="lbl-field-tag">DESTINATÁRIO / TO</span>
+                <span class="lbl-field-tag">CONSIGNEE / TO</span>
                 <div class="lbl-company">${escapeHtml(recipient)}</div>
-                <div class="lbl-subtext">Plataforma Logística Central</div>
+                <div class="lbl-subtext">Central Distribution Hub</div>
             </div>
         </div>
 
         <div class="lbl-row lbl-cargo-row">
             <div class="lbl-col" style="width:55%;">
-                <span class="lbl-field-tag">CONTEÚDO / CONTENTS</span>
+                <span class="lbl-field-tag">CARGO / CONTENTS</span>
                 <div class="lbl-meta-value">${escapeHtml(contents)}</div>
             </div>
             <div class="lbl-col" style="width:45%; text-align:right;">
-                <span class="lbl-field-tag">PESO / LOTE</span>
-                <div class="lbl-meta-value">${escapeHtml(weight)}${batchNo ? ' | Lote: ' + escapeHtml(batchNo) : ''}</div>
-                ${expiry ? `<div class="lbl-subtext" style="font-weight:700;color:#000;">Val: ${escapeHtml(expiry)}</div>` : ''}
+                <span class="lbl-field-tag">GROSS WEIGHT / BATCH</span>
+                <div class="lbl-meta-value">${escapeHtml(weight)}${batchNo ? ' | Lot: ' + escapeHtml(batchNo) : ''}</div>
+                ${expiry ? `<div class="lbl-subtext" style="font-weight:700;color:#000;">Best Before: ${escapeHtml(expiry)}</div>` : ''}
             </div>
         </div>
 
@@ -335,7 +380,7 @@ function updateLabelPreview() {
 
     const meta = persistCurrentFormValues();
     const isBatch = currentBatchSSCCs.length > 1;
-    const indexInfo = isBatch ? `Palete ${currentBatchIndex + 1} de ${currentBatchSSCCs.length}` : '';
+    const indexInfo = isBatch ? `Pallet ${currentBatchIndex + 1} of ${currentBatchSSCCs.length}` : '';
 
     const previewContainer = document.getElementById('lbl-preview-box');
     if (previewContainer) {
@@ -347,7 +392,7 @@ function updateLabelPreview() {
         if (isBatch) {
             batchNav.style.display = 'flex';
             const counter = document.getElementById('lbl-batch-counter');
-            if (counter) counter.textContent = `Palete ${currentBatchIndex + 1} de ${currentBatchSSCCs.length}`;
+            if (counter) counter.textContent = `Pallet ${currentBatchIndex + 1} of ${currentBatchSSCCs.length}`;
             const btnPrev = document.getElementById('lbl-btn-prev');
             const btnNext = document.getElementById('lbl-btn-next');
             if (btnPrev) btnPrev.disabled = (currentBatchIndex === 0);
@@ -359,12 +404,12 @@ function updateLabelPreview() {
 
     const printBtnText = document.getElementById('lbl-print-btn-text');
     if (printBtnText) {
-        printBtnText.textContent = isBatch ? `IMPRIMIR LOTE (${currentBatchSSCCs.length} PALETES)` : `IMPRIMIR (A5 / 4x6")`;
+        printBtnText.textContent = isBatch ? `PRINT ALL (${currentBatchSSCCs.length} PALLETS)` : `PRINT LABEL (A5 / 4×6")`;
     }
 
     const zplBtnText = document.getElementById('lbl-zpl-btn-text');
     if (zplBtnText) {
-        zplBtnText.textContent = isBatch ? `EXPORTAR ZPL (${currentBatchSSCCs.length})` : `EXPORTAR ZPL`;
+        zplBtnText.textContent = isBatch ? `DOWNLOAD ZPL (${currentBatchSSCCs.length})` : `DOWNLOAD ZPL`;
     }
 }
 
@@ -412,8 +457,8 @@ function downloadGS1ZPL() {
     const a = document.createElement('a');
     a.href = url;
     a.download = isBatch 
-        ? `etiquetas_lote_gs1_${currentBatchSSCCs.length}paletes.zpl`
-        : `etiqueta_sscc_${currentLabelSSCC}.zpl`;
+        ? `gs1_pallet_labels_${currentBatchSSCCs.length}units.zpl`
+        : `gs1_sscc_label_${currentLabelSSCC}.zpl`;
     a.click();
     URL.revokeObjectURL(url);
 }
@@ -434,66 +479,66 @@ function ensureLabelModalExists() {
             <div class="label-modal-header">
                 <div class="label-modal-title">
                     <i data-lucide="tag" style="width:16px;height:16px;color:var(--primary);"></i>
-                    <span>Etiqueta Logística GS1</span>
+                    <span>GS1 Logistics Pallet Label Generator</span>
                 </div>
-                <button class="label-modal-close" onclick="closeLabelModal()" title="Fechar">✕</button>
+                <button class="label-modal-close" onclick="closeLabelModal()" title="Close">✕</button>
             </div>
 
             <div class="label-modal-body">
-                <!-- Navegação de Lote (se houver múltiplos SSCCs) -->
+                <!-- Batch Navigation -->
                 <div id="lbl-batch-nav" class="lbl-batch-nav" style="display:none;">
-                    <button id="lbl-btn-prev" class="btn-batch-nav" onclick="prevBatchLabel()">◀ Anterior</button>
-                    <span id="lbl-batch-counter" class="lbl-batch-counter">Palete 1 de 1</span>
-                    <button id="lbl-btn-next" class="btn-batch-nav" onclick="nextBatchLabel()">Seguinte ▶</button>
+                    <button id="lbl-btn-prev" class="btn-batch-nav" onclick="prevBatchLabel()">◀ Previous</button>
+                    <span id="lbl-batch-counter" class="lbl-batch-counter">Pallet 1 of 1</span>
+                    <button id="lbl-btn-next" class="btn-batch-nav" onclick="nextBatchLabel()">Next ▶</button>
                 </div>
 
-                <!-- Preview da Etiqueta -->
+                <!-- Label Preview -->
                 <div id="lbl-preview-box"></div>
 
-                <!-- Painel de Personalização -->
+                <!-- Customization Panel -->
                 <details class="label-edit-details" open>
-                    <summary>Personalizar Dados da Etiqueta &amp; Formato</summary>
+                    <summary>Label Parameters &amp; Format</summary>
                     <div class="label-edit-grid">
                         <div class="lbl-input-row-2">
                             <div class="lbl-input-group">
-                                <label>Formato / Papel</label>
+                                <label>Label Size / Format</label>
                                 <select id="lbl-format" onchange="updateLabelPreview()">
-                                    <option value="a5">A5 Palete Standard (148×210 mm)</option>
-                                    <option value="a6">A6 Palete Compacta (105×148 mm)</option>
-                                    <option value="thermal">Térmica 4×6" / Zebra (100×150 mm)</option>
+                                    <option value="a5">A5 Standard Pallet (148×210 mm)</option>
+                                    <option value="a6">A6 Compact Pallet (105×148 mm)</option>
+                                    <option value="thermal">4×6" Zebra Thermal (100×150 mm)</option>
                                 </select>
                             </div>
                             <div class="lbl-input-group">
-                                <label>Ordem / Ref / Doc</label>
-                                <input type="text" id="lbl-order" value="ENC-2026/994" oninput="updateLabelPreview()">
+                                <label>Order / Doc Reference</label>
+                                <input type="text" id="lbl-order" value="PO-2026-994" oninput="updateLabelPreview()">
                             </div>
                         </div>
 
                         <div class="lbl-input-group">
-                            <label>Remetente / Expedidor</label>
-                            <input type="text" id="lbl-sender" value="EMPRESA REMETENTE LDA" oninput="updateLabelPreview()">
+                            <label>Consignor / Sender</label>
+                            <input type="text" id="lbl-sender" value="LOGISTICS DISPATCH SERVICES LTD" oninput="updateLabelPreview()">
                         </div>
                         <div class="lbl-input-group">
-                            <label>Destinatário</label>
-                            <input type="text" id="lbl-recipient" value="CENTRO DE DISTRIBUIÇÃO LOGÍSTICA" oninput="updateLabelPreview()">
+                            <label>Consignee / Destination</label>
+                            <input type="text" id="lbl-recipient" value="CENTRAL DISTRIBUTION HUB" oninput="updateLabelPreview()">
                         </div>
                         <div class="lbl-input-group">
-                            <label>Conteúdo / Volumes</label>
-                            <input type="text" id="lbl-contents" value="EURO PALETE (CARGA MISTA)" oninput="updateLabelPreview()">
+                            <label>Contents / Cargo Description</label>
+                            <input type="text" id="lbl-contents" value="EURO PALLET (MIXED CARGO)" oninput="updateLabelPreview()">
                         </div>
 
                         <div class="lbl-input-row-3">
                             <div class="lbl-input-group">
-                                <label>Peso Bruto</label>
-                                <input type="text" id="lbl-weight" value="420 KG" oninput="updateLabelPreview()">
+                                <label>Gross Weight</label>
+                                <input type="text" id="lbl-weight" value="450 KG" oninput="updateLabelPreview()">
                             </div>
                             <div class="lbl-input-group">
-                                <label>Lote (AI 10)</label>
-                                <input type="text" id="lbl-batch" placeholder="Ex: L-948" oninput="updateLabelPreview()">
+                                <label>Batch / Lot (AI 10)</label>
+                                <input type="text" id="lbl-batch" placeholder="e.g. L-9480" oninput="updateLabelPreview()">
                             </div>
                             <div class="lbl-input-group">
-                                <label>Validade (AI 15)</label>
-                                <input type="text" id="lbl-expiry" placeholder="Ex: 2026-12-31" oninput="updateLabelPreview()">
+                                <label>Best Before (AI 15)</label>
+                                <input type="text" id="lbl-expiry" placeholder="e.g. 2026-12-31" oninput="updateLabelPreview()">
                             </div>
                         </div>
                     </div>
@@ -503,11 +548,11 @@ function ensureLabelModalExists() {
             <div class="label-modal-footer">
                 <button class="main-btn btn-live" onclick="printGS1Label()">
                     <i data-lucide="printer" style="width:14px;height:14px;margin-right:6px;vertical-align:middle;"></i>
-                    <span id="lbl-print-btn-text">IMPRIMIR (A5 / 4x6")</span>
+                    <span id="lbl-print-btn-text">PRINT LABEL (A5 / 4×6")</span>
                 </button>
-                <button class="main-btn btn-audit" onclick="downloadGS1ZPL()" title="Descarregar ficheiro ZPL para impressora industrial Zebra">
+                <button class="main-btn btn-audit" onclick="downloadGS1ZPL()" title="Download Zebra ZPL label file">
                     <i data-lucide="download" style="width:14px;height:14px;margin-right:6px;vertical-align:middle;"></i>
-                    <span id="lbl-zpl-btn-text">EXPORTAR ZPL</span>
+                    <span id="lbl-zpl-btn-text">EXPORT ZPL</span>
                 </button>
             </div>
         </div>

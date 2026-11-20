@@ -183,6 +183,22 @@ function openCurrentOrSampleLabel() {
         }
     }
 
+    // If company configured its own GS1 prefix in Settings
+    if (typeof getGCPSettings === 'function') {
+        const s = getGCPSettings();
+        if (s && s.prefix) {
+            const ext = s.extDigit || '0';
+            const serialLen = 17 - 1 - s.prefix.length;
+            if (serialLen > 0) {
+                const serialStr = String(s.lastSerial || 1).padStart(serialLen, '0');
+                const body = `${ext}${s.prefix}${serialStr}`;
+                const cd = typeof getCD === 'function' ? getCD(body) : '0';
+                openLabelModal(body + cd);
+                return;
+            }
+        }
+    }
+
     // Default: generate a valid sample SSCC-18
     const sampleBody = '35601234560000001';
     const sampleCD = typeof getCD === 'function' ? getCD(sampleBody) : 6;
@@ -372,6 +388,22 @@ function buildLabelSheetHTML(s18, meta, indexInfo = '') {
     </div>`;
 }
 
+function onLabelSSCCInput(val) {
+    const clean = val.replace(/\D/g, '');
+    let s18 = clean;
+    if (clean.length === 20 && clean.startsWith('00')) s18 = clean.substring(2);
+    if (clean.length === 17 && typeof getCD === 'function') s18 = clean + getCD(clean);
+    if (s18.length === 18) {
+        currentLabelSSCC = s18;
+        if (currentBatchSSCCs.length <= 1) {
+            currentBatchSSCCs = [s18];
+        } else {
+            currentBatchSSCCs[currentBatchIndex] = s18;
+        }
+        updateLabelPreview();
+    }
+}
+
 /**
  * Updates live label preview in modal.
  */
@@ -385,6 +417,11 @@ function updateLabelPreview() {
     const previewContainer = document.getElementById('lbl-preview-box');
     if (previewContainer) {
         previewContainer.innerHTML = buildLabelSheetHTML(currentLabelSSCC, meta, indexInfo);
+    }
+
+    const ssccInput = document.getElementById('lbl-sscc-input');
+    if (ssccInput && document.activeElement !== ssccInput) {
+        ssccInput.value = currentLabelSSCC;
     }
 
     const batchNav = document.getElementById('lbl-batch-nav');
@@ -499,6 +536,11 @@ function ensureLabelModalExists() {
                 <details class="label-edit-details" open>
                     <summary>Label Parameters &amp; Format</summary>
                     <div class="label-edit-grid">
+                        <div class="lbl-input-group">
+                            <label>SSCC-18 Code (AI 00)</label>
+                            <input type="text" id="lbl-sscc-input" maxlength="20" placeholder="18 digits..." oninput="onLabelSSCCInput(this.value)">
+                        </div>
+
                         <div class="lbl-input-row-2">
                             <div class="lbl-input-group">
                                 <label>Label Size / Format</label>

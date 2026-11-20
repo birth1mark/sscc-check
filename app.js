@@ -554,6 +554,21 @@ function shareBatch() {
 }
 
 function checkUrlShare() {
+    // 1. Suporte a parâmetros de pesquisa do portal pormenores.net (?code=... ou ?sscc=...)
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code') || params.get('sscc');
+        if (code) {
+            document.getElementById('input').value = code;
+            process();
+            if (params.get('label') === '1' || window.location.hash === '#label') {
+                setTimeout(() => openLabelModal(code), 250);
+            }
+            return;
+        }
+    } catch (e) {}
+
+    // 2. Partilha serverless por hash (#share=...)
     if (window.location.hash.startsWith('#share=')) {
         try {
             const rawHash = window.location.hash.substring(7);

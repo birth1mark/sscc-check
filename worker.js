@@ -1,5 +1,5 @@
 /**
- * SSCC Pro Vision — REST API
+ * SSCCAPI — REST API
  * Cloudflare Worker — v1.2.2
  *
  * Fusão da versão 1.2.0 com os patches de segurança 1.0.1.
@@ -613,7 +613,7 @@ export default {
                 case '/extract':    return error('Use POST /extract with file content in the request body', 405);
                 default:
                     return json({
-                        name:    'SSCC Pro Vision API',
+                        name:    'SSCCAPI',
                         version: '5.9.0',
                         docs:    'https://ssccapi.com/sscc-api-guide.html',
                         webApp:  'https://ssccapi.com/',

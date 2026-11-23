@@ -1,5 +1,5 @@
 /**
- * Initialization for SSCC Pro Vision (v5.7.0)
+ * Initialization for SSCCAPI (v5.7.0)
  */
 
 let deferredInstallPrompt = null;

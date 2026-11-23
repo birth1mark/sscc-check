@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: SSCC Pro Vision — Validation, EDI & GS1 Pallet Label API
+  title: SSCCAPI — Validation, EDI & GS1 Pallet Label API
   version: 5.9.0
   description: |
     Enterprise-grade Cloudflare Edge APIs for Serial Shipping Container Code (SSCC-18) validation,

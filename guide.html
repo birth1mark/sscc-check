@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools</title>
-    <meta name="description" content="Complete guide to SSCC validation: structure, GS1 128 format, check digit algorithm with worked example, JavaScript implementation, and how to extract SSCCs from EDIFACT files.">
+    <title>SSCCAPI — How to Validate SSCC Codes, Check Digit Algorithm, EDIFACT &amp; ZPL Guide</title>
+    <meta name="description" content="Complete technical guide to SSCC validation: structure, GS1-128 format, check digit algorithm with worked example, JavaScript &amp; Python implementations, Retailer profiles, Zebra ZPL-II, and EDIFACT extraction.">
     <meta name="keywords" content="SSCC validation, SSCC check digit, GS1 128 format, serial shipping container code, EDI DESADV SSCC, SSCC algorithm, check digit calculator, logistics barcode">
-    <meta name="author" content="SSCC Pro Vision">
+    <meta name="author" content="SSCCAPI">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://ssccapi.com/guide.html">
     <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
@@ -18,14 +18,14 @@
     <!-- Open Graph -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://ssccapi.com/guide.html">
-    <meta property="og:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
+    <meta property="og:title" content="SSCCAPI — How to Validate SSCC Codes, Check Digit Algorithm &amp; Format Guide">
     <meta property="og:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
     <meta property="og:image" content="https://ssccapi.com/og-image.png">
-    <meta property="og:site_name" content="SSCC Pro Vision">
+    <meta property="og:site_name" content="SSCCAPI">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
+    <meta name="twitter:title" content="SSCCAPI — How to Validate SSCC Codes, Check Digit Algorithm &amp; Format Guide">
     <meta name="twitter:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
     <meta name="twitter:image" content="https://ssccapi.com/og-image.png">
 
@@ -37,8 +37,8 @@
       "headline": "How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools",
       "description": "Complete guide to SSCC validation: structure, GS1 128 format, check digit algorithm with worked example, and JavaScript implementation.",
       "url": "https://ssccapi.com/guide.html",
-      "author": { "@type": "Organization", "name": "SSCC Pro Vision" },
-      "publisher": { "@type": "Organization", "name": "SSCC Pro Vision" },
+      "author": { "@type": "Organization", "name": "SSCCAPI" },
+      "publisher": { "@type": "Organization", "name": "SSCCAPI" },
       "mainEntityOfPage": "https://ssccapi.com/guide.html"
     }
     </script>
@@ -52,7 +52,7 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "SSCC Pro Vision",
+          "name": "SSCCAPI",
           "item": "https://ssccapi.com/"
         },
         {
@@ -181,12 +181,12 @@
 
         .site-header {
             border-bottom: 1px solid var(--border);
-            padding: 0.85rem 1.25rem;
+            padding: 0.72rem 1.25rem;
             position: sticky; top: 0; background: rgba(11, 14, 20, 0.94);
-            backdrop-filter: blur(12px); z-index: 100;
+            backdrop-filter: blur(14px); z-index: 100;
         }
         .header-inner {
-            max-width: 760px;
+            max-width: 1120px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -195,69 +195,89 @@
         }
         .nav-brand {
             font-family: var(--font-mono);
-            font-size: 0.95rem; font-weight: 700; color: var(--text);
-            text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+            font-size: 0.92rem; font-weight: 700; color: var(--text);
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;
             transition: opacity 0.15s ease;
+            white-space: nowrap;
         }
         .nav-brand:hover { opacity: 0.85; }
         .brand-dot {
             width: 8px; height: 8px; background: var(--success);
             border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--success);
         }
-        .brand-sep { color: var(--text-dim); }
+        .brand-sep { color: var(--text-dim); font-weight: 400; margin: 0 1px; }
         .brand-sub { color: var(--primary); font-weight: 600; }
-        .nav-links { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-links { display: flex; align-items: center; gap: 0.4rem; flex-wrap: nowrap; }
         .nav-pill {
             font-family: var(--font-mono);
-            font-size: 0.76rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            padding: 0.3rem 0.65rem;
+            padding: 0.3rem 0.62rem;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: rgba(255, 255, 255, 0.02);
             color: var(--muted);
             text-decoration: none;
             transition: all 0.2s ease;
+            line-height: 1.2;
         }
         .nav-pill:hover, .nav-pill.active {
             border-color: var(--primary);
             color: var(--primary);
-            background: rgba(245, 158, 11, 0.06);
+            background: rgba(245, 158, 11, 0.08);
             text-decoration: none;
+        }
+        @media (max-width: 640px) {
+            .site-header { padding: 0.55rem 0.75rem; }
+            .nav-pill { font-size: 0.7rem; padding: 0.22rem 0.45rem; }
+            .brand-sub, .brand-sep { display: none; }
         }
 
         .wrapper {
-            max-width: 760px;
+            max-width: 1120px;
             margin: 0 auto;
-            padding: 48px 24px 80px;
+            padding: 28px 20px 80px;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+        .guide-article { min-width: 0; max-width: 820px; }
+        @media (max-width: 900px) {
+            .wrapper { grid-template-columns: 1fr; gap: 20px; padding: 24px 16px 64px; }
+            .toc { position: static !important; max-height: none !important; }
         }
 
-        .article-header { margin-bottom: 48px; border-bottom: 1px solid var(--border); padding-bottom: 32px; }
+        .article-header { margin-bottom: 36px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
         .article-tag {
             display: inline-block;
             font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
             text-transform: uppercase; color: var(--primary);
             background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25);
-            padding: 3px 10px; border-radius: 20px; margin-bottom: 16px;
+            padding: 3px 10px; border-radius: 20px; margin-bottom: 14px;
             font-family: var(--font-mono);
         }
         h1 {
-            font-size: clamp(24px, 4vw, 36px);
+            font-size: clamp(24px, 3.6vw, 34px);
             font-weight: 600; line-height: 1.25;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         h1 em { color: var(--primary); font-style: normal; }
         .article-meta { font-size: 13px; color: var(--muted); }
 
         .toc {
+            position: sticky;
+            top: 72px;
+            max-height: calc(100vh - 96px);
+            overflow-y: auto;
             background: var(--surface); border: 1px solid var(--border);
-            border-radius: 12px; padding: 20px 24px; margin-bottom: 40px;
+            border-radius: 12px; padding: 18px 20px; margin-bottom: 0;
         }
-        .toc-title { font-size: 12px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; }
+        .toc-title { font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--primary); margin-bottom: 12px; }
         .toc ol { padding-left: 18px; }
-        .toc li { margin-bottom: 6px; }
-        .toc a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.15s; }
+        .toc li { margin-bottom: 7px; }
+        .toc a { color: var(--muted); text-decoration: none; font-size: 13px; line-height: 1.4; transition: color 0.15s; }
         .toc a:hover { color: var(--primary); }
 
         h2 {
@@ -410,7 +430,7 @@
 <header class="site-header">
     <div class="header-inner">
         <div class="nav-brand">
-            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;" title="SSCCAPI.com Home">
+            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
                 <span class="brand-dot"></span>
                 <span>ssccapi.com</span>
             </a>
@@ -418,7 +438,7 @@
             <span class="brand-sub">guide</span>
         </div>
         <nav class="nav-links">
-            <a class="nav-pill" href="index.html">Vision Tool</a>
+            <a class="nav-pill" href="index.html">Studio</a>
             <a class="nav-pill" href="calculator.html">Calculator</a>
             <a class="nav-pill active" href="guide.html">Guide</a>
             <a class="nav-pill" href="sscc-api-guide.html">API</a>
@@ -427,15 +447,8 @@
 </header>
 
 <div class="wrapper">
-
-    <header class="article-header">
-        <span class="article-tag">Technical Guide</span>
-        <h1>How to Validate <em>SSCC Codes</em> — Format, Algorithm &amp; Tools</h1>
-        <p class="article-meta">GS1 128 . Check Digit . EDIFACT . JavaScript</p>
-    </header>
-
     <nav class="toc" aria-label="Table of contents">
-        <div class="toc-title">Contents</div>
+        <div class="toc-title">Technical Guide</div>
         <ol>
             <li><a href="#what-is-sscc">What is an SSCC?</a></li>
             <li><a href="#structure">SSCC Structure</a></li>
@@ -443,13 +456,21 @@
             <li><a href="#common-mistakes">Common Mistakes</a></li>
             <li><a href="#javascript">JavaScript Implementation</a></li>
             <li><a href="#python">Python Implementation</a></li>
-            <li><a href="#edifact">Extracting SSCCs from EDIFACT</a></li>
-            <li><a href="#sap-idoc">SSCC in SAP IDocs (E1EDL44 / EXIDV)</a></li>
-            <li><a href="#sunrise-2027">GS1 Sunrise 2027: Dual 1D GS1-128 &amp; 2D QR Digital Link + Zebra ZPL-II</a></li>
-            <li><a href="#faq">Frequently Asked Questions</a></li>
-            <li><a href="#tool">Free Online Validator</a></li>
+            <li><a href="#edifact">Extracting from EDIFACT</a></li>
+            <li><a href="#sap-idoc">SAP IDocs (E1EDL44/EXIDV)</a></li>
+            <li><a href="#sunrise-2027">Sunrise 2027 &amp; ZPL-II</a></li>
+            <li><a href="#retailer-compliance">Retailer GS1 Profiles</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#tool">Studio &amp; Cloud API</a></li>
         </ol>
     </nav>
+
+    <article class="guide-article">
+    <header class="article-header">
+        <span class="article-tag">SSCCAPI Technical Reference</span>
+        <h1>How to Validate <em>SSCC Codes</em> — Format, Algorithm &amp; Tools</h1>
+        <p class="article-meta">GS1-128 · Check Digit · EDIFACT · SAP IDoc · Zebra ZPL-II</p>
+    </header>
 
     <h2 id="what-is-sscc">What is an SSCC?</h2>
     <p>The <strong>Serial Shipping Container Code (SSCC)</strong> is an 18 digit GS1 identifier used in logistics to uniquely identify a physical shipping unit, a pallet, box, roll cage, or any other logistic unit. It is the primary identifier used in supply chain transactions between trading partners.</p>
@@ -754,7 +775,7 @@
     <span class="kw">&lt;/E1EDL44&gt;</span>
 <span class="kw">&lt;/E1EDL37&gt;</span></code></pre>
 
-    <p>Both <strong>SSCC Pro Vision</strong> and its REST API natively parse these XML IDoc tags as well as flat text IDoc streams up to 1 MB without requiring intermediate transformations.</p>
+    <p>Both <strong>SSCCAPI</strong> and its REST API natively parse these XML IDoc tags as well as flat text IDoc streams up to 1 MB without requiring intermediate transformations.</p>
 
     <h2 id="sunrise-2027">GS1 Sunrise 2027: Dual 1D GS1-128 &amp; 2D QR Digital Link + Zebra ZPL-II</h2>
     <p>Under the global <strong>GS1 Sunrise 2027</strong> initiative and the <strong>GS1 Digital Link</strong> standard, logistics pallet labels are transitioning from single 1D linear barcodes to <strong>Dual-Symbology (1D + 2D QR Code)</strong> and standalone <strong>2D QR Digital Link</strong> barcodes.</p>
@@ -783,7 +804,7 @@
     </table>
 
     <h3>Zebra ZPL-II Command Anatomy (1D ^BCN + 2D ^BQN)</h3>
-    <p>When printing on 4×6" (100×150mm, 203 dpi) industrial Zebra thermal printers, <strong>SSCC Pro Vision</strong> and the <a href="sscc-api-guide.html">Labels REST API (<code>POST /v1/labels</code>)</a> compile native ZPL-II streams combining <code>^BCN</code> (Code 128 Subset C with FNC1 escape <code>&gt;8</code>) and <code>^BQN</code> (QR Code Model 2):</p>
+    <p>When printing on 4×6" (100×150mm, 203 dpi) industrial Zebra thermal printers, <strong>SSCCAPI</strong> and the <a href="sscc-api-guide.html">Labels REST API (<code>POST /v1/labels</code>)</a> compile native ZPL-II streams combining <code>^BCN</code> (Code 128 Subset C with FNC1 escape <code>&gt;8</code>) and <code>^BQN</code> (QR Code Model 2):</p>
 
 <pre><code><span class="comment">; 2D GS1 Digital Link QR Code (Model 2, Magnification 4, Error Correction Q/M)</span>
 <span class="kw">^FO</span>575,168<span class="kw">^BQN</span>,2,4<span class="kw">^FD</span>QA,https://ssccapi.com/?sscc=356012345600000016&amp;10=LOT99<span class="kw">^FS</span>
@@ -894,7 +915,7 @@
     <ul>
         <li><strong>Standalone Barcodes or Full Pallet Labels</strong>: Switch between <em>Full GS1 Pallet Label</em> (A5 / A6 / 4×6") and <em>Barcode Only (SSCC Strip)</em> in 1D GS1-128, 2D QR Digital Link, or Dual mode.</li>
         <li><strong>4 Industrial Output Formats</strong>: Direct Print/PDF, native Zebra ZPL-II (<code>^BCN</code> + <code>^BQN</code>), pure Vector <code>.svg</code>, and high-resolution <code>300 DPI .png</code>.</li>
-        <li><strong>Cloudflare Edge REST API</strong>: Validate for free on <code>sscc.birth1mark.workers.dev</code> or generate labels &amp; barcodes via <code>sscc-labels.birth1mark.workers.dev</code> (25 free labels included; Pro packs from <strong>5 €</strong>).</li>
+        <li><strong>Cloudflare Edge REST API</strong>: Validate for free on <code>https://ssccapi.com/validate</code> or generate labels &amp; barcodes via <code>https://ssccapi.com/v1/labels</code> (25 free labels included; Pro packs from <strong>5 €</strong>).</li>
         <li><strong>Custom ERP &amp; Retailer Templates</strong>: Need bespoke label layouts (Sonae, Jerónimo Martins, Mercadona, Amazon) or SAP/Odoo connectors? Contact us for custom engineering.</li>
     </ul>
 
@@ -906,7 +927,7 @@
             <a class="cta-btn" href="sscc-api-guide.html" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">Explore REST API &amp; Sandbox →</a>
         </div>
     </div>
-
+    </article>
 </div>
 
 </body>

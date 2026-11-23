@@ -1,5 +1,5 @@
 /**
- * SSCC Pro Vision — Cloud Label & Barcode API Client SDK (Open-Core Edition)
+ * SSCCAPI — Cloud Label & Barcode API Client SDK (Open-Core Edition)
  *
  * The commercial GS1-128, 2D QR Digital Link (ISO/IEC 18004) & Zebra ZPL-II compiler
  * is hosted on the Cloudflare Edge API: https://sscc-labels.birth1mark.workers.dev
@@ -56,7 +56,7 @@ function initLabelGeneratorStudio() {
     const preview = document.getElementById('lbl-preview-box');
     if (preview) {
         preview.innerHTML = `<div style="padding:20px;text-align:center;background:#080a0f;border:1px solid #222c3d;border-radius:10px;font-family:monospace;">
-            <p style="color:#f59e0b;font-weight:700;margin-bottom:8px;">⚡ SSCC Pro Vision — Cloud Label &amp; ZPL Studio</p>
+            <p style="color:#f59e0b;font-weight:700;margin-bottom:8px;">⚡ SSCCAPI — Cloud Label &amp; ZPL Studio</p>
             <p style="color:#94a3b8;font-size:12px;margin-bottom:14px;">The commercial GS1-128, 2D QR Digital Link &amp; Zebra ZPL-II engine runs on the official hosted studio and Cloudflare Edge API.</p>
             <a href="https://ssccapi.com/#labels" style="display:inline-block;background:#f59e0b;color:#0b0e14;padding:8px 16px;border-radius:6px;font-weight:700;text-decoration:none;font-size:12px;">Open Official Label Studio (ssccapi.com) →</a>
         </div>`;
@@ -85,5 +85,5 @@ function downloadStudioEDIFACT() { redirectToHostedLabelStudio(); }
 function downloadStudioSAPIDoc() { redirectToHostedLabelStudio(); }
 function contactForCustomFeatures() {
     const email = atob('cGVkcm8=') + '@' + atob('cG9ybWVub3Jlcy5uZXQ=');
-    window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('SSCC Pro Vision — Custom Features / ERP Integration');
+    window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('SSCCAPI — Custom Features / ERP Integration');
 }

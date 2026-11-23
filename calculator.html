@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Universal GS1 Check Digit Calculator — GTIN-8, GTIN-12, GTIN-13, GTIN-14 &amp; SSCC</title>
-    <meta name="description" content="Free online universal GS1 check digit calculator. Calculate and verify check digits for GTIN-8, GTIN-12 (UPC), GTIN-13 (EAN), GTIN-14, GLN, and SSCC pallet codes. Interactive step-by-step Modulo 10 algorithm.">
+    <title>SSCCAPI — Universal GS1 Check Digit Calculator (GTIN-8, 12, 13, 14, GLN &amp; SSCC)</title>
+    <meta name="description" content="Free online universal GS1 check digit calculator by SSCCAPI. Calculate and verify check digits for GTIN-8, GTIN-12 (UPC), GTIN-13 (EAN), GTIN-14, GLN, and SSCC pallet codes. Interactive step-by-step Modulo 10 algorithm.">
     <meta name="keywords" content="GS1 check digit calculator, GTIN check digit, EAN 13 check digit, UPC check digit, SSCC check digit, modulo 10 algorithm, GS1-128 calculator, barcode check digit">
-    <meta name="author" content="birth1mark">
+    <meta name="author" content="SSCCAPI">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://ssccapi.com/calculator.html">
     <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Universal GS1 Check Digit Calculator — GTIN, EAN, UPC &amp; SSCC">
+    <meta property="og:site_name" content="SSCCAPI">
+    <meta property="og:title" content="SSCCAPI — Universal GS1 Check Digit Calculator (GTIN, EAN, UPC &amp; SSCC)">
     <meta property="og:description" content="Interactive Modulo 10 GS1 check digit calculator with step-by-step visual multiplier table. 100% free and client-side.">
     <meta property="og:url" content="https://ssccapi.com/calculator.html">
     <meta property="og:image" content="https://ssccapi.com/og-image.png">
@@ -116,29 +117,31 @@
 
         .site-header {
             border-bottom: 1px solid var(--border);
-            padding: 0.85rem 1.25rem;
+            padding: 0.72rem 1.25rem;
             position: sticky;
             top: 0;
             background: rgba(11, 14, 20, 0.94);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             z-index: 100;
         }
         .header-inner {
-            max-width: 680px;
+            max-width: 1120px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 0.75rem;
         }
         .brand {
             font-family: var(--font-mono);
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: var(--text-main);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.45rem;
+            white-space: nowrap;
         }
         .brand-dot {
             width: 8px;
@@ -148,33 +151,48 @@
             display: inline-block;
             box-shadow: 0 0 10px var(--success);
         }
-        .brand-sep { color: var(--text-dim); }
+        .brand-sep { color: var(--text-dim); font-weight: 400; margin: 0 1px; }
         .brand-sub { color: var(--primary); font-weight: 600; }
 
-        .header-nav { display: flex; align-items: center; gap: 0.5rem; }
+        .header-nav { display: flex; align-items: center; gap: 0.4rem; }
         .nav-pill {
             font-family: var(--font-mono);
-            font-size: 0.76rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            padding: 0.3rem 0.65rem;
+            padding: 0.3rem 0.62rem;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: rgba(255, 255, 255, 0.02);
             color: var(--text-muted);
             text-decoration: none;
             transition: all 0.2s ease;
+            line-height: 1.2;
         }
         .nav-pill:hover, .nav-pill.active {
             border-color: var(--primary);
             color: var(--primary);
-            background: rgba(245, 158, 11, 0.06);
+            background: rgba(245, 158, 11, 0.08);
+        }
+        @media (max-width: 640px) {
+            .site-header { padding: 0.55rem 0.75rem; }
+            .nav-pill { font-size: 0.7rem; padding: 0.22rem 0.45rem; }
+            .brand-sub, .brand-sep { display: none; }
         }
 
         .container {
             width: 100%;
-            max-width: 680px;
+            max-width: 1120px;
             margin: 0 auto;
-            padding: 24px 16px 56px;
+            padding: 24px 20px 56px;
+        }
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 24px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .calc-grid { grid-template-columns: 1fr; }
         }
 
         .card {
@@ -416,7 +434,7 @@
 <header class="site-header">
     <div class="header-inner">
         <div class="brand">
-            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI.com Home">
+            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
                 <span class="brand-dot"></span>
                 <span>ssccapi.com</span>
             </a>
@@ -424,7 +442,7 @@
             <span class="brand-sub">calculator</span>
         </div>
         <nav class="header-nav">
-            <a href="index.html" class="nav-pill">Vision Tool</a>
+            <a href="index.html" class="nav-pill">Studio</a>
             <a href="calculator.html" class="nav-pill active">Calculator</a>
             <a href="guide.html" class="nav-pill">Guide</a>
             <a href="sscc-api-guide.html" class="nav-pill">API</a>
@@ -433,7 +451,8 @@
 </header>
 
 <div class="container">
-    <main class="card">
+    <div class="calc-grid">
+    <main class="card" style="margin-bottom:0;">
         <div class="card-header">
             <h1>GS1 <span>CHECK DIGIT</span> CALCULATOR</h1>
             <p class="tagline">Universal Modulo 10 calculator for GTIN-8, 12, 13, 14, GLN &amp; SSCC</p>
@@ -528,6 +547,7 @@
         <h2>Mathematical Formula:</h2>
         <p><code>Check Digit = (10 - (Sum % 10)) % 10</code>. If the remainder is 0, the check digit is 0.</p>
     </article>
+    </div>
 </div>
 
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>

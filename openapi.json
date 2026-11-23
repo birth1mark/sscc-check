@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "SSCC Pro Vision — Validation, EDI & GS1 Pallet Label API",
+    "title": "SSCCAPI — Validation, EDI & GS1 Pallet Label API",
     "version": "5.9.0",
     "description": "Free, high-performance REST API for Serial Shipping Container Code (SSCC-18) validation,\ncheck digit calculation (GS1 Modulo 10), range expansion, country/company prefix lookup,\nand multi-format file extraction (UN/EDIFACT, SAP IDoc, XML, CSV, TXT).\nPowered by Cloudflare Workers. Zero authentication required.\n",
     "contact": {

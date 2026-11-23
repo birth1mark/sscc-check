@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSCC Pro Vision API &amp; Interactive Swagger Sandbox — GS1-128, 2D QR Digital Link &amp; Zebra ZPL</title>
+    <title>SSCCAPI — REST API &amp; Interactive Swagger Sandbox (GS1-128, 2D QR Digital Link &amp; Zebra ZPL)</title>
     <meta name="description" content="Interactive API documentation, Swagger live sandbox, technical architecture diagrams and ERP integration manuals for SSCC validation, GS1 pallet labels, 2D QR Digital Link and Zebra ZPL-II.">
     <meta name="keywords" content="SSCC API, GS1 pallet label API, Zebra ZPL API, GS1 Digital Link QR API, SSCC validation API, EDIFACT SSCC extract, Swagger sandbox">
+    <meta name="author" content="SSCCAPI">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://ssccapi.com/sscc-api-guide.html">
     <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
@@ -13,15 +14,16 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SSCCAPI">
     <meta property="og:url" content="https://ssccapi.com/sscc-api-guide.html">
-    <meta property="og:title" content="SSCC Pro Vision — Developer Portal &amp; Interactive API Sandbox">
+    <meta property="og:title" content="SSCCAPI — Developer Portal &amp; Interactive API Sandbox">
     <meta property="og:description" content="Live Swagger-style API sandbox, architecture diagrams and ERP manuals for GS1-128, 2D QR Digital Link and Zebra ZPL pallet labels.">
     <meta property="og:image" content="https://ssccapi.com/og-image.png">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "TechArticle",
-      "headline": "SSCC Pro Vision — Developer Portal, Interactive API Sandbox & ERP Integration Manual",
+      "headline": "SSCCAPI — Developer Portal, Interactive API Sandbox & ERP Integration Manual",
       "description": "Complete technical documentation and live sandbox for SSCC-18 validation, EDI extraction, GS1-128 & 2D QR Digital Link pallet labels, and Zebra ZPL-II generation.",
       "url": "https://ssccapi.com/sscc-api-guide.html"
     }
@@ -72,18 +74,18 @@
             z-index: -1;
         }
 
-        /* ─── Unified Header ─── */
+        /* ─── Unified Header (1120px across all pages) ─── */
         .site-header {
             border-bottom: 1px solid var(--border);
-            padding: 0.75rem 1.5rem;
+            padding: 0.72rem 1.25rem;
             position: sticky;
             top: 0;
             background: rgba(11, 14, 20, 0.94);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             z-index: 100;
         }
         .header-inner {
-            max-width: 1240px;
+            max-width: 1120px;
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -92,43 +94,50 @@
         }
         .nav-brand {
             font-family: var(--font-mono);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 700;
             color: var(--text);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.45rem;
+            white-space: nowrap;
         }
         .brand-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--success); }
-        .brand-sep { color: var(--text-dim); }
+        .brand-sep { color: var(--text-dim); font-weight: 400; margin: 0 1px; }
         .brand-sub { color: var(--primary); font-weight: 600; }
-        .nav-links { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        .nav-links { display: flex; gap: 0.4rem; align-items: center; flex-wrap: nowrap; }
         .nav-pill {
             font-family: var(--font-mono);
-            font-size: 0.76rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            padding: 0.3rem 0.65rem;
+            padding: 0.3rem 0.62rem;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: rgba(255, 255, 255, 0.02);
             color: var(--muted);
             text-decoration: none;
             transition: all 0.2s ease;
+            line-height: 1.2;
         }
         .nav-pill:hover, .nav-pill.active {
             border-color: var(--primary);
             color: var(--primary);
-            background: rgba(245, 158, 11, 0.06);
+            background: rgba(245, 158, 11, 0.08);
+        }
+        @media (max-width: 640px) {
+            .site-header { padding: 0.55rem 0.75rem; }
+            .nav-pill { font-size: 0.7rem; padding: 0.22rem 0.45rem; }
+            .brand-sub, .brand-sep { display: none; }
         }
 
-        /* ─── Two-Column Developer Portal Layout ─── */
+        /* ─── Two-Column Developer Portal Layout (Unified 1120px) ─── */
         .portal-layout {
-            max-width: 1240px;
+            max-width: 1120px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 270px 1fr;
-            gap: 32px;
+            grid-template-columns: 250px 1fr;
+            gap: 28px;
             padding: 28px 20px 80px;
             align-items: start;
         }
@@ -666,18 +675,18 @@
 <header class="site-header">
     <div class="header-inner">
         <div class="nav-brand">
-            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI.com Home">
+            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
                 <span class="brand-dot"></span>
                 <span>ssccapi.com</span>
             </a>
             <span class="brand-sep">/</span>
-            <span class="brand-sub">api-portal</span>
+            <span class="brand-sub">api</span>
         </div>
         <nav class="nav-links">
-            <a class="nav-pill" href="index.html">Vision Tool</a>
+            <a class="nav-pill" href="index.html">Studio</a>
             <a class="nav-pill" href="calculator.html">Calculator</a>
-            <a class="nav-pill" href="guide.html">Technical Guide</a>
-            <a class="nav-pill active" href="sscc-api-guide.html">API &amp; Sandbox</a>
+            <a class="nav-pill" href="guide.html">Guide</a>
+            <a class="nav-pill active" href="sscc-api-guide.html">API</a>
         </nav>
     </div>
 </header>
@@ -716,7 +725,7 @@
     <main class="portal-main">
         <div class="hero-banner">
             <span class="hero-tag">Developer Portal &amp; OpenAPI 3.1 Sandbox</span>
-            <h1>SSCC Pro Vision <em>REST API &amp; Label Engine</em></h1>
+            <h1>SSCCAPI <em>REST API &amp; Label Engine</em></h1>
             <p style="color:var(--muted);max-width:740px;">
                 Enterprise-grade Cloudflare Edge APIs for <strong>SSCC-18 Modulo 10 validation</strong>, <strong>EDIFACT / SAP IDoc extraction</strong>, and <strong>Dual-Symbology GS1 Logistics Pallet Labels</strong> (Classic 1D <code>GS1-128</code> + Sunrise 2027 2D <code>QR Code GS1 Digital Link</code> in native <strong>Zebra ZPL-II</strong>, Vector <strong>SVG</strong> and Printable <strong>A5/4×6" HTML</strong>).
             </p>
@@ -1269,7 +1278,7 @@ def print_gs1_pallet_batch(api_key, zebra_ip, gcp, start_serial, qty, lot_no):
 <script>
 function contactApiSupport() {
     const addr = atob('cGVkcm8=') + '@' + atob('cG9ybWVub3Jlcy5uZXQ=');
-    const subj = encodeURIComponent('SSCC Pro Vision API — Custom Features / ERP Integration');
+    const subj = encodeURIComponent('SSCCAPI — Custom Features / ERP Integration');
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(addr).catch(() => {});
     }

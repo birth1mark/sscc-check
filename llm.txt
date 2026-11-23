@@ -1,4 +1,4 @@
-# SSCC Pro Vision — GS1-128 Logistics Validator, EDI Extractor & Pallet Label Engine
+# SSCCAPI — GS1-128 Logistics Validator, EDI Extractor & Pallet Label Engine
 
 > Free, open-source GS1 Serial Shipping Container Code (SSCC-18) validator, Modulo 10 check digit calculator, EDIFACT/SAP IDoc/XML extractor, GS1-128 pallet label generator (A5/A6/4x6" & Zebra ZPL-II), and zero-auth public REST API.
 
@@ -17,7 +17,7 @@
 
 ## 1. Instructions for AI Agents & Autonomous Tools
 
-AI agents, LLM tool-callers, and automation workflows can interact with **SSCC Pro Vision** in two ways:
+AI agents, LLM tool-callers, and automation workflows can interact with **SSCCAPI** in two ways:
 1. **Direct REST API Calls (`https://sscc.birth1mark.workers.dev`)**: No API key or authentication required. Supports CORS (`*`) and returns structured JSON. Rate limit: 500 requests/hour per IP.
 2. **Deep-Linking into the Web Application (`https://ssccapi.com/`)**: Construct pre-populated URLs for human operators to view validation results or print physical GS1 pallet labels.
 

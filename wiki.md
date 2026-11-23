@@ -1,4 +1,4 @@
-# 📦 SSCC Pro Vision — Wiki
+# 📦 SSCCAPI — Wiki
 
 > Free, open-source SSCC validator, check digit calculator and REST API. Works in any modern browser, installs as a PWA on Android and iOS — no app store required.
 

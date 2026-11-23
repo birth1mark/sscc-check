@@ -1,4 +1,4 @@
-# 📦 SSCCAPI.com (SSCC Pro Vision) — GS1-128 & 2D QR Barcode Generator, ZPL Pallet Label Studio & REST API
+# 📦 SSCCAPI — GS1-128 & 2D QR Barcode Generator, ZPL Pallet Label Studio & REST API
 
 **Enterprise-grade SSCC-18 validator, standalone GS1-128 & 2D QR Digital Link barcode generator (`SVG`, `300 DPI PNG`, `Zebra ZPL-II`), A5/4×6" pallet label studio, EDIFACT/SAP IDoc extractor, and Cloudflare Edge REST API.**
 
@@ -183,7 +183,7 @@ Everything runs **100% client-side** — no file is ever uploaded to a server.
 
 ## ☕ Support
 
-If SSCC Pro Vision saves you time or helps your logistics workflow, consider [buying me a coffee](https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00). Contributions help maintain the project open-source, fast and ad-free!
+If SSCCAPI saves you time or helps your logistics workflow, consider [buying me a coffee](https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00). Contributions help maintain the project open-source, fast and ad-free!
 
 ---
 

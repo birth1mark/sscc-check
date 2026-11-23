@@ -1,4 +1,4 @@
-// SSCC Pro Vision — Core Application Logic (v5.8.0)
+// SSCCAPI — Core Application Logic (v5.8.0)
 
 // State
 let store = [];

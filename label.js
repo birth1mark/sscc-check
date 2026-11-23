@@ -14,7 +14,7 @@
 
 // Configure your independent Cloudflare Worker URL here once deployed:
 const LABELS_API_BASE_URL = 'https://sscc-labels.birth1mark.workers.dev';
-const FREE_LABEL_LIMIT = 100;
+const FREE_LABEL_LIMIT = 25;
 const LOCAL_QUOTA_STORAGE_KEY = 'sscc_labels_quota_v1';
 const PRO_API_KEY_STORAGE_KEY = 'sscc_pro_api_key_v1';
 const DEVICE_ID_STORAGE_KEY   = 'sscc_device_fp_v1';
@@ -681,7 +681,7 @@ function updateQuotaUI(remoteQuota = null) {
     if (rem === 0) {
         badgeEl.className = 'quota-pill quota-exhausted';
         badgeEl.innerHTML = `🔒 Free Quota: <strong>0 / ${FREE_LABEL_LIMIT}</strong> labels left — <u>Unlock Pro</u>`;
-    } else if (rem <= 25) {
+    } else if (rem <= 10) {
         badgeEl.className = 'quota-pill quota-warn';
         badgeEl.innerHTML = `⚠️ Free Quota: <strong>${rem} / ${FREE_LABEL_LIMIT}</strong> labels remaining`;
     } else {

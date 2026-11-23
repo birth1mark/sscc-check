@@ -1,8 +1,10 @@
-// SSCC Pro Vision — Core Application Logic (v5.6.0)
+// SSCC Pro Vision — Core Application Logic (v5.7.0)
 
 // State
 let store = [];
 window.store = store;
+let activeWorkspaceTab = 'validate';
+let historySaveTimer = null;
 
 // GS1 Prefix Country Flag (source: GS1 General Specifications 2025)
 const GS1_FLAGS = [
@@ -98,9 +100,9 @@ function parseRangeLine(line) {
 function expandRange(bodyA, bodyB) {
     const start = BigInt(bodyA);
     const end   = BigInt(bodyB);
-    if (end < start) return { error: 'O fim do intervalo é menor que o início.' };
+    if (end < start) return { error: 'Range end is smaller than range start.' };
     const count = end - start + 1n;
-    if (count > BigInt(MAX_RANGE)) return { error: `Intervalo demasiado grande: ${count} códigos (máximo ${MAX_RANGE}).` };
+    if (count > BigInt(MAX_RANGE)) return { error: `Range too large: ${count} codes (maximum ${MAX_RANGE}).` };
     const results = [];
     for (let n = start; n <= end; n++) {
         results.push(n.toString().padStart(17, '0'));
@@ -110,16 +112,14 @@ function expandRange(bodyA, bodyB) {
 
 function formatSSCC(body, cd, provided) {
     const ai  = `<span class="sscc-ai">(00)</span>`;
-    const ext = `<span class="sscc-ext">${body[0]}</span>`;
-    const b   = `<span class="sscc-body">${body.substring(1)}</span>`;
+    const ext = `<span class="sscc-ext" title="Extension Digit">${body[0]}</span>`;
+    const b   = `<span class="sscc-body" title="GS1 Company Prefix &amp; Serial Reference">${body.substring(1)}</span>`;
 
     let cdHtml;
-    if (provided === null) {
-        cdHtml = `<span class="sscc-cd">${cd}</span>`;
-    } else if (provided === cd) {
-        cdHtml = `<span class="sscc-cd">${cd}</span>`;
+    if (provided === null || provided === cd) {
+        cdHtml = `<span class="sscc-cd" title="Valid Check Digit (${cd})">${cd}</span>`;
     } else {
-        cdHtml = `<span class="sscc-cd-err" title="Expected ${cd}">${provided}</span>`;
+        cdHtml = `<span class="sscc-cd-err" title="Invalid Check Digit: provided ${provided}, expected ${cd}">${provided}</span>`;
     }
 
     return `${ai} ${ext} ${b} ${cdHtml}`;
@@ -137,7 +137,7 @@ function copyCode(plain, btn) {
         setTimeout(() => {
             btn.innerHTML = orig;
             if (window.lucide) lucide.createIcons();
-        }, 1500);
+        }, 1400);
     });
 }
 
@@ -163,11 +163,98 @@ function exportCSV() {
     URL.revokeObjectURL(url);
 }
 
-function process() {
-    const raw = document.getElementById('input').value;
+/**
+ * Switches between the two primary workspace tabs: 'validate' and 'labels'.
+ */
+function switchWorkspaceTab(tabName) {
+    activeWorkspaceTab = tabName;
+
+    const btnVal = document.getElementById('tab-btn-validate');
+    const btnLbl = document.getElementById('tab-btn-labels');
+    const panelVal = document.getElementById('panel-validate');
+    const panelLbl = document.getElementById('panel-labels');
+
+    if (tabName === 'labels') {
+        if (typeof stopScanner === 'function' && typeof isScanning !== 'undefined' && isScanning) {
+            stopScanner();
+        }
+        if (btnVal) { btnVal.classList.remove('active'); btnVal.setAttribute('aria-selected', 'false'); }
+        if (btnLbl) { btnLbl.classList.add('active'); btnLbl.setAttribute('aria-selected', 'true'); }
+        if (panelVal) panelVal.style.display = 'none';
+        if (panelLbl) panelLbl.style.display = 'block';
+
+        if (typeof initLabelStudioIfNeeded === 'function') {
+            initLabelStudioIfNeeded();
+        }
+    } else {
+        if (btnVal) { btnVal.classList.add('active'); btnVal.setAttribute('aria-selected', 'true'); }
+        if (btnLbl) { btnLbl.classList.remove('active'); btnLbl.setAttribute('aria-selected', 'false'); }
+        if (panelVal) panelVal.style.display = 'block';
+        if (panelLbl) panelLbl.style.display = 'none';
+    }
+
+    if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * Handles live input from the textarea without requiring an explicit "AUDIT" click.
+ */
+function handleLiveInput() {
+    dismissFileBanner();
+    process(false);
+
+    clearTimeout(historySaveTimer);
+    historySaveTimer = setTimeout(() => {
+        const raw = document.getElementById('input')?.value || '';
+        if (store.some(i => i.plain)) {
+            saveSessionToHistory(raw, store);
+        }
+    }, 1200);
+}
+
+/**
+ * Loads sample SSCC codes to demonstrate validation, check digit calc, and ranges.
+ */
+function loadSampleCodes(presetType = 'mixed') {
+    const input = document.getElementById('input');
+    if (!input) return;
+
+    dismissFileBanner();
+
+    if (presetType === 'single') {
+        input.value = '356012345600000016';
+    } else if (presetType === 'calc17') {
+        input.value = '35601234560000002';
+    } else if (presetType === 'range') {
+        input.value = '356012345600000016 - 356012345600000020';
+    } else {
+        input.value = [
+            '356012345600000016',
+            '34012345670000009',
+            '384012345600000010 - 384012345600000012'
+        ].join('\n');
+    }
+
+    process(true);
+    showToast('Sample SSCC batch loaded.');
+}
+
+function dismissFileBanner() {
+    const banner = document.getElementById('file-banner');
+    if (banner) banner.style.display = 'none';
+}
+
+function process(saveImmediate = true) {
+    const inputEl = document.getElementById('input');
+    const raw = inputEl ? inputEl.value : '';
     const lines = raw.split(/\r?\n/);
     store = [];
     window.store = store;
+
+    const clearBtn = document.getElementById('btn-clear-input');
+    if (clearBtn) {
+        clearBtn.style.display = raw.trim().length > 0 ? 'inline-flex' : 'none';
+    }
 
     lines.forEach(line => {
         const trimmed = line.trim();
@@ -185,11 +272,11 @@ function process() {
                 const cd   = getCD(body);
                 const full = body + cd;
                 store.push({
-                    code:  formatSSCC(body, cd, null),
-                    label: 'GEN',
-                    status:'gen',
-                    flag:  getFlag(full),
-                    plain: plainSSCC(body, cd),
+                    code:   formatSSCC(body, cd, null),
+                    label:  'GEN',
+                    status: 'gen',
+                    flag:   getFlag(full),
+                    plain:  plainSSCC(body, cd),
                 });
             });
             return;
@@ -205,7 +292,7 @@ function process() {
             const flag     = getFlag(body + cd);
             store.push({
                 code:   formatSSCC(body, cd, provided),
-                label:  ok ? 'PASS' : `FAIL: expected ${cd}`,
+                label:  ok ? 'VALID' : `FAIL · exp ${cd}`,
                 status: ok ? 'valid' : 'invalid',
                 flag,
                 plain:  plainSSCC(body, cd),
@@ -215,38 +302,70 @@ function process() {
             const cd   = getCD(val);
             const flag = getFlag(val + cd);
             store.push({
-                code:  formatSSCC(val, cd, null),
-                label: 'GEN',
-                status:'gen',
+                code:   formatSSCC(val, cd, null),
+                label:  'GEN · +' + cd,
+                status: 'gen',
                 flag,
-                plain: plainSSCC(val, cd),
+                plain:  plainSSCC(val, cd),
+            });
+        } else if (val.length > 0) {
+            store.push({
+                code:   `<span style="color:var(--text-muted);">${escapeHtml(trimmed)}</span>`,
+                label:  `${val.length} digits (need 17/18)`,
+                status: 'invalid',
+                flag:   '',
+                plain:  null,
             });
         }
     });
 
     render();
 
-    // Auto-save session to history if there are valid results
-    if (store.some(i => i.plain)) {
+    if (saveImmediate && store.some(i => i.plain)) {
         saveSessionToHistory(raw, store);
+    }
+}
+
+function updateWorkspaceBadges() {
+    const validOrGen = store.filter(i => (i.status === 'valid' || i.status === 'gen') && i.plain);
+    const badgeEl = document.getElementById('tab-validate-badge');
+    if (badgeEl) {
+        if (store.length > 0) {
+            badgeEl.textContent = store.length;
+            badgeEl.style.display = 'inline-block';
+        } else {
+            badgeEl.style.display = 'none';
+        }
+    }
+
+    const srcAuditedLabel = document.getElementById('src-audited-label');
+    if (srcAuditedLabel) {
+        srcAuditedLabel.textContent = `Validated List (${validOrGen.length})`;
     }
 }
 
 function render() {
     const out = document.getElementById('output');
+    updateWorkspaceBadges();
+    if (!out) return;
 
     if (!store.length) {
         out.innerHTML = `<div class="empty-state">
             <div class="empty-state-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
                     <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
                     <rect x="7" y="8" width="2" height="8" rx="1"/><rect x="11" y="8" width="1" height="8" rx="0.5"/>
                     <rect x="14" y="8" width="3" height="8" rx="1"/>
                 </svg>
             </div>
-            <div class="empty-state-label">Scan a barcode or enter an SSCC</div>
-            <div class="empty-state-hint">e.g. 356012345600000016 or START - END</div>
+            <div class="empty-state-label">Ready to validate or extract SSCC codes</div>
+            <div class="empty-state-hint">Paste codes above, scan a GS1-128 barcode, or drop an EDIFACT / XML / CSV file</div>
+            <div class="sample-chips">
+                <button type="button" class="sample-chip" onclick="loadSampleCodes('single')">18-Digit SSCC</button>
+                <button type="button" class="sample-chip" onclick="loadSampleCodes('calc17')">17-Digit Check Calc</button>
+                <button type="button" class="sample-chip" onclick="loadSampleCodes('range')">5-Pallet Range</button>
+            </div>
         </div>`;
         return;
     }
@@ -257,47 +376,60 @@ function render() {
     const total      = store.filter(i => i.plain).length;
     const validOrGen = store.filter(i => (i.status === 'valid' || i.status === 'gen') && i.plain);
 
-    let summary = `<div class="results-summary">`;
-    if (gen)     summary += `<span class="badge badge-gen">${gen} GEN</span>`;
-    if (valid)   summary += `<span class="badge badge-pass">${valid} PASS</span>`;
-    if (invalid) summary += `<span class="badge badge-fail">${invalid} FAIL</span>`;
-    
-    // Batch Labels Button
+    let summary = `<div class="results-summary"><div class="summary-badges">`;
+    if (valid)   summary += `<span class="badge badge-pass">${valid} VALID</span>`;
+    if (gen)     summary += `<span class="badge badge-gen">${gen} GENERATED</span>`;
+    if (invalid) summary += `<span class="badge badge-fail">${invalid} INVALID</span>`;
+    summary += `</div><div class="summary-actions">`;
+
     if (validOrGen.length > 0) {
-        summary += `<button class="btn-export btn-batch-labels" onclick="openBatchLabelsModal()" title="Print GS1 pallet labels or export batch ZPL">
-            <i data-lucide="printer" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Pallet Labels (${validOrGen.length})
-        </button>`;
-    }
-    
-    if (total > 1) {
-        summary += `<button class="btn-export" onclick="exportCSV()" title="Export results to CSV">
-            <i data-lucide="download" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>CSV
+        summary += `<button type="button" class="btn-export btn-batch-labels" onclick="openBatchLabelsModal()" title="Open Pallet Label Studio with these ${validOrGen.length} codes">
+            <i data-lucide="printer" style="width:12px;height:12px;"></i>
+            <span>Print Labels (${validOrGen.length})</span>
         </button>`;
     }
 
     if (total > 0) {
-        summary += `<button class="btn-export" onclick="shareBatch()" title="Share batch via direct link">
-            <i data-lucide="share-2" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"></i>Share
+        summary += `<button type="button" class="btn-export" onclick="exportCSV()" title="Export results to CSV">
+            <i data-lucide="download" style="width:12px;height:12px;"></i>
+            <span>CSV</span>
+        </button>`;
+        summary += `<button type="button" class="btn-export" onclick="shareBatch()" title="Copy shareable link to this batch">
+            <i data-lucide="share-2" style="width:12px;height:12px;"></i>
+            <span>Share</span>
         </button>`;
     }
 
-    summary += `</div>`;
+    summary += `</div></div>`;
 
-    const rows = store.map((item, idx) => {
+    const legend = `<div class="sscc-legend">
+        <div class="legend-items">
+            <span><span class="sscc-ai">(00)</span> AI</span>
+            <span><span class="legend-dot" style="background:var(--primary);"></span>Ext</span>
+            <span><span class="legend-dot" style="background:var(--text-main);"></span>GS1 Prefix &amp; Serial</span>
+            <span><span class="legend-dot" style="background:var(--success);"></span>Check Digit</span>
+        </div>
+        <span>${store.length} item${store.length !== 1 ? 's' : ''}</span>
+    </div>`;
+
+    const rows = store.map(item => {
         const badgeClass = item.status === 'valid'   ? 'badge-pass'
                          : item.status === 'invalid' ? 'badge-fail'
-                         :                            'badge-gen';
-        const rowStyle = item.status === 'invalid' ? 'color:#f87171' : '';
-        const copyBtn  = item.plain
-            ? `<button class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy SSCC"><i data-lucide="copy" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
+                         :                             'badge-gen';
+        const copyBtn = item.plain
+            ? `<button type="button" class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy 18-digit SSCC"><i data-lucide="copy" style="width:13px;height:13px;"></i></button>`
             : '';
         const labelBtn = (item.status === 'valid' || item.status === 'gen') && item.plain
-            ? `<button class="btn-copy" onclick="openLabelModal('${item.plain}')" title="Generate GS1 Pallet Label (Print / ZPL)"><i data-lucide="tag" style="width:13px;height:13px;vertical-align:middle;"></i></button>`
+            ? `<button type="button" class="btn-copy" onclick="openLabelModal('${item.plain}')" title="Open GS1 Pallet Label for this SSCC"><i data-lucide="tag" style="width:13px;height:13px;"></i></button>`
             : '';
+        const sourceSub = item.source ? `<span class="result-source">${escapeHtml(item.source)}</span>` : '';
 
         return `
-        <div class="result-row" style="${rowStyle}">
-            <span class="result-code">${item.code}</span>
+        <div class="result-row">
+            <div class="result-code-wrap">
+                <span class="result-code">${item.code}</span>
+                ${sourceSub}
+            </div>
             <span class="result-meta">
                 <span class="flag">${item.flag || ''}</span>
                 <span class="badge ${badgeClass}">${item.label}</span>
@@ -307,22 +439,25 @@ function render() {
         </div>`;
     }).join('');
 
-    out.innerHTML = summary + rows;
+    out.innerHTML = summary + legend + rows;
     if (window.lucide) lucide.createIcons();
 }
 
 function clearAll() {
-    document.getElementById('input').value = '';
+    const input = document.getElementById('input');
+    if (input) input.value = '';
+    const clearBtn = document.getElementById('btn-clear-input');
+    if (clearBtn) clearBtn.style.display = 'none';
+    dismissFileBanner();
     store = [];
     window.store = store;
     render();
 }
 
 /* ==========================================================================
-   FEATURE 3: USABILIDADE, ARMAZENAMENTO & PWA
+   PERSISTENT AUDIT HISTORY, GS1 GCP STORAGE, SHARING & HARDWARE SCANNER
    ========================================================================== */
 
-// 1. Persistent Local Audit History (LocalStorage)
 const HISTORY_KEY = 'sscc_audit_history_v1';
 
 function getHistory() {
@@ -335,27 +470,26 @@ function getHistory() {
 }
 
 function saveSessionToHistory(rawText, storeItems) {
-    if (!rawText.trim() || !storeItems.length) return;
+    if (!rawText || !rawText.trim() || !storeItems.length) return;
     try {
         const history = getHistory();
         const validCount = storeItems.filter(i => (i.status === 'valid' || i.status === 'gen') && i.plain).length;
         if (validCount === 0) return;
 
-        // Evitar duplicar sessão exatamente igual em menos de 10 segundos
-        if (history.length > 0 && history[0].rawText === rawText && (Date.now() - history[0].id) < 10000) {
+        if (history.length > 0 && history[0].rawText === rawText.trim()) {
             return;
         }
 
         const newEntry = {
             id: Date.now(),
-            date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date().toLocaleDateString(),
+            date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' · ' + new Date().toLocaleDateString(),
             count: storeItems.length,
             validCount: validCount,
-            rawText: rawText
+            rawText: rawText.trim()
         };
 
         history.unshift(newEntry);
-        if (history.length > 30) history.pop(); // Guarda até 30 sessões
+        if (history.length > 30) history.pop();
         localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
         updateHistoryCount();
     } catch (e) {}
@@ -413,7 +547,8 @@ function restoreHistoryItem(id) {
     if (!item) return;
     document.getElementById('input').value = item.rawText;
     closeHistoryModal();
-    process();
+    switchWorkspaceTab('validate');
+    process(false);
     showToast(`Session restored (${item.validCount} pallets).`);
 }
 
@@ -422,7 +557,7 @@ function deleteHistoryItem(id) {
     history = history.filter(h => h.id !== id);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
     updateHistoryCount();
-    openHistoryModal(); // Refresh modal
+    openHistoryModal();
 }
 
 function clearAllHistory() {
@@ -432,7 +567,7 @@ function clearAllHistory() {
     openHistoryModal();
 }
 
-// 2. Configurador de Prefixo GS1 da Empresa (GCP)
+// GS1 Company Prefix (GCP) Persistence (shared directly with Tab 2 Studio)
 const GCP_SETTINGS_KEY = 'sscc_gcp_settings_v1';
 
 function getGCPSettings() {
@@ -441,9 +576,9 @@ function getGCPSettings() {
         if (s) return JSON.parse(s);
     } catch (e) {}
     return {
-        prefix: '',
+        prefix: '5601234',
         extDigit: '0',
-        lastSerial: 1
+        lastSerial: 1000
     };
 }
 
@@ -453,88 +588,10 @@ function saveGCPSettings(data) {
     } catch (e) {}
 }
 
-function openSettingsModal() {
-    const s = getGCPSettings();
-    if (document.getElementById('cfg-prefix')) document.getElementById('cfg-prefix').value = s.prefix || '';
-    if (document.getElementById('cfg-ext')) document.getElementById('cfg-ext').value = s.extDigit || '0';
-    if (document.getElementById('cfg-serial')) document.getElementById('cfg-serial').value = s.lastSerial || '1';
-
-    const modal = document.getElementById('settings-modal-backdrop');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function closeSettingsModal() {
-    const modal = document.getElementById('settings-modal-backdrop');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-    }
-}
-
-function saveSettingsForm() {
-    const prefix = (document.getElementById('cfg-prefix')?.value || '').replace(/\D/g, '');
-    const extDigit = (document.getElementById('cfg-ext')?.value || '0').replace(/\D/g, '') || '0';
-    const lastSerial = parseInt(document.getElementById('cfg-serial')?.value || '1', 10);
-
-    if (prefix && (prefix.length < 6 || prefix.length > 11)) {
-        alert('GS1 Company Prefix (GCP) is typically 6 to 11 digits long.');
-        return;
-    }
-
-    saveGCPSettings({
-        prefix,
-        extDigit: extDigit.slice(0, 1),
-        lastSerial: isNaN(lastSerial) ? 1 : lastSerial
-    });
-
-    closeSettingsModal();
-    showToast('GS1 settings saved successfully.');
-}
-
-/**
- * Generates the next sequential SSCC for the configured GS1 Company Prefix.
- */
-function generateNextSSCC() {
-    const s = getGCPSettings();
-    if (!s.prefix) {
-        openSettingsModal();
-        showToast('Registered GS1 Company Prefix required to generate SSCCs.', 'warn');
-        return;
-    }
-
-    const ext = s.extDigit || '0';
-    const prefix = s.prefix;
-    // Total body digits = 17 = 1 (ext) + prefix.length + serial.length
-    const serialLen = 17 - 1 - prefix.length;
-    if (serialLen <= 0) {
-        alert('GS1 Company Prefix is too long.');
-        return;
-    }
-
-    const nextSerialNum = (parseInt(s.lastSerial, 10) || 0) + 1;
-    const serialStr = String(nextSerialNum).padStart(serialLen, '0');
-    const body17 = `${ext}${prefix}${serialStr}`;
-    const cd = getCD(body17);
-    const fullSSCC = body17 + cd;
-
-    // Atualiza o contador guardado
-    s.lastSerial = nextSerialNum;
-    saveGCPSettings(s);
-
-    const input = document.getElementById('input');
-    input.value = (input.value.trim() ? input.value.trim() + '\n' : '') + fullSSCC;
-    process();
-
-    if (typeof playBeep === 'function') playBeep();
-    showToast(`Generated: (00) ${fullSSCC}`);
-}
-
-// 3. Partilha Serverless por URL Hash
+// Serverless URL Hash Sharing
 function shareBatch() {
-    const raw = document.getElementById('input').value.trim();
+    const validCodes = store.filter(i => i.plain).map(i => i.plain);
+    const raw = document.getElementById('input').value.trim() || validCodes.join('\n');
     if (!raw) {
         showToast('Nothing to share.', 'warn');
         return;
@@ -554,29 +611,32 @@ function shareBatch() {
 }
 
 function checkUrlShare() {
-    // 1. Suporte a parâmetros de pesquisa do portal pormenores.net (?code=... ou ?sscc=...)
     try {
         const params = new URLSearchParams(window.location.search);
         const code = params.get('code') || params.get('sscc');
         if (code) {
             document.getElementById('input').value = code;
-            process();
+            process(true);
             if (params.get('label') === '1' || window.location.hash === '#label') {
-                setTimeout(() => openLabelModal(code), 250);
+                setTimeout(() => openLabelModal(code), 150);
             }
             return;
         }
     } catch (e) {}
 
-    // 2. Serverless sharing via hash (#share=...)
+    if (window.location.hash === '#labels' || window.location.hash === '#label') {
+        switchWorkspaceTab('labels');
+        return;
+    }
+
     if (window.location.hash.startsWith('#share=')) {
         try {
             const rawHash = window.location.hash.substring(7);
             const decoded = decodeURIComponent(escape(atob(decodeURIComponent(rawHash))));
             if (decoded) {
                 document.getElementById('input').value = decoded;
-                process();
-                showToast('Shared batch loaded successfully!');
+                process(true);
+                showToast('Shared batch loaded!');
                 history.replaceState(null, null, window.location.pathname);
             }
         } catch (e) {
@@ -585,21 +645,21 @@ function checkUrlShare() {
     }
 }
 
-// 4. Hardware / Laser Barcode Scanner Listener (Wedge)
+// Hardware / Laser Barcode Scanner Listener (Wedge)
 let scannerBuffer = '';
 let lastKeyTime = 0;
 
 function initHardwareScannerListener() {
     window.addEventListener('keydown', e => {
-        // Do not interfere if user is typing in input or textarea
         const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
-        if (activeTag === 'input' && document.activeElement.id !== 'file-input') return;
+        if ((activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') && document.activeElement.id !== 'file-input') {
+            return;
+        }
 
         const now = Date.now();
         const diff = now - lastKeyTime;
         lastKeyTime = now;
 
-        // Industrial barcode scanners emit keystrokes < 50ms apart
         if (diff > 55) {
             scannerBuffer = '';
         }
@@ -608,10 +668,11 @@ function initHardwareScannerListener() {
             const trimmed = scannerBuffer.trim();
             if (trimmed.length >= 17) {
                 e.preventDefault();
+                switchWorkspaceTab('validate');
                 const input = document.getElementById('input');
                 input.value = (input.value.trim() ? input.value.trim() + '\n' : '') + trimmed;
-                if (typeof playBeep === 'function') playBeep();
-                process();
+                if (typeof beep === 'function') beep();
+                process(true);
                 showToast(`Scanned via hardware: ${trimmed.slice(-8)}`);
             }
             scannerBuffer = '';
@@ -624,7 +685,10 @@ function initHardwareScannerListener() {
     });
 }
 
-// 5. Toast Notification System
+function escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function showToast(msg, type = 'info') {
     let toast = document.getElementById('app-toast');
     if (!toast) {

@@ -1,24 +1,27 @@
 /**
- * Initialization for SSCC Pro Vision (v5.6.0)
+ * Initialization for SSCC Pro Vision (v5.7.0)
  */
 
 let deferredInstallPrompt = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializa ícones Lucide
-    if (window.lucide) lucide.createIcons();
+    // Render empty state and initialize workspace
+    if (typeof render === 'function') render();
 
-    // Inicializa lógica de ficheiros do parser.js
+    // Initialize file upload drag & drop
     if (typeof initFileUpload === 'function') initFileUpload();
 
-    // Inicializa suporte a hardware scanner (laser / Bluetooth wedge)
+    // Initialize hardware laser / Bluetooth barcode scanner wedge listener
     if (typeof initHardwareScannerListener === 'function') initHardwareScannerListener();
 
-    // Verifica partilhas por URL (#share=...)
+    // Check URL parameters (?code=..., #share=..., #labels)
     if (typeof checkUrlShare === 'function') checkUrlShare();
 
     // Update session audit count in history pill
     if (typeof updateHistoryCount === 'function') updateHistoryCount();
+
+    // Initialize Lucide icons
+    if (window.lucide) lucide.createIcons();
 
     // Online / Offline Status Indicator
     const updateNetworkStatus = () => {
@@ -37,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNetworkStatus();
 });
 
-// Suporte para instalação PWA
+// PWA Installation Support
 window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredInstallPrompt = e;
@@ -55,7 +58,7 @@ function triggerPWAInstall() {
     });
 }
 
-// Registo do Service Worker
+// Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./service-worker.js')

@@ -53,13 +53,12 @@
             "priceCurrency": "EUR"
           },
           "featureList": [
-            "Validate 18-digit SSCC codes",
-            "Calculate GS1 check digits",
-            "Scan GS1-128 barcodes via camera",
+            "Real-time 18-digit SSCC validation",
+            "Automatic GS1 Modulo 10 check digit calculation",
+            "GS1-128 camera and hardware laser barcode scanner",
             "Generate and Print GS1 Logistics Pallet Labels (A5, A6, 4x6 inch thermal)",
             "Batch ZPL export for industrial Zebra thermal printers",
-            "Extract SSCCs from EDIFACT, IDoc, XML and CSV files",
-            "Hardware laser barcode scanner listener support",
+            "Extract SSCCs from EDIFACT, SAP IDoc, XML and CSV files",
             "Offline audit history persistence",
             "Free REST API",
             "Works offline as PWA",
@@ -145,12 +144,11 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Grelha sutil de fundo retro-terminal (em sintonia com pormenores.net) */
         body::before {
             content: "";
             position: fixed;
             inset: 0;
-            background-image: 
+            background-image:
                 linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
             background-size: 36px 36px;
@@ -158,7 +156,7 @@
             z-index: -1;
         }
 
-        /* ─── Header de Marca Minimalista Pormenores ─── */
+        /* ─── Minimalist Brand Header ─── */
         .site-header {
             border-bottom: 1px solid var(--border);
             padding: 0.65rem 1rem;
@@ -170,7 +168,7 @@
             z-index: 100;
         }
         .header-inner {
-            max-width: 540px;
+            max-width: 580px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -190,9 +188,7 @@
             white-space: nowrap;
             flex-shrink: 0;
         }
-        .brand:hover {
-            opacity: 0.85;
-        }
+        .brand:hover { opacity: 0.85; }
         .brand-dot {
             width: 8px;
             height: 8px;
@@ -201,15 +197,9 @@
             display: inline-block;
             box-shadow: 0 0 10px var(--success);
         }
-        .brand-sep {
-            color: var(--text-dim);
-            font-weight: 400;
-            margin: 0 1px;
-        }
-        .brand-sub {
-            color: var(--primary);
-            font-weight: 600;
-        }
+        .brand-sep { color: var(--text-dim); font-weight: 400; margin: 0 1px; }
+        .brand-sub { color: var(--primary); font-weight: 600; }
+
         .header-nav {
             display: flex;
             align-items: center;
@@ -231,7 +221,7 @@
             font-family: var(--font-mono);
             font-size: 0.73rem;
             font-weight: 500;
-            padding: 0.28rem 0.52rem;
+            padding: 0.28rem 0.55rem;
             border-radius: 6px;
             border: 1px solid var(--border);
             background: rgba(255, 255, 255, 0.02);
@@ -249,17 +239,6 @@
             border-color: var(--primary);
             color: var(--primary);
             background: rgba(245, 158, 11, 0.06);
-        }
-        .nav-pill-primary {
-            border-color: rgba(245, 158, 11, 0.4) !important;
-            background: rgba(245, 158, 11, 0.1) !important;
-            color: var(--primary) !important;
-            font-weight: 600 !important;
-        }
-        .nav-pill-primary:hover {
-            border-color: var(--primary) !important;
-            background: rgba(245, 158, 11, 0.2) !important;
-            color: #fff !important;
         }
         .nav-icon-btn {
             width: 28px;
@@ -295,31 +274,27 @@
             text-align: center;
             line-height: 13px;
         }
+
         @media (max-width: 580px) {
             .site-header { padding: 0.5rem 0.75rem; }
-            .header-inner { flex-wrap: wrap; gap: 0.45rem; justify-content: space-between; }
-            .header-nav { width: 100%; justify-content: space-between; }
-            .nav-group-links { gap: 0.25rem; }
-            .nav-pill { font-size: 0.7rem; padding: 0.22rem 0.4rem; }
+            .header-inner { gap: 0.4rem; }
+            .nav-pill { font-size: 0.7rem; padding: 0.22rem 0.42rem; }
         }
 
+        /* ─── Main Container & Card ─── */
         .container {
             width: 100%;
-            max-width: 540px;
+            max-width: 580px;
             margin: 0 auto;
-            padding: 24px 16px 48px;
+            padding: 20px 14px 48px;
         }
 
         .card {
             background: var(--surface-card);
             border-radius: 14px;
-            padding: 22px;
+            padding: 20px;
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
             border: 1px solid var(--border);
-            transition: border-color 0.2s ease;
-        }
-        .card:hover {
-            border-color: rgba(245, 158, 11, 0.35);
         }
 
         .card-header {
@@ -338,10 +313,7 @@
             justify-content: center;
             gap: 8px;
         }
-        h1 span {
-            color: var(--text-main);
-            font-weight: 600;
-        }
+        h1 span { color: var(--text-main); font-weight: 600; }
         .version-badge {
             font-size: 10px;
             font-weight: 600;
@@ -352,13 +324,118 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
         .tagline {
-            font-size: 13px;
+            font-size: 12.5px;
             color: var(--text-muted);
-            margin: 6px 0 0;
+            margin: 4px 0 0;
             font-weight: 400;
-            letter-spacing: 0.01em;
         }
 
+        /* ─── Primary Mode Switcher (2-Tab Workspace) ─── */
+        .workspace-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: #080a0f;
+            padding: 5px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+        .workspace-tab {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 9px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: all 0.18s ease;
+            white-space: nowrap;
+        }
+        .workspace-tab:hover:not(.active) {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .workspace-tab.active {
+            background: var(--surface);
+            color: var(--primary);
+            border-color: rgba(245, 158, 11, 0.38);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+            font-weight: 700;
+        }
+        .tab-count-pill {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 6px;
+            border-radius: 10px;
+            background: rgba(245, 158, 11, 0.16);
+            color: var(--primary);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .workspace-tab.active .tab-count-pill {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+
+        /* ─── Tab 1: Capture Toolbar (Scan & File Drop) ─── */
+        .capture-toolbar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        @media (max-width: 440px) {
+            .capture-toolbar { grid-template-columns: 1fr; }
+        }
+        .capture-btn {
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.18s ease;
+            text-align: center;
+            user-select: none;
+        }
+        .capture-btn-scan {
+            background: var(--primary);
+            color: #0b0e14;
+            border: 1px solid var(--primary);
+            font-weight: 700;
+        }
+        .capture-btn-scan:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+        }
+        .capture-btn-scan.scanning-active {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #ffffff;
+        }
+        .capture-btn-file {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1.5px dashed var(--border);
+            color: var(--text-muted);
+        }
+        .capture-btn-file:hover,
+        .capture-btn-file.drag-over {
+            border-color: var(--primary);
+            background: rgba(245, 158, 11, 0.06);
+            color: var(--text-main);
+        }
+
+        /* ─── Camera Viewport ─── */
         #viewport-wrap {
             width: 100%;
             height: 220px;
@@ -377,14 +454,126 @@
             object-fit: cover;
             display: block;
         }
+        #scan-status {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(11, 14, 20, 0.85);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
 
-        textarea {
+        /* ─── File Upload Feedback Banner ─── */
+        .file-banner {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: rgba(56, 189, 248, 0.07);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+        }
+        .file-banner-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        .file-banner-name {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .file-banner-info {
+            color: var(--text-muted);
+        }
+        .file-banner-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .file-banner-close:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ─── Smart Input Area ─── */
+        .input-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            gap: 8px;
+        }
+        .input-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            display: inline-block;
+        }
+        .input-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .micro-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s;
+        }
+        .micro-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.08);
+        }
+        .micro-btn-danger:hover {
+            border-color: var(--danger);
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        textarea#input {
             width: 100%;
-            height: 110px;
+            height: 96px;
             background: #080a0f;
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 14px;
+            padding: 11px 13px;
             color: #f8fafc;
             font-family: var(--font-mono);
             font-size: 13px;
@@ -392,45 +581,685 @@
             box-sizing: border-box;
             resize: vertical;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            line-height: 1.5;
         }
-        textarea:focus {
+        textarea#input:focus {
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
         }
 
-        .drop-zone {
-            width: 100%;
-            box-sizing: border-box;
-            border: 1.5px dashed var(--border);
-            border-radius: 8px;
-            padding: 13px;
-            margin-bottom: 12px;
-            color: var(--text-muted);
-            font-size: 13px;
+        /* ─── Results Panel & Toolbar ─── */
+        .results {
+            background: #080a0f;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            min-height: 110px;
+            max-height: 440px;
+            overflow-y: auto;
+        }
+        .results-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 12px;
+            background: rgba(18, 23, 34, 0.9);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            backdrop-filter: blur(8px);
+        }
+        .summary-badges {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .summary-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .btn-export {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 9px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s ease;
+        }
+        .btn-export:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.08);
+        }
+        .btn-batch-labels {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: var(--success);
+            font-weight: 700;
+        }
+        .btn-batch-labels:hover {
+            background: var(--success);
+            border-color: var(--success);
+            color: #0b0e14;
+        }
+
+        /* Anatomy Legend */
+        .sscc-legend {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.015);
+            border-bottom: 1px solid rgba(34, 44, 61, 0.5);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+        .legend-items {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .legend-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 3px;
+        }
+
+        /* Result Rows */
+        .result-row {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(34, 44, 61, 0.5);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.12s;
+        }
+        .result-row:hover {
+            background: rgba(255, 255, 255, 0.018);
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        .result-code-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+        .result-code {
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+        .result-source {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+        .result-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            padding: 5px 8px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-copy:hover {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* SSCC Color-Coded Anatomy */
+        .sscc-ai   { color: var(--text-dim); }
+        .sscc-ext  { color: var(--primary); font-weight: 700; }
+        .sscc-body { color: var(--text-main); }
+        .sscc-cd   { color: var(--success); font-weight: 700; }
+        .sscc-cd-err {
+            color: #ffffff;
+            background: var(--danger);
+            padding: 0 5px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 24px 16px;
+            color: var(--text-muted);
+        }
+        .empty-state-icon {
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            opacity: 0.65;
+        }
+        .empty-state-label {
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+        .empty-state-hint {
+            font-size: 11.5px;
+            color: var(--text-dim);
+            margin-bottom: 14px;
+        }
+        .sample-chips {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.015);
+            gap: 6px;
+            flex-wrap: wrap;
         }
-        .drop-zone:hover {
-            border-color: var(--primary);
-            background: rgba(245, 158, 11, 0.04);
-            color: var(--text-main);
+        .sample-chip {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .sample-chip:hover {
+            background: var(--primary);
+            color: #0b0e14;
         }
 
-        .btn-stack {
+        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; font-family: var(--font-mono); white-space: nowrap; }
+        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+        .badge-fail { background: rgba(239,68,68,0.15);  color: #f87171;        border: 1px solid rgba(239,68,68,0.35); }
+        .badge-gen  { background: rgba(245,158,11,0.15); color: var(--primary); border: 1px solid rgba(245,158,11,0.3); }
+
+        /* ─── Tab 2: GS1 Pallet Label & Generator Studio ─── */
+        .studio-source-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .source-label {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .source-pills {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .source-pill {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .source-pill:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+        .source-pill.active {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Audited Batch Notice Banner in Tab 2 */
+        .audited-batch-card {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(13, 17, 26, 0.85) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .audited-batch-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* Pallet Batch Config Card (Sequential Generation) */
+        .label-batch-config-card {
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, rgba(13, 17, 26, 0.85) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.32);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+        }
+        .batch-config-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .batch-config-title {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+        .batch-config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 480px) {
+            .batch-config-grid { grid-template-columns: 1fr; }
+        }
+        .lbl-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .lbl-input-group label {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lbl-input-group input,
+        .lbl-input-group select {
+            width: 100%;
+            height: 36px;
+            box-sizing: border-box;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0 10px;
+            color: #f8fafc;
+            font-size: 12px;
+            font-family: var(--font-mono);
+            transition: all 0.15s;
+        }
+        .lbl-input-group input:focus,
+        .lbl-input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
+        }
+
+        /* Stepper Controls */
+        .stepper-wrap {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 36px;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .stepper-wrap:focus-within {
+            border-color: var(--primary);
+        }
+        .stepper-wrap input {
+            border: none !important;
+            background: transparent !important;
+            height: 100% !important;
+            text-align: center;
+            font-size: 12.5px !important;
+            font-weight: 700 !important;
+            flex: 1;
+            min-width: 0;
+            padding: 0 4px !important;
+        }
+        .btn-stepper {
+            background: rgba(245, 158, 11, 0.12);
+            border: none;
+            color: var(--primary);
+            width: 34px;
+            height: 100%;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .btn-stepper:hover {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] { -moz-appearance: textfield; }
+
+        /* Quick Presets Bar */
+        .batch-quick-presets {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .preset-label {
+            font-size: 10.5px;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-right: 2px;
+        }
+        .btn-preset {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            color: #f1f5f9;
+            padding: 3px 9px;
+            border-radius: 6px;
+            font-size: 10.5px;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-preset:hover {
+            background: rgba(245, 158, 11, 0.22);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .btn-preset.active {
+            background: var(--primary);
+            color: #0b0e14;
+            border-color: var(--primary);
+            font-weight: 800;
+        }
+
+        /* Batch Range Summary */
+        .batch-range-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: rgba(8, 10, 15, 0.75);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 6px;
+            padding: 7px 10px;
+            margin-top: 10px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+        .batch-range-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+        }
+        .range-title { color: var(--text-muted); font-weight: 600; }
+        .range-code { color: #f8fafc; font-weight: 700; }
+        .batch-badge {
+            background: var(--primary);
+            color: #0b0e14;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .gcp-compliance-note {
+            font-size: 10.5px;
+            color: var(--text-dim);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* GS1 Physical Label Sheet */
+        .gs1-label-sheet {
+            background: #ffffff;
+            color: #000000;
+            border: 2.5px solid #000000;
+            border-radius: 4px;
+            padding: 14px;
+            font-family: Arial, Helvetica, sans-serif;
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0 0 14px 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
+        .gs1-label-sheet.format-a6 { max-width: 380px; margin: 0 auto 14px; }
+        .gs1-label-sheet.format-thermal { max-width: 360px; margin: 0 auto 14px; }
+        .lbl-row {
+            border-bottom: 2px solid #000000;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .lbl-field-tag {
+            display: block;
+            font-size: 8.5px;
+            font-weight: 800;
+            color: #333333;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+        .lbl-company {
+            font-size: 13px;
+            font-weight: 800;
+            color: #000000;
+            line-height: 1.25;
+            text-transform: uppercase;
+        }
+        .lbl-subtext { font-size: 10.5px; color: #555555; margin-top: 2px; }
+        .lbl-meta-value { font-size: 12px; font-weight: 700; color: #000000; }
+        .lbl-sscc-section {
+            border-bottom: none;
+            padding: 10px 0 2px;
+            text-align: center;
+            display: block;
+        }
+        .lbl-sscc-title {
+            display: block;
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+            color: #000000;
+        }
+        .lbl-sscc-hri {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14.5px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+        .lbl-barcode-wrap {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            background: #ffffff;
+            padding: 4px 0;
+        }
+        .lbl-pallet-tag {
+            font-size: 9.5px;
+            font-weight: 800;
+            color: #000;
+            background: #e2e8f0;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-family: var(--font-mono);
+        }
+
+        /* Batch Navigation */
+        .lbl-batch-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(8, 10, 15, 0.7);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 12px;
+            margin-bottom: 12px;
+        }
+        .btn-batch-nav {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-batch-nav:hover:not(:disabled) {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+        .btn-batch-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+        .lbl-batch-counter {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: var(--font-mono);
+        }
+
+        /* Label Customization Form */
+        .label-edit-details {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+        .label-edit-details summary {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .label-edit-details summary::after {
+            content: '＋';
+            color: var(--primary);
+        }
+        .label-edit-details[open] summary::after {
+            content: '－';
+        }
+        .label-edit-grid {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-bottom: 14px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
         }
-        .btn-grid {
+        .lbl-input-row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
+        }
+        .lbl-input-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        @media (max-width: 480px) {
+            .lbl-input-row-2, .lbl-input-row-3 { grid-template-columns: 1fr; }
+        }
+
+        .studio-actions-footer {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 8px;
+        }
+        @media (max-width: 440px) {
+            .studio-actions-footer { grid-template-columns: 1fr; }
         }
         .main-btn {
             width: 100%;
@@ -444,6 +1273,10 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         .btn-live {
             background: var(--primary);
@@ -472,83 +1305,37 @@
             background: rgba(239, 68, 68, 0.15);
         }
 
-        .results {
-            background: #080a0f;
-            border-radius: 8px;
-            padding: 6px;
-            border: 1px solid var(--border);
-            min-height: 80px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .result-row {
-            padding: 10px 12px;
-            border-bottom: 1px solid rgba(34, 44, 61, 0.6);
-            font-family: var(--font-mono);
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .result-row:last-child {
-            border-bottom: none;
-        }
-        
-        .btn-copy { 
-            background: rgba(255, 255, 255, 0.03) !important; 
-            border: 1px solid var(--border) !important; 
-            border-radius: 6px; 
-            color: var(--text-muted); 
-            padding: 6px 9px; 
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        .btn-copy:hover { 
-            background: rgba(245, 158, 11, 0.1) !important; 
-            border-color: var(--primary) !important; 
-            color: var(--primary); 
-        }
-        .btn-copy.copied { 
-            background: rgba(16, 185, 129, 0.1) !important; 
-            color: var(--success) !important; 
-            border-color: var(--success) !important; 
-        }
-
-        .sscc-ai  { color: var(--text-dim); }
-        .sscc-ext { color: var(--primary); font-weight: 700; }
-        .sscc-ref { color: var(--text-main); }
-        .sscc-cd  { font-weight: 700; }
-        .sscc-cd.cd-valid   { color: var(--success); }
-        .sscc-cd.cd-invalid { color: var(--danger); text-decoration: underline; }
-
+        /* ─── Info Panel & FAQ ─── */
         .info-panel {
             margin-top: 18px;
             background: rgba(15, 20, 31, 0.55);
             border-radius: 12px;
             border: 1px solid var(--border);
-            padding: 18px;
+            padding: 16px 18px;
             font-size: 13px;
         }
-        .info-panel h2 {
-            font-family: var(--font-mono);
-            font-size: 13px;
-            color: var(--primary);
-            margin: 0 0 10px 0;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .info-panel-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        details {
+        .privacy-badge {
+            color: var(--success);
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        details.info-accordion {
             cursor: pointer;
             border-top: 1px solid var(--border);
             padding-top: 10px;
-            margin-top: 12px;
+            margin-top: 10px;
         }
-        summary {
+        details.info-accordion summary {
             font-family: var(--font-mono);
             font-weight: 600;
             font-size: 12px;
@@ -558,22 +1345,17 @@
             align-items: center;
             justify-content: space-between;
         }
-        summary::after {
+        details.info-accordion summary::after {
             content: '＋';
             color: var(--primary);
         }
-        details[open] summary::after {
+        details.info-accordion[open] summary::after {
             content: '－';
         }
-
-        .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700; font-family: var(--font-mono); }
-        .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
-        .badge-fail { background: rgba(239,68,68,0.15);  color: var(--danger);  border: 1px solid rgba(239,68,68,0.3); }
-        .badge-gen  { background: rgba(245,158,11,0.15); color: var(--primary); border: 1px solid rgba(245,158,11,0.3); }
         .version { font-weight: 700; color: var(--primary); margin-right: 6px; font-family: var(--font-mono); }
         .changelog p { margin: 10px 0; border-left: 2px solid var(--border); padding-left: 10px; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
-        /* ─── GS1 Logistics Pallet Label Modal (Mobile-First) ─── */
+        /* ─── History Modal ─── */
         .label-modal-backdrop {
             position: fixed;
             inset: 0;
@@ -584,28 +1366,18 @@
             align-items: center;
             justify-content: center;
             padding: 12px;
-            animation: fadeIn 0.2s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
         .label-modal {
             background: var(--surface-card);
             border: 1px solid var(--border);
             border-radius: 14px;
             width: 100%;
-            max-width: 540px;
-            max-height: 94vh;
+            max-width: 520px;
+            max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
-            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
         }
         .label-modal-header {
             padding: 12px 16px;
@@ -639,16 +1411,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.15s;
         }
-        .label-modal-close:hover {
-            color: #fff;
-            border-color: var(--primary);
-        }
-        .label-modal-body {
-            padding: 14px 16px;
-            overflow-y: auto;
-        }
+        .label-modal-close:hover { color: #fff; border-color: var(--primary); }
+        .label-modal-body { padding: 14px 16px; overflow-y: auto; }
         .label-modal-footer {
             padding: 12px 16px;
             border-top: 1px solid var(--border);
@@ -656,470 +1421,13 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             background: var(--surface-card);
-            position: sticky;
-            bottom: 0;
-            z-index: 10;
-        }
-
-        /* GS1 Physical Label Sheet (Realistic High-Contrast Layout) */
-        .gs1-label-sheet {
-            background: #ffffff;
-            color: #000000;
-            border: 2.5px solid #000000;
-            border-radius: 4px;
-            padding: 14px;
-            font-family: Arial, Helvetica, sans-serif;
-            box-sizing: border-box;
-            width: 100%;
-            margin: 0 0 14px 0;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-        }
-        .lbl-row {
-            border-bottom: 2px solid #000000;
-            padding: 8px 0;
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        .lbl-field-tag {
-            display: block;
-            font-size: 8.5px;
-            font-weight: 800;
-            color: #333333;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 2px;
-        }
-        .lbl-company {
-            font-size: 13px;
-            font-weight: 800;
-            color: #000000;
-            line-height: 1.25;
-            text-transform: uppercase;
-        }
-        .lbl-subtext {
-            font-size: 10.5px;
-            color: #555555;
-            margin-top: 2px;
-        }
-        .lbl-meta-value {
-            font-size: 12px;
-            font-weight: 700;
-            color: #000000;
-        }
-        .lbl-sscc-section {
-            border-bottom: none;
-            padding: 10px 0 2px;
-            text-align: center;
-            display: block;
-        }
-        .lbl-sscc-title {
-            display: block;
-            font-size: 9.5px;
-            font-weight: 800;
-            letter-spacing: 0.06em;
-            margin-bottom: 4px;
-            color: #000000;
-        }
-        .lbl-sscc-hri {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14.5px;
-            font-weight: 800;
-            letter-spacing: 0.04em;
-            color: #000000;
-            margin-bottom: 8px;
-        }
-        .lbl-barcode-wrap {
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            background: #ffffff;
-            padding: 4px 0;
-        }
-
-        /* ─── Pallet Batch Config Card (Sequential Generation) ─── */
-        .label-batch-config-card {
-            background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, rgba(13, 17, 26, 0.85) 100%);
-            border: 1px solid rgba(245, 158, 11, 0.32);
-            border-radius: 10px;
-            padding: 14px 16px;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-        }
-        .batch-config-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .batch-config-title {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-        }
-        .batch-dispatch-pill {
-            font-family: var(--font-mono);
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--primary);
-            background: rgba(245, 158, 11, 0.12);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            padding: 1px 7px;
-            border-radius: 10px;
-            letter-spacing: 0.04em;
-        }
-        .batch-gs1-advisory {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(245, 158, 11, 0.07);
-            border: 1px solid rgba(245, 158, 11, 0.22);
-            border-radius: 6px;
-            padding: 7px 10px;
-            margin-bottom: 12px;
-            font-size: 11px;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-        .batch-gs1-advisory strong {
-            color: #f8fafc;
-            font-weight: 600;
-        }
-        .batch-config-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        @media (max-width: 480px) {
-            .batch-config-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .lbl-input-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .lbl-input-group label {
-            display: block;
-            height: 18px;
-            line-height: 18px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .lbl-input-group input,
-        .lbl-input-group select {
-            width: 100%;
-            height: 38px;
-            box-sizing: border-box;
-            background: #080a0f;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0 10px;
-            color: #f8fafc;
-            font-size: 12.5px;
-            font-family: var(--font-mono);
-            transition: all 0.15s;
-        }
-        .lbl-input-group input:focus,
-        .lbl-input-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
-        }
-        /* Custom Stepper Controls (Increment / Decrement) */
-        .stepper-wrap {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            height: 38px;
-            background: #080a0f;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            overflow: hidden;
-            box-sizing: border-box;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .stepper-wrap:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
-        }
-        .stepper-wrap input {
-            border: none !important;
-            background: transparent !important;
-            height: 100% !important;
-            text-align: center;
-            font-size: 13px !important;
-            font-weight: 700 !important;
-            font-family: var(--font-mono) !important;
-            color: #f8fafc !important;
-            flex: 1;
-            min-width: 0;
-            padding: 0 4px !important;
-            box-shadow: none !important;
-        }
-        .btn-stepper {
-            background: rgba(245, 158, 11, 0.12);
-            border: none;
-            color: var(--primary);
-            width: 38px;
-            height: 100%;
-            font-size: 17px;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
-            user-select: none;
-            flex-shrink: 0;
-        }
-        .btn-stepper:hover {
-            background: var(--primary);
-            color: #0b0e14;
-        }
-        .btn-stepper:active {
-            transform: scale(0.92);
-        }
-        /* Hide native spinner arrows */
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-        /* Quick Presets Bar */
-        .batch-quick-presets {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-        .preset-label {
-            font-size: 10.5px;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            margin-right: 4px;
-        }
-        .btn-preset {
-            background: rgba(245, 158, 11, 0.08);
-            border: 1px solid rgba(245, 158, 11, 0.25);
-            color: #f1f5f9;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-family: var(--font-mono);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s ease-in-out;
-        }
-        .btn-preset:hover {
-            background: rgba(245, 158, 11, 0.22);
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-1px);
-        }
-        .btn-preset.active {
-            background: var(--primary);
-            color: #0b0e14;
-            border-color: var(--primary);
-            font-weight: 800;
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
-        }
-        /* Batch Range Summary */
-        .batch-range-summary {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(8, 10, 15, 0.75);
-            border: 1px solid rgba(245, 158, 11, 0.25);
-            border-radius: 6px;
-            padding: 8px 12px;
-            margin-top: 12px;
-            font-family: var(--font-mono);
-            font-size: 11.5px;
-        }
-        .batch-range-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            overflow: hidden;
-        }
-        .range-title {
-            color: var(--text-muted);
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .range-code {
-            color: #f8fafc;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-        }
-        .batch-badge {
-            background: var(--primary);
-            color: #0b0e14;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-        .lbl-pallet-tag {
-            font-size: 9.5px;
-            font-weight: 800;
-            color: #000;
-            background: #e2e8f0;
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-family: var(--font-mono);
-            letter-spacing: 0.02em;
-        }
-
-        /* Label Customization Form */
-        .label-edit-details {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-        .label-edit-details summary {
-            font-family: var(--font-mono);
-            font-size: 11.5px;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-        .label-edit-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .lbl-input-group label {
-            display: block;
-            font-size: 10.5px;
-            font-weight: 600;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            margin-bottom: 3px;
-        }
-        .lbl-input-group input {
-            width: 100%;
-            box-sizing: border-box;
-            background: #080a0f;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 6px 10px;
-            color: #f8fafc;
-            font-size: 12px;
-            font-family: var(--font-mono);
-            transition: border-color 0.15s;
-        }
-        .lbl-input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .lbl-input-group select {
-            width: 100%;
-            box-sizing: border-box;
-            background: #080a0f;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 6px 10px;
-            color: #f8fafc;
-            font-size: 12px;
-            font-family: var(--font-mono);
-            transition: border-color 0.15s;
-        }
-        .lbl-input-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .lbl-input-row-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .lbl-input-row-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-        }
-
-        /* Batch Navigation */
-        .lbl-batch-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(8, 10, 15, 0.7);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-bottom: 12px;
-        }
-        .btn-batch-nav {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: var(--primary);
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 11.5px;
-            font-family: var(--font-mono);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .btn-batch-nav:hover:not(:disabled) {
-            background: var(--primary);
-            color: #0b0e14;
-        }
-        .btn-batch-nav:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            border-color: var(--border);
-            color: var(--text-muted);
-        }
-        .lbl-batch-counter {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--primary);
-            font-family: var(--font-mono);
-            letter-spacing: 0.02em;
-        }
-
-        /* History & Counter Badge */
-        .count-pill {
-            background: var(--primary);
-            color: #000;
-            border-radius: 10px;
-            padding: 1px 6px;
-            font-size: 9.5px;
-            font-weight: 700;
-            margin-left: 3px;
         }
         .history-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 12px;
-            border-bottom: 1px solid var(--border);
+            border: 1px solid var(--border);
             background: rgba(255, 255, 255, 0.02);
             border-radius: 8px;
             margin-bottom: 8px;
@@ -1127,157 +1435,6 @@
         .history-date { font-size: 12px; font-weight: 700; color: var(--text-main); font-family: var(--font-mono); }
         .history-meta { font-size: 11px; color: var(--text-muted); }
         .history-actions { display: flex; gap: 6px; }
-
-        /* Sequencial Button */
-        .btn-seq {
-            background: rgba(245, 158, 11, 0.12);
-            color: var(--primary);
-            border: 1px solid rgba(245, 158, 11, 0.35);
-            width: 100%;
-        }
-        .btn-seq:hover {
-            background: rgba(245, 158, 11, 0.22);
-            border-color: var(--primary);
-        }
-
-        .btn-label-direct {
-            background: rgba(16, 185, 129, 0.12);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            width: 100%;
-        }
-        .btn-label-direct:hover {
-            background: rgba(16, 185, 129, 0.22);
-            border-color: var(--success);
-        }
-
-        .nav-pill-highlight {
-            border-color: rgba(245, 158, 11, 0.45) !important;
-            background: rgba(245, 158, 11, 0.12) !important;
-            color: var(--primary) !important;
-            font-weight: 600 !important;
-            cursor: pointer;
-        }
-        .nav-pill-highlight:hover {
-            border-color: var(--primary) !important;
-            background: rgba(245, 158, 11, 0.22) !important;
-            color: #fff !important;
-        }
-
-        /* ─── GS1 Compliance & Registration Frame ─── */
-        .gs1-compliance-frame {
-            background: linear-gradient(180deg, rgba(245, 158, 11, 0.07) 0%, rgba(13, 17, 26, 0.8) 100%);
-            border: 1px solid rgba(245, 158, 11, 0.28);
-            border-left: 3px solid var(--primary);
-            border-radius: 8px;
-            padding: 10px 14px;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-        }
-        .gs1-frame-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-        .gs1-frame-title {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-mono);
-            font-size: 10.5px;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: 0.05em;
-        }
-        .gs1-frame-pill {
-            font-family: var(--font-mono);
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--primary);
-            background: rgba(245, 158, 11, 0.14);
-            border: 1px solid rgba(245, 158, 11, 0.35);
-            padding: 1px 7px;
-            border-radius: 10px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-        .gs1-frame-body {
-            font-size: 11.5px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            letter-spacing: 0.01em;
-        }
-        .gs1-frame-body strong {
-            color: #f1f5f9;
-            font-weight: 600;
-        }
-
-        /* ─── Quick Tools Bar ─── */
-        .quick-tools-bar {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .quick-tool-btn {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px 10px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-decoration: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-        }
-        .quick-tool-btn:hover {
-            border-color: var(--primary);
-            color: var(--text-main);
-            background: rgba(245, 158, 11, 0.06);
-        }
-        @media (max-width: 480px) {
-            .quick-tools-bar {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ─── GS1 Warning Card in Settings Modal ─── */
-        .gs1-warning-card {
-            background: rgba(245, 158, 11, 0.08);
-            border: 1px solid rgba(245, 158, 11, 0.35);
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin-bottom: 14px;
-        }
-        .gs1-warning-title {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-mono);
-            font-size: 11.5px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-        .gs1-warning-text {
-            font-size: 11px;
-            color: var(--text-muted);
-            line-height: 1.45;
-        }
-        .gs1-warning-text strong {
-            color: var(--text-main);
-        }
-
-        /* Format variations */
-        .gs1-label-sheet.format-a6 { max-width: 380px; margin: 0 auto 14px; }
-        .gs1-label-sheet.format-thermal { max-width: 360px; margin: 0 auto 14px; }
 
         /* Toast Notifications */
         .app-toast {
@@ -1308,7 +1465,6 @@
 
         .print-only-container { display: none; }
 
-        /* Regras de Impressão Nativa (A5 / Térmica Multi-Página) */
         @media print {
             body {
                 background: #ffffff !important;
@@ -1337,7 +1493,6 @@
             }
         }
     </style>
-    <!-- Auto-Redirect GitHub Pages to pormenores.net/sscc/ -->
     <script>
     if (window.location.hostname.includes('github.io')) {
         var path = window.location.pathname.replace(/^\/sscc-check\//, '');
@@ -1357,9 +1512,6 @@
         </a>
         <nav class="header-nav">
             <div class="nav-group-links">
-                <button class="nav-pill nav-pill-primary" onclick="openCurrentOrSampleLabel()" title="GS1 Logistics Pallet Label Generator (A5 &amp; Zebra ZPL)">
-                    <i data-lucide="tag" style="width:11px;height:11px;"></i><span>Labels</span>
-                </button>
                 <a href="calculator.html" class="nav-pill" title="Universal GS1 Check Digit Calculator">Calculator</a>
                 <a href="guide.html" class="nav-pill">Guide</a>
                 <a href="sscc-api-guide.html" class="nav-pill">API</a>
@@ -1368,9 +1520,6 @@
                 <button class="nav-icon-btn" onclick="openHistoryModal()" title="Local Audit History">
                     <i data-lucide="clock" style="width:13px;height:13px;"></i>
                     <span id="history-count-badge" class="count-pill" style="display:none;">0</span>
-                </button>
-                <button class="nav-icon-btn" onclick="openSettingsModal()" title="GS1 Company Prefix Settings">
-                    <i data-lucide="settings" style="width:13px;height:13px;"></i>
                 </button>
                 <button id="btn-pwa-install" class="nav-icon-btn" onclick="triggerPWAInstall()" style="display:none;color:var(--primary);" title="Install as PWA App">
                     <i data-lucide="download" style="width:13px;height:13px;"></i>
@@ -1383,123 +1532,293 @@
 <div class="container">
     <main class="card">
         <div class="card-header">
-            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.6.0</span></h1>
-            <p class="tagline">GS1-128 barcode vision &amp; logistics check digit engine</p>
-        </div>
-        
-        <!-- GS1 Regulatory Compliance Frame -->
-        <div class="gs1-compliance-frame">
-            <div class="gs1-frame-header">
-                <div class="gs1-frame-title">
-                    <i data-lucide="shield-alert" style="width:13px;height:13px;"></i>
-                    <span>GS1 REGULATORY REQUIREMENT</span>
-                </div>
-                <span class="gs1-frame-pill">OFFICIAL NOTICE</span>
-            </div>
-            <div class="gs1-frame-body">
-                Valid SSCC codes can only be generated if your business is registered with <strong>GS1</strong> and holds an authorized <strong>GS1 Company Prefix (GCP)</strong>. Unregistered prefixes are invalid and rejected across supply chains.
-            </div>
+            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.7.0</span></h1>
+            <p class="tagline">GS1-128 validator, EDI extractor &amp; logistics pallet label studio</p>
         </div>
 
-        <div id="viewport-wrap"><video id="video" autoplay muted playsinline></video></div>
-        
-        <textarea id="input" placeholder="Scan a barcode, drop file, or enter codes..."></textarea>
-
-        <div id="drop-zone" class="drop-zone">
-            <i data-lucide="upload" style="width:18px;height:18px;margin-right:10px;opacity:0.6;"></i>
-            <span>Drop file or <u>browse</u>. EDIFACT, XML, CSV, TXT</span>
-            <input type="file" id="file-input" style="display:none;">
-        </div>
-
-        <div class="quick-tools-bar">
-            <button type="button" class="quick-tool-btn" onclick="openCurrentOrSampleLabel()" title="GS1 Logistics Pallet Label Generator">
-                <i data-lucide="tag" style="width:12px;height:12px;color:var(--primary);"></i>
-                <span>Pallet Label Generator (A5 &amp; ZPL)</span>
+        <!-- Primary Workspace Mode Switcher -->
+        <div class="workspace-tabs" role="tablist">
+            <button id="tab-btn-validate" class="workspace-tab active" role="tab" aria-selected="true" onclick="switchWorkspaceTab('validate')">
+                <i data-lucide="scan-barcode" style="width:14px;height:14px;"></i>
+                <span>Validate &amp; Extract</span>
+                <span id="tab-validate-badge" class="tab-count-pill" style="display:none;">0</span>
             </button>
-            <a href="calculator.html" class="quick-tool-btn" title="Universal Check Digit Calculator">
-                <i data-lucide="calculator" style="width:12px;height:12px;color:var(--primary);"></i>
-                <span>Check Digit Calculator</span>
-            </a>
+            <button id="tab-btn-labels" class="workspace-tab" role="tab" aria-selected="false" onclick="switchWorkspaceTab('labels')">
+                <i data-lucide="printer" style="width:14px;height:14px;"></i>
+                <span>Pallet Labels &amp; ZPL</span>
+            </button>
         </div>
 
-        <div class="btn-stack">
-            <button class="main-btn btn-live" id="btnToggle" onclick="toggleScanner()">START SCANNER</button>
-            <div class="btn-grid">
-                <button class="main-btn btn-audit" onclick="process()">AUDIT</button>
-                <button class="main-btn btn-clear" onclick="clearAll()">CLEAR</button>
-            </div>
-            <div class="btn-grid">
-                <button class="main-btn btn-seq" onclick="generateNextSSCC()" title="Requires registered GS1 Company Prefix">
-                    <i data-lucide="sparkles" style="width:13px;height:13px;margin-right:5px;vertical-align:middle;"></i>+ NEXT SSCC
+        <!-- ==================== TAB 1: VALIDATE & EXTRACT ==================== -->
+        <section id="panel-validate" role="tabpanel">
+            <div class="capture-toolbar">
+                <button type="button" class="capture-btn capture-btn-scan" id="btnToggle" onclick="toggleScanner()">
+                    <i data-lucide="camera" style="width:14px;height:14px;"></i>
+                    <span id="btnToggleText">Scan Barcode</span>
                 </button>
-                <button class="main-btn btn-label-direct" onclick="openCurrentOrSampleLabel()" title="Generate GS1 Logistics Pallet Label (A5 / 4x6 / ZPL)">
-                    <i data-lucide="printer" style="width:13px;height:13px;margin-right:5px;vertical-align:middle;"></i>PALLET LABELS
-                </button>
+                <div id="drop-zone" class="capture-btn capture-btn-file" title="Drop or browse EDIFACT, SAP IDoc, XML, CSV, or TXT file">
+                    <i data-lucide="file-up" style="width:14px;height:14px;"></i>
+                    <span>Upload EDI / XML / CSV</span>
+                    <input type="file" id="file-input" style="display:none;">
+                </div>
             </div>
-        </div>
 
-        <div class="results" id="output">
-            <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Scan a barcode or enter an SSCC</div>
-        </div>
+            <div id="viewport-wrap">
+                <video id="video" autoplay muted playsinline></video>
+                <div id="scan-status">Point camera at GS1-128 barcode…</div>
+            </div>
+
+            <div id="file-banner" class="file-banner">
+                <div id="file-banner-content" class="file-banner-content"></div>
+                <button type="button" class="file-banner-close" onclick="dismissFileBanner()" title="Dismiss">✕</button>
+            </div>
+
+            <div class="input-header">
+                <span class="input-label">
+                    <span class="live-dot" title="Real-time validation active"></span>
+                    <span>SSCC Codes / Range Input</span>
+                </span>
+                <div class="input-actions">
+                    <button type="button" class="micro-btn" onclick="loadSampleCodes()" title="Load sample SSCC codes">
+                        <i data-lucide="sparkles" style="width:11px;height:11px;"></i>
+                        <span>Try Sample</span>
+                    </button>
+                    <button type="button" id="btn-clear-input" class="micro-btn micro-btn-danger" onclick="clearAll()" style="display:none;" title="Clear all codes">
+                        <i data-lucide="trash-2" style="width:11px;height:11px;"></i>
+                        <span>Clear</span>
+                    </button>
+                </div>
+            </div>
+
+            <textarea id="input" placeholder="Paste or type SSCCs (18-digit to validate, 17-digit to calculate check digit, or START - END range)…" oninput="handleLiveInput()"></textarea>
+
+            <div class="results" id="output"></div>
+        </section>
+
+        <!-- ==================== TAB 2: PALLET LABELS & ZPL STUDIO ==================== -->
+        <section id="panel-labels" role="tabpanel" style="display:none;">
+            <!-- Source Switcher: Sequential Generator vs Audited List -->
+            <div class="studio-source-bar">
+                <span class="source-label">Label Source:</span>
+                <div class="source-pills">
+                    <button type="button" id="src-btn-seq" class="source-pill active" onclick="setLabelSourceMode('sequential')">
+                        <i data-lucide="layers" style="width:12px;height:12px;"></i>
+                        <span>Sequential Generator</span>
+                    </button>
+                    <button type="button" id="src-btn-audited" class="source-pill" onclick="setLabelSourceMode('audited')">
+                        <i data-lucide="list-checks" style="width:12px;height:12px;"></i>
+                        <span id="src-audited-label">Validated List (0)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mode A: Sequential Batch Parameters -->
+            <div id="seq-generator-card" class="label-batch-config-card">
+                <div class="batch-config-header">
+                    <div class="batch-config-title">
+                        <i data-lucide="sliders" style="width:13px;height:13px;"></i>
+                        <span>Sequential SSCC Batch Parameters</span>
+                    </div>
+                    <button type="button" class="micro-btn" onclick="sendGeneratedBatchToValidator()" title="Send generated batch to Validator for CSV export or sharing">
+                        <i data-lucide="arrow-up-left" style="width:11px;height:11px;"></i>
+                        <span>Send to Validator</span>
+                    </button>
+                </div>
+
+                <div class="batch-config-grid">
+                    <div class="lbl-input-group">
+                        <label for="batch-gcp">GS1 Company Prefix (GCP)</label>
+                        <input type="text" id="batch-gcp" placeholder="e.g. 5601234" maxlength="11" oninput="regenerateBatchSequence()">
+                    </div>
+                    <div class="lbl-input-group">
+                        <label for="batch-ext">Extension Digit (0–9)</label>
+                        <select id="batch-ext" onchange="regenerateBatchSequence()">
+                            <option value="0">0 — Standard Pallet</option>
+                            <option value="1">1 — Outer Case / Carton</option>
+                            <option value="2">2 — Transport Package</option>
+                            <option value="3">3 — Mixed Pallet</option>
+                            <option value="4">4 — Internal / Custom</option>
+                            <option value="5">5 — Reserved Logistics</option>
+                            <option value="6">6 — Reserved Logistics</option>
+                            <option value="7">7 — Reserved Logistics</option>
+                            <option value="8">8 — Reserved Logistics</option>
+                            <option value="9">9 — Variable Measure</option>
+                        </select>
+                    </div>
+                    <div class="lbl-input-group">
+                        <label for="batch-start-serial">Start Serial Number</label>
+                        <div class="stepper-wrap">
+                            <button type="button" class="btn-stepper" onclick="adjustBatchStartSerial(-1)" title="Decrement serial">−</button>
+                            <input type="number" id="batch-start-serial" min="1" step="1" value="1001" oninput="regenerateBatchSequence()">
+                            <button type="button" class="btn-stepper" onclick="adjustBatchStartSerial(1)" title="Increment serial">+</button>
+                        </div>
+                    </div>
+                    <div class="lbl-input-group">
+                        <label for="batch-qty">Pallet Quantity</label>
+                        <div class="stepper-wrap">
+                            <button type="button" class="btn-stepper" onclick="adjustBatchQty(-1)" title="Decrement quantity">−</button>
+                            <input type="number" id="batch-qty" min="1" max="500" value="1" oninput="regenerateBatchSequence()">
+                            <button type="button" class="btn-stepper" onclick="adjustBatchQty(1)" title="Increment quantity">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="batch-quick-presets">
+                    <span class="preset-label">Presets:</span>
+                    <button type="button" class="btn-preset active" data-qty="1" onclick="setBatchQty(1)">1 Pallet</button>
+                    <button type="button" class="btn-preset" data-qty="5" onclick="setBatchQty(5)">5 Pallets</button>
+                    <button type="button" class="btn-preset" data-qty="10" onclick="setBatchQty(10)">10 Pallets</button>
+                    <button type="button" class="btn-preset" data-qty="24" onclick="setBatchQty(24)" title="20ft Container (~24 pallets)">24 (20' FCL)</button>
+                    <button type="button" class="btn-preset" data-qty="33" onclick="setBatchQty(33)" title="Full Semi-Trailer Truckload (33 Euro-pallets)">33 (FTL)</button>
+                </div>
+
+                <div class="batch-range-summary" id="batch-range-summary">
+                    <div class="batch-range-info">
+                        <span class="range-title">Range:</span>
+                        <span id="batch-range-text" class="range-code">…</span>
+                    </div>
+                    <span id="batch-total-tag" class="batch-badge">1 Pallet</span>
+                </div>
+
+                <div class="gcp-compliance-note">
+                    <i data-lucide="shield-alert" style="width:12px;height:12px;color:var(--primary);flex-shrink:0;"></i>
+                    <span>Commercial supply chains require an officially registered <strong>GS1 Company Prefix (GCP)</strong>.</span>
+                </div>
+            </div>
+
+            <!-- Mode B: Audited List Active Banner -->
+            <div id="audited-source-card" class="audited-batch-card">
+                <div class="audited-batch-info">
+                    <i data-lucide="check-circle-2" style="width:15px;height:15px;color:var(--success);"></i>
+                    <span id="audited-batch-summary-text">Loaded validated codes from Validator</span>
+                </div>
+                <button type="button" class="micro-btn" onclick="switchWorkspaceTab('validate')">
+                    <i data-lucide="edit-3" style="width:11px;height:11px;"></i>
+                    <span>Edit in Validator</span>
+                </button>
+            </div>
+
+            <!-- Batch Preview Navigation -->
+            <div id="lbl-batch-nav" class="lbl-batch-nav" style="display:none;">
+                <button type="button" id="lbl-btn-prev" class="btn-batch-nav" onclick="prevBatchLabel()">◀ Prev</button>
+                <span id="lbl-batch-counter" class="lbl-batch-counter">Pallet 1 of 1</span>
+                <button type="button" id="lbl-btn-next" class="btn-batch-nav" onclick="nextBatchLabel()">Next ▶</button>
+            </div>
+
+            <!-- Physical GS1 Label Sheet Live Preview -->
+            <div id="lbl-preview-box"></div>
+
+            <!-- Shipping Metadata & Format Customization -->
+            <details class="label-edit-details" open>
+                <summary>Shipping Details &amp; Label Format (A5 / A6 / 4×6" Thermal)</summary>
+                <div class="label-edit-grid">
+                    <div class="lbl-input-row-2">
+                        <div class="lbl-input-group">
+                            <label for="lbl-format">Label Size / Format</label>
+                            <select id="lbl-format" onchange="updateLabelPreview()">
+                                <option value="a5">A5 Standard Pallet (148×210 mm)</option>
+                                <option value="a6">A6 Compact Pallet (105×148 mm)</option>
+                                <option value="thermal">4×6" Zebra Thermal (100×150 mm)</option>
+                            </select>
+                        </div>
+                        <div class="lbl-input-group">
+                            <label for="lbl-order">Order / Doc Reference</label>
+                            <input type="text" id="lbl-order" value="PO-2026-994" oninput="updateLabelPreview()">
+                        </div>
+                    </div>
+
+                    <div class="lbl-input-row-2">
+                        <div class="lbl-input-group">
+                            <label for="lbl-sender">Consignor / Sender (FROM)</label>
+                            <input type="text" id="lbl-sender" value="LOGISTICS DISPATCH SERVICES LTD" oninput="updateLabelPreview()">
+                        </div>
+                        <div class="lbl-input-group">
+                            <label for="lbl-recipient">Consignee / Destination (TO)</label>
+                            <input type="text" id="lbl-recipient" value="CENTRAL DISTRIBUTION HUB" oninput="updateLabelPreview()">
+                        </div>
+                    </div>
+
+                    <div class="lbl-input-group">
+                        <label for="lbl-contents">Contents / Cargo Description</label>
+                        <input type="text" id="lbl-contents" value="EURO PALLET (MIXED CARGO)" oninput="updateLabelPreview()">
+                    </div>
+
+                    <div class="lbl-input-row-3">
+                        <div class="lbl-input-group">
+                            <label for="lbl-weight">Gross Weight</label>
+                            <input type="text" id="lbl-weight" value="450 KG" oninput="updateLabelPreview()">
+                        </div>
+                        <div class="lbl-input-group">
+                            <label for="lbl-batch">Batch / Lot (AI 10)</label>
+                            <input type="text" id="lbl-batch" placeholder="e.g. L-9480" oninput="updateLabelPreview()">
+                        </div>
+                        <div class="lbl-input-group">
+                            <label for="lbl-expiry">Best Before (AI 15)</label>
+                            <input type="text" id="lbl-expiry" placeholder="e.g. 2026-12-31" oninput="updateLabelPreview()">
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Primary Output Actions -->
+            <div class="studio-actions-footer">
+                <button type="button" class="main-btn btn-live" onclick="printGS1Label()">
+                    <i data-lucide="printer" style="width:14px;height:14px;"></i>
+                    <span id="lbl-print-btn-text">PRINT LABEL (A5 / 4×6")</span>
+                </button>
+                <button type="button" class="main-btn btn-audit" onclick="downloadGS1ZPL()" title="Download industrial Zebra ZPL-II file">
+                    <i data-lucide="download" style="width:14px;height:14px;"></i>
+                    <span id="lbl-zpl-btn-text">DOWNLOAD ZPL</span>
+                </button>
+            </div>
+        </section>
     </main>
 
     <section class="info-panel">
-        <h2>How to Use</h2>
-        
-        <p style="font-size:12px; margin-bottom:12px;">
-            New to SSCC? Read the <a href="guide.html" style="color:var(--primary); font-weight:600;">complete guide →</a>
-            &nbsp;·&nbsp;
-            <a href="calculator.html" style="color:var(--primary); font-weight:600;">GS1 Check Digit Calculator →</a>
-            &nbsp;·&nbsp;
-            <a href="sscc-api-guide.html" style="color:var(--primary); font-weight:600;">API documentation →</a>
-        </p>
+        <div class="info-panel-top">
+            <span class="privacy-badge">
+                <i data-lucide="shield-check" style="width:15px;height:15px;"></i>
+                <span>100% Client-Side &amp; Offline PWA — Shipping data never leaves your browser</span>
+            </span>
+        </div>
 
-        <p style="color:var(--success); font-size:12px; font-weight:600; margin:12px 0; display:flex; align-items:center; gap:6px;">
-            <i data-lucide="shield-check" style="width:16px; height:16px;"></i>
-            Privacy first. This app works offline and never transmits your shipping data.
-        </p>
-
-        <details>
-            <summary>Frequently Asked Questions</summary>
-            <div style="margin-top:10px; color:var(--text-muted); line-height:1.6;">
-                <p><strong>Can I generate valid SSCCs without being registered with GS1?</strong><br><strong>No.</strong> Valid, globally unique SSCCs legally require an official <strong>GS1 Company Prefix (GCP)</strong> issued exclusively to your organization by a local GS1 Member Organization (such as GS1 Portugal, GS1 US, GS1 UK). SSCCs created without GS1 registration are not recognized in commercial trade and will be rejected by logistics carriers (DHL, FedEx, UPS) and automated distribution hubs.</p>
-                <p><strong>What does SSCC stand for?</strong><br>Serial Shipping Container Code. It is an 18 digit number used to uniquely identify logistics units.</p>
-                <p><strong>How is SSCC related to GS1?</strong><br>The SSCC is a core GS1 standard for logistics. It uses a GS1 Company Prefix to ensure global uniqueness.</p>
-                <p><strong>Can I print pallet labels or export to Zebra printers?</strong><br>Yes! Click the "PALLET LABELS" button or tag icon next to any code, or click "Pallet Labels" in the results bar to print batch A5/A6 labels or download ready-to-use Zebra ZPL files.</p>
-            </div>
-        </details>
-
-        <details>
-            <summary>Show all instructions</summary>
-            <ul style="margin-top:10px; padding-left:18px; color:var(--text-muted); line-height:1.8;">
-                <li><strong>Barcode Scanning</strong>. Use your camera or hardware laser scanner (Bluetooth/USB wedge). Haptic feedback and beeps confirm a successful scan.</li>
-                <li><strong>Manual Validation</strong>. Enter a full 18 digit SSCC. The system validates the check digit and highlights errors in red.</li>
-                <li><strong>Pallet Labels &amp; ZPL</strong>. Generate GS1 Logistics Labels in A5, A6 or 4x6" thermal format with vector barcodes. Export single or batch ZPL code.</li>
-                <li><strong>Range Expansion</strong>. Generate multiple codes using <code>START - END</code> or <code>START to END</code> format. Supports up to 500 codes per operation.</li>
-                <li><strong>File Extraction</strong>. Upload EDIFACT, XML, IDoc, or CSV files. All data is processed locally in your browser.</li>
-                <li><strong>Export &amp; Share</strong>. Download CSV or share your current batch instantly with colleagues via URL hash.</li>
+        <details class="info-accordion">
+            <summary>Quick Guide &amp; Supported Formats</summary>
+            <ul style="margin-top:10px; padding-left:18px; color:var(--text-muted); line-height:1.8; font-size:12px;">
+                <li><strong>Instant Validation (18 or 20 digits)</strong>: Paste full SSCCs (with or without AI <code>00</code>) to verify the Modulo 10 check digit and identify country prefix.</li>
+                <li><strong>Check Digit Generation (17 digits)</strong>: Paste a 17-digit payload to automatically compute and append the 18th GS1 check digit.</li>
+                <li><strong>Range Expansion</strong>: Enter <code>START - END</code> (up to 500 codes) to expand and compute check digits for an entire sequence.</li>
+                <li><strong>EDI &amp; ERP File Extraction</strong>: Drop any <strong>EDIFACT</strong> (<code>GIN+BJ</code>, <code>RFF+SI</code>), <strong>SAP IDoc</strong> (<code>EXIDV</code>), <strong>XML</strong>, or <strong>CSV</strong> file to extract all SSCCs automatically.</li>
+                <li><strong>Hardware Laser Scanners</strong>: USB and Bluetooth HID barcode scanners are detected automatically anywhere on the page.</li>
             </ul>
         </details>
 
-        <details>
+        <details class="info-accordion">
+            <summary>Frequently Asked Questions</summary>
+            <div style="margin-top:10px; color:var(--text-muted); line-height:1.6; font-size:12px;">
+                <p style="margin-bottom:8px;"><strong>Can I generate commercial SSCCs without being registered with GS1?</strong><br>Valid, globally unique SSCCs legally require an official <strong>GS1 Company Prefix (GCP)</strong> issued to your organization by a GS1 Member Organization (e.g. GS1 Portugal, GS1 US, GS1 UK).</p>
+                <p style="margin-bottom:8px;"><strong>What does SSCC stand for?</strong><br>Serial Shipping Container Code — an 18-digit GS1 identification key used to track logistics units (pallets, containers, totes) across global supply chains.</p>
+                <p><strong>How do I print pallet labels or export to Zebra thermal printers?</strong><br>Switch to the <strong>Pallet Labels &amp; ZPL</strong> tab (or click <em>Print Labels</em> from any validated list) to print A5/A6/4×6" sheets or export native Zebra ZPL-II code.</p>
+            </div>
+        </details>
+
+        <details class="info-accordion">
             <summary>Changelog</summary>
             <div class="changelog" style="margin-top:10px;">
+                <p><span class="version">v5.7.0</span> UX Overhaul. Unified 2-tab workspace (Validate &amp; Extract vs. Pallet Labels &amp; ZPL Studio), real-time zero-click validation, interactive sample chips, and streamlined EDI file feedback.</p>
                 <p><span class="version">v5.6.0</span> Major Release. Batch GS1 Pallet Label printing &amp; multi-label ZPL export, Universal Check Digit Calculator, Offline Session History, Laser Scanner listener &amp; Serverless URL sharing.</p>
-                <p><span class="version">v5.5.5</span> UI Refinement. Improved result row aesthetics and professional copy button integration.</p>
-                <p><span class="version">v5.5.4</span> SEO Update. Added FAQ Schema to improve visibility in search engine results.</p>
                 <p><span class="version">v5.5.3</span> REST API Release. Public API endpoints available for remote validation and extraction.</p>
                 <p><span class="version">v5.5.2</span> GS1 Specification. Full update of member prefixes for the 2025 GS1 standard.</p>
-                <p><span class="version">v5.5</span> Advanced Parser. Support for EDIFACT, XML, and SAP IDoc file formats.</p>
             </div>
         </details>
     </section>
 
-    <footer style="margin-top:28px; text-align:center; font-size:12px; color:var(--text-dim); display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; font-family:var(--font-mono);">
+    <footer style="margin-top:24px; text-align:center; font-size:12px; color:var(--text-dim); display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; font-family:var(--font-mono);">
         <a href="https://pormenores.net/" style="color:var(--text-muted); text-decoration:none;">pormenores.net</a>
         <span>•</span>
         <span>Free &amp; Open Source</span>
         <span>•</span>
-        <a href="https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00" target="_blank" rel="noopener noreferrer" style="color:var(--primary); text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:600; padding:3px 10px; border-radius:12px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); transition:all 0.2s;" title="Buy me a coffee">
+        <a href="https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00" target="_blank" rel="noopener noreferrer" style="color:var(--primary); text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:600; padding:3px 10px; border-radius:12px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35);" title="Buy me a coffee">
             ☕ Buy me a coffee
         </a>
         <span>•</span>
@@ -1524,53 +1843,6 @@
         <div class="label-modal-footer">
             <button class="main-btn btn-clear" onclick="clearAllHistory()">CLEAR ALL</button>
             <button class="main-btn btn-audit" onclick="closeHistoryModal()">CLOSE</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal GS1 Company Prefix Settings -->
-<div id="settings-modal-backdrop" class="label-modal-backdrop" style="display:none;" onclick="if(event.target===this)closeSettingsModal()">
-    <div class="label-modal">
-        <div class="label-modal-header">
-            <div class="label-modal-title">
-                <i data-lucide="settings" style="width:16px;height:16px;color:var(--primary);"></i>
-                <span>GS1 Company Prefix Settings</span>
-            </div>
-            <button class="label-modal-close" onclick="closeSettingsModal()" title="Close">✕</button>
-        </div>
-        <div class="label-modal-body">
-            <div class="gs1-warning-card">
-                <div class="gs1-warning-title">
-                    <i data-lucide="shield-alert" style="width:14px;height:14px;"></i>
-                    <span>Official GS1 Registration Required</span>
-                </div>
-                <div class="gs1-warning-text">
-                    You can <strong>only</strong> generate valid, supply-chain compliant SSCC barcodes if your company is officially registered with <strong>GS1</strong> (e.g. GS1 US, GS1 UK, GS1 Portugal, GS1 Germany) and holds an authentic <strong>GS1 Company Prefix (GCP)</strong>.
-                    <br><br>
-                    Using random or unauthorized prefixes causes barcode collisions and leads to immediate pallet rejection by logistics carriers, retail distribution centers, and EDI systems.
-                </div>
-            </div>
-
-            <div class="label-edit-grid">
-                <div class="lbl-input-group">
-                    <label>Licensed GS1 Company Prefix (GCP)</label>
-                    <input type="text" id="cfg-prefix" placeholder="e.g. 5601234 (7 to 10 digits)">
-                </div>
-                <div class="lbl-input-row-2">
-                    <div class="lbl-input-group">
-                        <label>Extension Digit (0-9)</label>
-                        <input type="text" id="cfg-ext" value="0" maxlength="1">
-                    </div>
-                    <div class="lbl-input-group">
-                        <label>Last Serial Number</label>
-                        <input type="number" id="cfg-serial" value="1">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="label-modal-footer">
-            <button class="main-btn btn-audit" onclick="closeSettingsModal()">CANCEL</button>
-            <button class="main-btn btn-live" onclick="saveSettingsForm()">SAVE PREFIX</button>
         </div>
     </div>
 </div>

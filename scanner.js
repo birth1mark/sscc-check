@@ -47,10 +47,16 @@ function extractSSCC(raw) {
 function setScannerUI(active) {
     const wrap = document.getElementById('viewport-wrap');
     const btn  = document.getElementById('btnToggle');
-    if (wrap) wrap.style.display   = active ? 'block' : 'none';
-    if (btn) btn.style.background = active ? 'var(--danger)' : 'var(--primary)';
-
-    if (btn) btn.innerText = active ? 'STOP SCANNER' : 'START SCANNER';
+    const txt  = document.getElementById('btnToggleText');
+    if (wrap) wrap.style.display = active ? 'block' : 'none';
+    if (btn) {
+        btn.classList.toggle('scanning-active', active);
+        if (txt) {
+            txt.textContent = active ? 'Stop Scanner' : 'Scan Barcode';
+        } else {
+            btn.innerText = active ? 'STOP SCANNER' : 'SCAN BARCODE';
+        }
+    }
 }
 
 function setStatus(msg) {

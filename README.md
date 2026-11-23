@@ -5,7 +5,7 @@
 🔗 **[Try it live →](https://pormenores.net/sscc/)**
 🔗 **[API documentation →](https://pormenores.net/sscc/sscc-api-guide.html)**
 
-![Version](https://img.shields.io/badge/version-5.6.0-blue)
+![Version](https://img.shields.io/badge/version-5.7.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![PWA](https://img.shields.io/badge/PWA-ready-purple)
 [![Public APIs PR #9237](https://img.shields.io/badge/Public_APIs-PR_#9237-blue?logo=github)](https://github.com/public-apis/public-apis/pull/9237)
@@ -140,6 +140,7 @@ Everything runs **100% client-side** — no file is ever uploaded to a server.
 
 | Version | Highlights |
 |---|---|
+| **v5.7.0** | Unified 2-tab workspace (Validate & Extract vs. Pallet Labels & ZPL Studio), real-time zero-click validation, interactive sample presets, GS1 anatomy legend & EDI file extraction feedback banner |
 | **v5.6.0** | Batch GS1 Pallet Label printing & multi-label ZPL export (A5, A6, 4x6" thermal), Universal GS1 Check Digit Calculator, Offline Session History, Laser Scanner Wedge listener & Serverless URL sharing |
 | **v5.5.5** | UI refinement, professional copy feedback, and GS1 label generator baseline |
 | **v5.5.3** | Free REST API on Cloudflare Workers — validate, generate, range, extract |

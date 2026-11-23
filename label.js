@@ -1,12 +1,9 @@
 /**
- * SSCC Pro Vision — GS1 Logistics Pallet Label & Barcode Engine (v5.6.0)
+ * SSCC Pro Vision — GS1 Logistics Pallet Label & Barcode Engine (v5.7.0)
  *
- * Implements:
- * 1. Pure vector GS1-128 (Code 128 Subset C with FNC1) SVG generator.
- * 2. GS1 Logistics Pallet Label layouts (A5 standard, A6 compact, 4x6" Zebra thermal).
- * 3. Single and Batch ZPL (Zebra Programming Language) export for industrial printers.
- * 4. Multi-page native print support (one label per sheet/thermal roll).
- * 5. Local storage persistence for company metadata and preferences.
+ * Integrated directly into the Tab 2 Studio ("Pallet Labels & ZPL") with two clear modes:
+ * - 'sequential': Generates sequential SSCC pallet batches from the company's GS1 Prefix (GCP).
+ * - 'audited': Prints/exports labels for the exact SSCC codes validated or extracted in Tab 1.
  */
 
 // Code 128 Patterns (Codes 0 to 106)
@@ -59,7 +56,6 @@ function generateGS1BarcodeSVG(sscc18, height = 75) {
     if (clean.length === 20 && clean.startsWith('00')) s18 = clean.substring(2);
     s18 = s18.padStart(18, '0');
 
-    // GS1-128 format: (00) + 18 digits = 20 numeric characters total
     const fullDigits = '00' + s18;
     const values = [102]; // FNC1 designates GS1 standard
 
@@ -67,7 +63,6 @@ function generateGS1BarcodeSVG(sscc18, height = 75) {
         values.push(parseInt(fullDigits.substring(i, i + 2), 10));
     }
 
-    // Checksum: Start C (105) + sum(value * position)
     let checksum = 105;
     for (let idx = 0; idx < values.length; idx++) {
         checksum += values[idx] * (idx + 1);
@@ -142,16 +137,30 @@ ${palletTagZPL}
 ^XZ`;
 }
 
-// State
+// Studio State
+let labelStudioInitialized = false;
+let labelSourceMode = 'sequential'; // 'sequential' | 'audited'
 let currentLabelSSCC = '';
 let currentBatchSSCCs = [];
 let currentBatchIndex = 0;
 
+function normalizeTo18Digits(rawSSCC) {
+    const clean = String(rawSSCC || '').replace(/\D/g, '');
+    if (clean.length === 20 && clean.startsWith('00')) return clean.substring(2);
+    if (clean.length === 17 && typeof getCD === 'function') return clean + getCD(clean);
+    if (clean.length === 18) return clean;
+    return null;
+}
+
 /**
- * Opens pallet label batch generator initialized with GS1 Company Prefix & Start Serial.
+ * Ensures the embedded Tab 2 Studio is initialized with stored defaults.
  */
-function openCurrentOrSampleLabel() {
-    ensureLabelModalExists();
+function initLabelStudioIfNeeded() {
+    if (labelStudioInitialized && currentBatchSSCCs.length > 0) {
+        updateWorkspaceBadges();
+        return;
+    }
+    labelStudioInitialized = true;
     loadStoredFormDefaults();
 
     const s = typeof getGCPSettings === 'function' ? getGCPSettings() : null;
@@ -169,17 +178,130 @@ function openCurrentOrSampleLabel() {
     if (startInput) startInput.value = startSerial;
     if (qtyInput) qtyInput.value = 1;
 
-    regenerateBatchSequence();
+    setLabelSourceMode('sequential');
+}
 
-    const modal = document.getElementById('label-modal-backdrop');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+/**
+ * Switches the Label Studio between 'sequential' (GCP generator) and 'audited' (validated list from Tab 1).
+ */
+function setLabelSourceMode(mode, customAuditedCodes = null) {
+    const btnSeq = document.getElementById('src-btn-seq');
+    const btnAud = document.getElementById('src-btn-audited');
+    const seqCard = document.getElementById('seq-generator-card');
+    const audCard = document.getElementById('audited-source-card');
+    const audText = document.getElementById('audited-batch-summary-text');
+
+    if (mode === 'audited') {
+        const codes = customAuditedCodes || (window.store || [])
+            .filter(item => (item.status === 'valid' || item.status === 'gen') && item.plain)
+            .map(item => normalizeTo18Digits(item.plain))
+            .filter(Boolean);
+
+        if (!codes.length) {
+            if (typeof showToast === 'function') {
+                showToast('No validated SSCCs in Validator yet. Using Sequential Generator.', 'warn');
+            }
+            mode = 'sequential';
+        } else {
+            labelSourceMode = 'audited';
+            currentBatchSSCCs = codes;
+            currentBatchIndex = 0;
+            currentLabelSSCC = codes[0];
+
+            if (btnSeq) btnSeq.classList.remove('active');
+            if (btnAud) btnAud.classList.add('active');
+            if (seqCard) seqCard.style.display = 'none';
+            if (audCard) audCard.style.display = 'flex';
+            if (audText) {
+                audText.textContent = codes.length === 1
+                    ? `Printing 1 validated SSCC: (00) ${codes[0]}`
+                    : `Printing batch of ${codes.length} validated SSCC codes from Validator`;
+            }
+
+            updateLabelPreview();
+            return;
+        }
+    }
+
+    // Sequential Mode
+    labelSourceMode = 'sequential';
+    if (btnSeq) btnSeq.classList.add('active');
+    if (btnAud) btnAud.classList.remove('active');
+    if (seqCard) seqCard.style.display = 'block';
+    if (audCard) audCard.style.display = 'none';
+
+    regenerateBatchSequence();
+}
+
+/**
+ * Opens the Label Studio in sequential generator mode (backward compatible helper).
+ */
+function openCurrentOrSampleLabel() {
+    initLabelStudioIfNeeded();
+    setLabelSourceMode('sequential');
+    if (typeof switchWorkspaceTab === 'function') {
+        switchWorkspaceTab('labels');
     }
 }
 
 /**
- * Regenerates the batch sequence from the GS1 Prefix, Extension, Start Serial, and Quantity.
+ * Opens the Label Studio for a single validated SSCC from Tab 1.
+ */
+function openLabelModal(rawSSCC) {
+    const s18 = normalizeTo18Digits(rawSSCC);
+    if (!s18) {
+        alert('Invalid SSCC code for label generation (requires 18 digits).');
+        return;
+    }
+
+    initLabelStudioIfNeeded();
+    if (typeof switchWorkspaceTab === 'function') {
+        switchWorkspaceTab('labels');
+    }
+    setLabelSourceMode('audited', [s18]);
+}
+
+/**
+ * Opens the Label Studio for all valid/generated SSCCs in Tab 1.
+ */
+function openBatchLabelsModal() {
+    const valids = (window.store || [])
+        .filter(item => (item.status === 'valid' || item.status === 'gen') && item.plain)
+        .map(item => normalizeTo18Digits(item.plain))
+        .filter(Boolean);
+
+    if (!valids.length) {
+        if (typeof showToast === 'function') {
+            showToast('No valid SSCC codes found to print.', 'warn');
+        }
+        return;
+    }
+
+    initLabelStudioIfNeeded();
+    if (typeof switchWorkspaceTab === 'function') {
+        switchWorkspaceTab('labels');
+    }
+    setLabelSourceMode('audited', valids);
+}
+
+/**
+ * Sends the currently generated sequential batch back to Tab 1 (Validator) for CSV export or sharing.
+ */
+function sendGeneratedBatchToValidator() {
+    if (!currentBatchSSCCs.length) return;
+    const input = document.getElementById('input');
+    if (input) {
+        input.value = currentBatchSSCCs.join('\n');
+    }
+    if (typeof process === 'function') process(true);
+    if (typeof switchWorkspaceTab === 'function') switchWorkspaceTab('validate');
+    if (typeof showToast === 'function') {
+        showToast(`Loaded ${currentBatchSSCCs.length} generated SSCC(s) into Validator.`);
+    }
+}
+
+/**
+ * Regenerates the batch sequence from GS1 Prefix, Extension, Start Serial, and Quantity.
  */
 function regenerateBatchSequence() {
     const gcpInput = document.getElementById('batch-gcp');
@@ -201,8 +323,19 @@ function regenerateBatchSequence() {
 
     const serialLen = 17 - 1 - gcp.length;
     if (serialLen <= 0) {
-        alert('GS1 Company Prefix is too long (maximum 11 digits).');
+        if (typeof showToast === 'function') {
+            showToast('GS1 Company Prefix is too long (max 11 digits).', 'warn');
+        }
         return;
+    }
+
+    // Persist prefix configuration automatically
+    if (typeof saveGCPSettings === 'function') {
+        saveGCPSettings({
+            prefix: gcp,
+            extDigit: ext,
+            lastSerial: Math.max(0, start - 1)
+        });
     }
 
     const batch = [];
@@ -227,12 +360,11 @@ function regenerateBatchSequence() {
         } else {
             const first = batch[0];
             const last = batch[batch.length - 1];
-            summaryRange.innerHTML = `<span>(00) ...${first.slice(-7)}</span> &nbsp;→&nbsp; <span>(00) ...${last.slice(-7)}</span>`;
+            summaryRange.innerHTML = `<span>(00) …${first.slice(-7)}</span> &nbsp;→&nbsp; <span>(00) …${last.slice(-7)}</span>`;
             summaryTag.textContent = `${batch.length} Pallets`;
         }
     }
 
-    // Update active highlight on preset buttons
     document.querySelectorAll('.btn-preset').forEach(btn => {
         const q = parseInt(btn.getAttribute('data-qty'), 10);
         if (q === qty) {
@@ -272,6 +404,8 @@ function adjustBatchStartSerial(delta) {
 }
 
 function updateStoredLastSerialOnDispatch() {
+    if (labelSourceMode !== 'sequential') return;
+
     const startInput = document.getElementById('batch-start-serial');
     const qtyInput = document.getElementById('batch-qty');
     const gcpInput = document.getElementById('batch-gcp');
@@ -291,88 +425,10 @@ function updateStoredLastSerialOnDispatch() {
             extDigit: ext,
             lastSerial: lastUsed
         });
-        // Suggest the next serial for subsequent print runs
-        if (startInput) startInput.value = lastUsed + 1;
+        startInput.value = lastUsed + 1;
         if (typeof showToast === 'function') {
-            showToast(`Batch dispatched: ${qty} pallets. Next serial: ${lastUsed + 1}`);
+            showToast(`Dispatched ${qty} pallet(s). Next serial advanced to ${lastUsed + 1}.`);
         }
-    }
-}
-
-/**
- * Opens modal for a single SSCC.
- */
-function openLabelModal(rawSSCC) {
-    const clean = rawSSCC.replace(/\D/g, '');
-    let s18 = clean;
-    if (clean.length === 20 && clean.startsWith('00')) s18 = clean.substring(2);
-    if (clean.length === 17 && typeof getCD === 'function') s18 = clean + getCD(clean);
-
-    if (s18.length !== 18) {
-        alert('Invalid SSCC code for label generation (requires 18 digits).');
-        return;
-    }
-
-    currentLabelSSCC = s18;
-    currentBatchSSCCs = [s18];
-    currentBatchIndex = 0;
-
-    ensureLabelModalExists();
-    loadStoredFormDefaults();
-
-    // Try to parse prefix and serial if matching
-    const s = typeof getGCPSettings === 'function' ? getGCPSettings() : null;
-    const gcp = (s && s.prefix) ? s.prefix : s18.substring(1, 8);
-    const ext = s18[0];
-    const serialLen = 17 - 1 - gcp.length;
-    const serialPortion = parseInt(s18.substring(1 + gcp.length, 17), 10) || 1;
-
-    if (document.getElementById('batch-gcp')) document.getElementById('batch-gcp').value = gcp;
-    if (document.getElementById('batch-ext')) document.getElementById('batch-ext').value = ext;
-    if (document.getElementById('batch-start-serial')) document.getElementById('batch-start-serial').value = serialPortion;
-    if (document.getElementById('batch-qty')) document.getElementById('batch-qty').value = 1;
-
-    updateLabelPreview();
-
-    const modal = document.getElementById('label-modal-backdrop');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-/**
- * Opens modal for all valid/generated SSCCs in the active store (batch mode).
- */
-function openBatchLabelsModal() {
-    if (!window.store || !window.store.length) {
-        alert('No codes available to print labels.');
-        return;
-    }
-
-    const valids = window.store
-        .filter(item => (item.status === 'valid' || item.status === 'gen') && item.plain)
-        .map(item => item.plain);
-
-    if (!valids.length) {
-        alert('No valid SSCC codes found in current audit.');
-        return;
-    }
-
-    currentBatchSSCCs = valids;
-    currentBatchIndex = 0;
-    currentLabelSSCC = valids[0];
-
-    ensureLabelModalExists();
-    loadStoredFormDefaults();
-
-    if (document.getElementById('batch-qty')) document.getElementById('batch-qty').value = valids.length;
-    updateLabelPreview();
-
-    const modal = document.getElementById('label-modal-backdrop');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
     }
 }
 
@@ -389,14 +445,6 @@ function nextBatchLabel() {
         currentBatchIndex++;
         currentLabelSSCC = currentBatchSSCCs[currentBatchIndex];
         updateLabelPreview();
-    }
-}
-
-function closeLabelModal() {
-    const modal = document.getElementById('label-modal-backdrop');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
     }
 }
 
@@ -428,7 +476,7 @@ function persistCurrentFormValues() {
 }
 
 /**
- * Builds HTML markup for a single label sheet.
+ * Builds HTML markup for a single GS1 physical pallet label sheet.
  */
 function buildLabelSheetHTML(s18, meta, indexInfo = '') {
     const sender = meta.sender || 'LOGISTICS DISPATCH SERVICES LTD';
@@ -456,7 +504,7 @@ function buildLabelSheetHTML(s18, meta, indexInfo = '') {
                 <div class="lbl-company">${escapeHtml(sender)}</div>
                 <div class="lbl-subtext">Logistics Dispatch Center</div>
             </div>
-            <div class="lbl-col lbl-carrier-col">
+            <div class="lbl-col lbl-carrier-col" style="text-align:right;">
                 <span class="lbl-field-tag">DATE</span>
                 <div class="lbl-meta-value">${today}</div>
                 <span class="lbl-field-tag" style="margin-top:4px;">ORDER / DOC</span>
@@ -497,24 +545,8 @@ function buildLabelSheetHTML(s18, meta, indexInfo = '') {
     </div>`;
 }
 
-function onLabelSSCCInput(val) {
-    const clean = val.replace(/\D/g, '');
-    let s18 = clean;
-    if (clean.length === 20 && clean.startsWith('00')) s18 = clean.substring(2);
-    if (clean.length === 17 && typeof getCD === 'function') s18 = clean + getCD(clean);
-    if (s18.length === 18) {
-        currentLabelSSCC = s18;
-        if (currentBatchSSCCs.length <= 1) {
-            currentBatchSSCCs = [s18];
-        } else {
-            currentBatchSSCCs[currentBatchIndex] = s18;
-        }
-        updateLabelPreview();
-    }
-}
-
 /**
- * Updates live label preview in modal.
+ * Updates live label preview in the Tab 2 Studio.
  */
 function updateLabelPreview() {
     if (!currentLabelSSCC) return;
@@ -550,7 +582,7 @@ function updateLabelPreview() {
 
     const zplBtnText = document.getElementById('lbl-zpl-btn-text');
     if (zplBtnText) {
-        zplBtnText.textContent = isBatch ? `DOWNLOAD ZPL (${currentBatchSSCCs.length} PALLETS)` : `DOWNLOAD ZPL`;
+        zplBtnText.textContent = isBatch ? `DOWNLOAD ZPL (${currentBatchSSCCs.length})` : `DOWNLOAD ZPL`;
     }
 }
 
@@ -601,177 +633,9 @@ function downloadGS1ZPL() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = isBatch 
+    a.download = isBatch
         ? `gs1_pallet_labels_${currentBatchSSCCs.length}units.zpl`
         : `gs1_sscc_label_${currentLabelSSCC}.zpl`;
     a.click();
     URL.revokeObjectURL(url);
-}
-
-function escapeHtml(str) {
-    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-/**
- * Injects modal HTML into DOM.
- */
-function ensureLabelModalExists() {
-    if (document.getElementById('label-modal-backdrop')) return;
-
-    const modalHtml = `
-    <div id="label-modal-backdrop" class="label-modal-backdrop" style="display:none;" onclick="if(event.target===this)closeLabelModal()">
-        <div class="label-modal">
-            <div class="label-modal-header">
-                <div class="label-modal-title">
-                    <i data-lucide="printer" style="width:16px;height:16px;color:var(--primary);"></i>
-                    <span>GS1 Pallet Label Batch Generator</span>
-                </div>
-                <button class="label-modal-close" onclick="closeLabelModal()" title="Close">✕</button>
-            </div>
-
-            <div class="label-modal-body">
-                <!-- Pallet Batch Generation Card -->
-                <div class="label-batch-config-card">
-                    <div class="batch-config-header">
-                        <div class="batch-config-title">
-                            <i data-lucide="layers" style="width:14px;height:14px;"></i>
-                            <span>Pallet Batch Parameters (Sequential SSCC)</span>
-                        </div>
-                        <span class="batch-dispatch-pill">DISPATCH OUTBOUND</span>
-                    </div>
-
-                    <div class="batch-gs1-advisory">
-                        <i data-lucide="shield-alert" style="width:12px;height:12px;color:var(--primary);flex-shrink:0;"></i>
-                        <span>Valid SSCCs require an authorized <strong>GS1 Company Prefix (GCP)</strong> to clear supply chain gateways.</span>
-                    </div>
-
-                    <div class="batch-config-grid">
-                        <div class="lbl-input-group">
-                            <label for="batch-gcp">GS1 Company Prefix (GCP)</label>
-                            <input type="text" id="batch-gcp" placeholder="e.g. 5601234" maxlength="12" oninput="regenerateBatchSequence()">
-                        </div>
-                        <div class="lbl-input-group">
-                            <label for="batch-ext">Extension Digit</label>
-                            <select id="batch-ext" onchange="regenerateBatchSequence()">
-                                <option value="0">0 — Standard Pallet</option>
-                                <option value="1">1 — Outer Case / Carton</option>
-                                <option value="2">2 — Transport Package</option>
-                                <option value="3">3 — Mixed Pallet</option>
-                            </select>
-                        </div>
-                        <div class="lbl-input-group">
-                            <label for="batch-start-serial">Start Serial Number</label>
-                            <div class="stepper-wrap">
-                                <button type="button" class="btn-stepper" onclick="adjustBatchStartSerial(-1)" title="Decrement serial">−</button>
-                                <input type="number" id="batch-start-serial" min="1" step="1" oninput="regenerateBatchSequence()">
-                                <button type="button" class="btn-stepper" onclick="adjustBatchStartSerial(1)" title="Increment serial">+</button>
-                            </div>
-                        </div>
-                        <div class="lbl-input-group">
-                            <label for="batch-qty">Pallet Quantity</label>
-                            <div class="stepper-wrap">
-                                <button type="button" class="btn-stepper" onclick="adjustBatchQty(-1)" title="Decrement quantity">−</button>
-                                <input type="number" id="batch-qty" min="1" max="500" value="1" oninput="regenerateBatchSequence()">
-                                <button type="button" class="btn-stepper" onclick="adjustBatchQty(1)" title="Increment quantity">+</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="batch-quick-presets">
-                        <span class="preset-label">Quick Presets:</span>
-                        <button type="button" class="btn-preset" data-qty="1" onclick="setBatchQty(1)">1 Pallet</button>
-                        <button type="button" class="btn-preset" data-qty="5" onclick="setBatchQty(5)">5 Pallets</button>
-                        <button type="button" class="btn-preset" data-qty="10" onclick="setBatchQty(10)">10 Pallets</button>
-                        <button type="button" class="btn-preset" data-qty="24" onclick="setBatchQty(24)" title="20ft Container (~24 pallets)">24 (20' FCL)</button>
-                        <button type="button" class="btn-preset" data-qty="33" onclick="setBatchQty(33)" title="Full Semi-Trailer Truckload (33 Euro-pallets)">33 (FTL)</button>
-                    </div>
-
-                    <div class="batch-range-summary" id="batch-range-summary">
-                        <div class="batch-range-info">
-                            <span class="range-title">SSCC Range:</span>
-                            <span id="batch-range-text" class="range-code">...</span>
-                        </div>
-                        <span id="batch-total-tag" class="batch-badge">1 Pallet</span>
-                    </div>
-                </div>
-
-                <!-- Batch Navigation -->
-                <div id="lbl-batch-nav" class="lbl-batch-nav" style="display:none;">
-                    <button id="lbl-btn-prev" class="btn-batch-nav" onclick="prevBatchLabel()">◀ Previous</button>
-                    <span id="lbl-batch-counter" class="lbl-batch-counter">Pallet 1 of 1</span>
-                    <button id="lbl-btn-next" class="btn-batch-nav" onclick="nextBatchLabel()">Next ▶</button>
-                </div>
-
-                <!-- Label Preview -->
-                <div id="lbl-preview-box"></div>
-
-                <!-- Customization Panel -->
-                <details class="label-edit-details">
-                    <summary>Shipping Details &amp; Label Format</summary>
-                    <div class="label-edit-grid">
-                        <div class="lbl-input-row-2">
-                            <div class="lbl-input-group">
-                                <label>Label Size / Format</label>
-                                <select id="lbl-format" onchange="updateLabelPreview()">
-                                    <option value="a5">A5 Standard Pallet (148×210 mm)</option>
-                                    <option value="a6">A6 Compact Pallet (105×148 mm)</option>
-                                    <option value="thermal">4×6" Zebra Thermal (100×150 mm)</option>
-                                </select>
-                            </div>
-                            <div class="lbl-input-group">
-                                <label>Order / Doc Reference</label>
-                                <input type="text" id="lbl-order" value="PO-2026-994" oninput="updateLabelPreview()">
-                            </div>
-                        </div>
-
-                        <div class="lbl-input-group">
-                            <label>Consignor / Sender</label>
-                            <input type="text" id="lbl-sender" value="LOGISTICS DISPATCH SERVICES LTD" oninput="updateLabelPreview()">
-                        </div>
-                        <div class="lbl-input-group">
-                            <label>Consignee / Destination</label>
-                            <input type="text" id="lbl-recipient" value="CENTRAL DISTRIBUTION HUB" oninput="updateLabelPreview()">
-                        </div>
-                        <div class="lbl-input-group">
-                            <label>Contents / Cargo Description</label>
-                            <input type="text" id="lbl-contents" value="EURO PALLET (MIXED CARGO)" oninput="updateLabelPreview()">
-                        </div>
-
-                        <div class="lbl-input-row-3">
-                            <div class="lbl-input-group">
-                                <label>Gross Weight</label>
-                                <input type="text" id="lbl-weight" value="450 KG" oninput="updateLabelPreview()">
-                            </div>
-                            <div class="lbl-input-group">
-                                <label>Batch / Lot (AI 10)</label>
-                                <input type="text" id="lbl-batch" placeholder="e.g. L-9480" oninput="updateLabelPreview()">
-                            </div>
-                            <div class="lbl-input-group">
-                                <label>Best Before (AI 15)</label>
-                                <input type="text" id="lbl-expiry" placeholder="e.g. 2026-12-31" oninput="updateLabelPreview()">
-                            </div>
-                        </div>
-
-                        <div style="font-size:10.5px;color:var(--text-muted);margin-top:8px;padding:6px 10px;background:rgba(245,158,11,0.06);border-left:2px solid var(--primary);border-radius:4px;line-height:1.4;">
-                            <strong>GS1 Compliance:</strong> Commercial pallet labels require an officially registered GS1 Company Prefix (GCP) to prevent logistics rejection.
-                        </div>
-                    </div>
-                </details>
-            </div>
-
-            <div class="label-modal-footer">
-                <button class="main-btn btn-live" onclick="printGS1Label()">
-                    <i data-lucide="printer" style="width:14px;height:14px;margin-right:6px;vertical-align:middle;"></i>
-                    <span id="lbl-print-btn-text">PRINT LABELS (1 PALLET)</span>
-                </button>
-                <button class="main-btn btn-audit" onclick="downloadGS1ZPL()" title="Download Zebra ZPL label file">
-                    <i data-lucide="download" style="width:14px;height:14px;margin-right:6px;vertical-align:middle;"></i>
-                    <span id="lbl-zpl-btn-text">EXPORT ZPL</span>
-                </button>
-            </div>
-        </div>
-    </div>`;
-
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    if (window.lucide) lucide.createIcons();
 }

@@ -4,7 +4,7 @@
 
 - Primary Web App & GS1 Digital Link Resolver: https://ssccapi.com/
 - Mirror Web App: https://pormenores.net/sscc/
-- Commercial GS1 Labels, ZPL & 2D QR Digital Link API Base URL: https://api.ssccapi.com (Mirror: https://sscc-labels.birth1mark.workers.dev)
+- Commercial GS1 Labels, ZPL & 2D QR Digital Link API Base URL: https://ssccapi.com (Mirror: https://sscc-labels.birth1mark.workers.dev)
 - Public Validation REST API Base URL: https://ssccapi.com (Mirror: https://sscc.birth1mark.workers.dev)
 - OpenAPI 3.1 Specification (JSON): https://ssccapi.com/openapi.json
 - OpenAPI 3.1 Specification (YAML): https://ssccapi.com/openapi.yaml

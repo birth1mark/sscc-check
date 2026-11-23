@@ -36,7 +36,7 @@
 
 Explore and test all endpoints live in the **[Interactive OpenAPI 3.1 Swagger Sandbox](https://pormenores.net/sscc/sscc-api-guide.html)**.
 
-### Server 1: Free Validation & EDI Extraction API (`https://sscc.birth1mark.workers.dev`)
+### Server 1: Free Validation & EDI Extraction API (`https://ssccapi.com`)
 *100% free · No API key required · 500 req/hr*
 
 | Endpoint | Description |
@@ -47,7 +47,7 @@ Explore and test all endpoints live in the **[Interactive OpenAPI 3.1 Swagger Sa
 | `GET /prefix?sscc=356012345600000016` | Lookup GS1 Member Organization country & flag |
 | `POST /extract` | Extract and validate all SSCCs from raw EDIFACT, SAP IDoc, XML, or CSV payloads |
 
-### Server 2: GS1 Pallet Labels, ZPL-II & Standalone Barcode API (`https://sscc-labels.birth1mark.workers.dev`)
+### Server 2: GS1 Pallet Labels, ZPL-II & Standalone Barcode API (`https://ssccapi.com/v1`)
 *Includes **25 free labels** per GS1 Company Prefix (`GCP`) · Pro `X-API-Key` unlocks high-volume ERP production*
 
 | Endpoint | Description |
@@ -60,18 +60,18 @@ Explore and test all endpoints live in the **[Interactive OpenAPI 3.1 Swagger Sa
 #### Example 1: Generate Standalone 1D Barcode, 2D QR Code, or Both (`GET /v1/barcode`)
 ```bash
 # 1) Only 1D GS1-128 Linear Barcode (Vector SVG)
-curl "https://sscc-labels.birth1mark.workers.dev/v1/barcode?sscc=356012345600000016&type=gs1-128"
+curl "https://ssccapi.com/v1/barcode?sscc=356012345600000016&type=gs1-128"
 
 # 2) Only 2D QR Code GS1 Digital Link (Vector SVG)
-curl "https://sscc-labels.birth1mark.workers.dev/v1/barcode?sscc=356012345600000016&type=qr&batch=LOT-26A"
+curl "https://ssccapi.com/v1/barcode?sscc=356012345600000016&type=qr&batch=LOT-26A"
 
 # 3) BOTH (1D GS1-128 + 2D QR Code) as separate SVG & ZPL properties in JSON
-curl "https://sscc-labels.birth1mark.workers.dev/v1/barcode?sscc=356012345600000016&type=both&format=json"
+curl "https://ssccapi.com/v1/barcode?sscc=356012345600000016&type=both&format=json"
 ```
 
 #### Example 2: Pipe Batch GS1 Pallet Labels Directly to a Zebra Thermal Printer (`TCP Port 9100`)
 ```bash
-curl -s -X POST "https://sscc-labels.birth1mark.workers.dev/v1/labels" \
+curl -s -X POST "https://ssccapi.com/v1/labels" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: sscc_pro_YOUR_KEY" \
   -d '{"gcp":"5601234","startSerial":1001,"quantity":33,"symbology":"dual","layout":"full","format":"zpl"}' \

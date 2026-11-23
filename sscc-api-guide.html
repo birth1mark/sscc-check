@@ -685,10 +685,10 @@
     <aside class="portal-sidebar">
         <div class="sidebar-auth-box">
             <div class="sidebar-auth-title">
-                <span>🔑 Sandbox Auth Key</span>
-                <button onclick="checkSandboxQuota()" style="background:none;border:none;color:var(--primary);font-family:var(--font-mono);font-size:10px;cursor:pointer;text-decoration:underline;">Check</button>
+                <span>🔑 Auth Key / Recover</span>
+                <button onclick="checkSandboxQuota(true)" style="background:none;border:none;color:var(--primary);font-family:var(--font-mono);font-size:10px;cursor:pointer;text-decoration:underline;">Verify / Recover</button>
             </div>
-            <input type="text" id="global-api-key" class="sidebar-auth-input" placeholder="X-API-Key (sscc_pro_...)" oninput="syncGlobalApiKey()">
+            <input type="text" id="global-api-key" class="sidebar-auth-input" placeholder="sscc_pro_... or purchase email" oninput="syncGlobalApiKey()">
             <div id="sidebar-quota-text" class="sidebar-quota-status">🟢 Free Tier: 25 labels included</div>
         </div>
 
@@ -1387,7 +1387,26 @@ async function executeQrSandbox() {
 }
 
 async function checkSandboxQuota(showConsole = false) {
-    const key = getSandboxApiKey();
+    let key = getSandboxApiKey();
+    const sidebarEl = document.getElementById('sidebar-quota-text');
+
+    // If user entered their purchase email in the Sandbox box, auto-recover their X-API-Key!
+    if (key.includes('@') && !key.startsWith('sscc_pro_')) {
+        try {
+            const cRes = await fetch(`${LABELS_API}/v1/claim?email=${encodeURIComponent(key.toLowerCase())}`);
+            const cData = await cRes.json();
+            if (cRes.ok && cData.apiKey) {
+                key = cData.apiKey;
+                document.getElementById('global-api-key').value = key;
+                syncGlobalApiKey();
+            } else if (sidebarEl) {
+                sidebarEl.style.color = 'var(--danger)';
+                sidebarEl.textContent = cData.error || 'No key found for email';
+                return;
+            }
+        } catch (_) {}
+    }
+
     const gcp = document.getElementById('sb-lbl-gcp')?.value || '5601234';
     const headers = {};
     if (key) headers['X-API-Key'] = key;

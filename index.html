@@ -2103,9 +2103,16 @@
             </div>
 
             <div class="lbl-input-group" style="margin-top:8px;">
-                <label for="pro-api-key-input">Already paid? Enter your Purchase Email or Pro Key (X-API-Key):</label>
-                <input type="text" id="pro-api-key-input" placeholder="your@email.com  or  sscc_pro_xxxxxxxxxxxxxxxx">
+                <label for="pro-api-key-input">Recover / Activate — Enter your Purchase Email or Pro Key (X-API-Key):</label>
+                <div style="display:flex;gap:6px;">
+                    <input type="text" id="pro-api-key-input" placeholder="your@email.com  or  sscc_pro_xxxxxxxxxxxxxxxx" style="flex:1;">
+                    <button type="button" class="micro-btn" onclick="copyRecoveredProKey()" title="Copy active Pro API Key to clipboard" style="padding:0 12px;height:36px;border-color:rgba(245,158,11,0.4);color:var(--primary);">
+                        <i data-lucide="copy" style="width:13px;height:13px;"></i>
+                        <span>Copy Key</span>
+                    </button>
+                </div>
             </div>
+            <div id="pro-recovered-box" style="display:none;margin-top:10px;padding:10px 12px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.4);border-radius:8px;font-family:var(--font-mono);font-size:11.5px;color:var(--success);line-height:1.5;"></div>
         </div>
         <div class="label-modal-footer">
             <button class="main-btn btn-audit" onclick="closeProUpgradeModal()">CLOSE</button>

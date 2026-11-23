@@ -785,12 +785,37 @@ function openProUpgradeModal(reasonMsg = '', quotaInfo = null) {
         }
     }
 
+    const existingKey = getStoredProApiKey();
     const keyInput = document.getElementById('pro-api-key-input');
-    if (keyInput) keyInput.value = getStoredProApiKey();
+    if (keyInput) keyInput.value = existingKey;
+
+    const recBox = document.getElementById('pro-recovered-box');
+    if (recBox) {
+        if (existingKey) {
+            const q = getLocalQuotaStore();
+            const balanceTxt = q.proRemaining !== null ? ` (${q.proRemaining.toLocaleString()} credits remaining)` : '';
+            recBox.style.display = 'block';
+            recBox.innerHTML = `✅ <strong>Active Pro Key:</strong> <code>${escapeHtml(existingKey)}</code>${balanceTxt}`;
+        } else {
+            recBox.style.display = 'none';
+        }
+    }
 
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     if (window.lucide) lucide.createIcons();
+}
+
+function copyRecoveredProKey() {
+    const input = document.getElementById('pro-api-key-input');
+    const val = (input ? input.value : '').trim() || getStoredProApiKey();
+    if (!val || !val.startsWith('sscc_pro_')) {
+        if (typeof showToast === 'function') showToast('Enter your purchase email and click ACTIVATE KEY first to recover your key.', 'warn');
+        return;
+    }
+    navigator.clipboard.writeText(val).then(() => {
+        if (typeof showToast === 'function') showToast('📋 Pro API Key copied to clipboard!', 'success');
+    });
 }
 
 function closeProUpgradeModal() {
@@ -829,9 +854,14 @@ async function saveProApiKeyFromModal() {
             q.proLimit = data.creditsLimit;
             saveLocalQuotaStore(q);
             updateQuotaUI({ tier: data.plan || 'pro', limit: data.creditsLimit, remaining: data.creditsRemaining });
-            closeProUpgradeModal();
+
+            const recBox = document.getElementById('pro-recovered-box');
+            if (recBox) {
+                recBox.style.display = 'block';
+                recBox.innerHTML = `🎉 <strong>Key Recovered &amp; Activated!</strong><br>Your X-API-Key: <code>${escapeHtml(data.apiKey)}</code><br>Balance: <strong>${data.creditsRemaining.toLocaleString()} / ${data.creditsLimit.toLocaleString()}</strong> label credits remaining.`;
+            }
             if (typeof showToast === 'function') {
-                showToast(`🎉 Pro Key activated (${data.creditsRemaining.toLocaleString()} credits)!`, 'success');
+                showToast(`🎉 Pro Key recovered (${data.creditsRemaining.toLocaleString()} credits)!`, 'success');
             }
             return;
         } catch (err) {

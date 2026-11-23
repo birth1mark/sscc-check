@@ -12,7 +12,7 @@
     RewriteEngine On
 
     # Versioned JS asset path (bypasses Cloudflare Worker pathname cache cleanly)
-    RewriteRule ^assets/v511/(app|label|parser|scanner|init)\.js$ $1.js [L]
+    RewriteRule ^assets/v[0-9]+/(app|label|parser|scanner|init)\.js$ $1.js [L]
 
     # Nice URLs (internal rewrites — zero redirect loops with Cloudflare Edge Proxy)
     RewriteRule ^calculator/?$ calculator.html [L]

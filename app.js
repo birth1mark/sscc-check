@@ -747,6 +747,10 @@ function render() {
             <i data-lucide="file-code" style="width:12px;height:12px;"></i>
             <span>SAP IDoc</span>
         </button>`;
+        summary += `<button type="button" class="btn-export" onclick="copyApiCurl()" title="Copy equivalent SSCCAPI REST API cURL command for ERP/WMS automation">
+            <i data-lucide="terminal" style="width:12px;height:12px;"></i>
+            <span>API cURL</span>
+        </button>`;
         summary += `<button type="button" class="btn-export" onclick="shareBatch()" title="Copy shareable link to this batch">
             <i data-lucide="share-2" style="width:12px;height:12px;"></i>
             <span>Share</span>
@@ -1217,4 +1221,26 @@ function exportSAP_IDoc() {
         downloadEDIFile(idoc, `sscc_idoc_delvry03_${ts}.xml`, 'application/xml');
     }
     showToast(`✓ Exported ${validOrGen.length} SSCCs as SAP IDoc DELVRY03 XML`, 'success');
+}
+
+function copyApiCurl() {
+    const validOrGen = store.filter(i => (i.status === 'valid' || i.status === 'gen') && i.plain);
+    if (!validOrGen.length) {
+        showToast('⚠️ No valid SSCC codes available for API cURL', 'error');
+        return;
+    }
+    let cmd = '';
+    if (validOrGen.length === 1) {
+        cmd = `curl -s "https://ssccapi.com/validate?sscc=${validOrGen[0].plain}"`;
+    } else {
+        const list = validOrGen.slice(0, 50).map(i => i.plain);
+        cmd = `curl -s -X POST "https://ssccapi.com/v1/labels" -H "Content-Type: application/json" -d '${JSON.stringify({ ssccs: list, symbology: 'dual', format: 'zpl' })}'`;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(cmd).then(() => {
+            showToast(validOrGen.length === 1
+                ? '📋 Copied GET /validate cURL command!'
+                : `📋 Copied POST /v1/labels ZPL cURL (${Math.min(validOrGen.length, 50)} SSCCs)!`, 'success');
+        }).catch(() => {});
+    }
 }

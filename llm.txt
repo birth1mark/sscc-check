@@ -3,7 +3,8 @@
 > Free, open-source GS1 Serial Shipping Container Code (SSCC-18) validator, Modulo 10 check digit calculator, EDIFACT/SAP IDoc/XML extractor, GS1-128 pallet label generator (A5/A6/4x6" & Zebra ZPL-II), and zero-auth public REST API.
 
 - Canonical Web App: https://pormenores.net/sscc/
-- Public REST API Base URL: https://sscc.birth1mark.workers.dev
+- Public Validation REST API Base URL: https://sscc.birth1mark.workers.dev
+- Commercial GS1 Labels, ZPL & 2D QR Digital Link API Base URL: https://sscc-labels.birth1mark.workers.dev
 - OpenAPI 3.0 Specification (JSON): https://pormenores.net/sscc/openapi.json
 - OpenAPI 3.0 Specification (YAML): https://pormenores.net/sscc/openapi.yaml
 - Universal GS1 Check Digit Calculator: https://pormenores.net/sscc/calculator.html
@@ -94,6 +95,23 @@ AI agents, LLM tool-callers, and automation workflows can interact with **SSCC P
     -H "Content-Type: text/plain" \
     -d "UNA:+.? 'UNB+UNOC:3+SENDER+RECEIVER+261123:0800+1'GIN+BJ+356012345600000016'"
   ```
+
+---
+
+## 2B. GS1 Pallet Label, ZPL-II & 2D QR Digital Link API (`https://sscc-labels.birth1mark.workers.dev`)
+
+Generates industrial GS1 Logistics Pallet Labels with **1D GS1-128** (`Code 128 Subset C/B + FNC1`), **2D QR Code (`GS1 Digital Link` — Sunrise 2027)**, or **Dual Symbology (`1D + 2D QR`)** in **Zebra ZPL-II (`.zpl`)**, **Printable HTML (`A5`/`A6`/`4x6"`)**, **Vector SVG**, or **JSON**.
+
+- **Free Tier**: Includes **25 free labels** per company prefix (`GCP`).
+- **Pro API Key (`X-API-Key: sscc_pro_...`)**:
+  - **Emergency Pack (250 Labels — 5 EUR)**: https://buy.stripe.com/cNieVd4cm1UU7bAgcre3e01
+  - **Business Pack (1,000 Labels — 15 EUR)**: https://buy.stripe.com/bJe9AT9wGarq67wf8ne3e02
+  - **Pro Unlimited (100,000 Labels / 1 Year — 29 EUR)**: https://buy.stripe.com/28EeVdeR0eHG53s3pFe3e03
+- **Endpoints**:
+  - `POST https://sscc-labels.birth1mark.workers.dev/v1/labels` — Generate single or batch labels (`symbology: "dual" | "gs1-128" | "qr"`, `format: "json" | "zpl" | "html" | "svg"`).
+  - `GET https://sscc-labels.birth1mark.workers.dev/v1/label?sscc=356012345600000016&symbology=dual&format=zpl` — Single label generation.
+  - `GET https://sscc-labels.birth1mark.workers.dev/v1/qr?sscc=356012345600000016` — Direct 2D GS1 Digital Link QR Code (`image/svg+xml`).
+  - `GET https://sscc-labels.birth1mark.workers.dev/v1/quota?gcp=5601234` — Check remaining free or Pro label credits.
 
 ---
 

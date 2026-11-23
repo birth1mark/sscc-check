@@ -1793,6 +1793,13 @@
     </style>
     <script>
     (function() {
+        var dl = window.location.pathname.match(/^\/00\/(\d{18})\/?$/);
+        if (dl) {
+            var p = new URLSearchParams(window.location.search);
+            if (!p.has('sscc')) p.set('sscc', dl[1]);
+            window.location.replace('/?' + p.toString() + window.location.hash);
+            return;
+        }
         var map = { 'index.html': '', 'calculator.html': 'calculator', 'guide.html': 'guide', 'sscc-api-guide.html': 'docs' };
         var clean = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '').replace(/^\//, '');
         var nice = (clean in map) ? map[clean] : clean;

@@ -19,6 +19,6 @@
     RewriteRule ^guide/?$ guide.html [L]
     RewriteRule ^docs/?$ sscc-api-guide.html [L]
 
-    # Native GS1 Digital Link URI: /00/<18-digit-SSCC>
-    RewriteRule ^00/([0-9]{18})/?$ https://ssccapi.com/?sscc=$1 [R=302,L,QSA]
+    # Native GS1 Digital Link URI: /00/<18-digit-SSCC> (internal rewrite — zero Worker subrequest loop)
+    RewriteRule ^00/([0-9]{18})/?$ index.html [L]
 </IfModule>

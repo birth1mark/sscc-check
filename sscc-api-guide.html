@@ -1462,38 +1462,75 @@ async function executeQrSandbox() {
     const t0 = performance.now();
 
     const url = `${LABELS_API}/v1/barcode?sscc=${encodeURIComponent(sscc)}&type=${encodeURIComponent(type)}&format=${encodeURIComponent(fmt)}&batch=${encodeURIComponent(batch)}`;
-    const res = await fetch(url);
+    let res = await fetch(url);
+    let rawText = await res.text();
     const ms = Math.round(performance.now() - t0);
+
+    // Fallback compatibility if Cloudflare Worker is still on v1.0.0 (where /v1/barcode returns root info JSON)
+    let isV10Fallback = false;
+    try {
+        const maybeJson = JSON.parse(rawText);
+        if (maybeJson && maybeJson.service && maybeJson.endpoints && !maybeJson.sscc) {
+            isV10Fallback = true;
+        }
+    } catch (_) {}
+
+    if (isV10Fallback) {
+        const symParam = (type === 'both') ? 'dual' : type;
+        if (fmt === 'zpl') {
+            const zRes = await fetch(`${LABELS_API}/v1/label?sscc=${encodeURIComponent(sscc)}&symbology=${symParam}&format=zpl&batch=${encodeURIComponent(batch)}`);
+            rawText = await zRes.text();
+        } else {
+            const [res1d, resQr] = await Promise.all([
+                (type === 'gs1-128' || type === 'both') ? fetch(`${LABELS_API}/v1/label?sscc=${encodeURIComponent(sscc)}&symbology=gs1-128&format=svg`).then(r => r.text()) : Promise.resolve(''),
+                (type === 'qr' || type === 'both') ? fetch(`${LABELS_API}/v1/qr?sscc=${encodeURIComponent(sscc)}&batch=${encodeURIComponent(batch)}`).then(r => r.text()) : Promise.resolve('')
+            ]);
+            if (fmt === 'json') {
+                const fbObj = {
+                    status: 'ok',
+                    sscc,
+                    hri: `(00) ${sscc}`,
+                    symbology: type === 'both' ? 'both (gs1-128 + qr)' : type,
+                    digitalLinkUri: `https://pormenores.net/sscc/?sscc=${sscc}${batch ? '&10=' + batch : ''}`
+                };
+                if (res1d) fbObj.svg1d = res1d;
+                if (resQr) fbObj.svgQr = resQr;
+                rawText = JSON.stringify(fbObj);
+            } else {
+                rawText = (type === 'both')
+                    ? `<div style="display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;"><div style="min-width:260px;">${res1d}</div><div>${resQr}</div></div>`
+                    : (res1d || resQr);
+            }
+        }
+    }
 
     box.classList.add('visible');
     if (fmt === 'json') {
-        const data = await res.json();
+        const data = JSON.parse(rawText);
         document.getElementById('res-status-qr').textContent = `${res.status} OK · application/json (type=${type}) · ${ms} ms`;
         let visualHtml = '';
         if (data.svg1d && data.svgQr) {
             visualHtml = `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;align-items:center;">
-                <div style="background:#fff;padding:10px;border-radius:8px;"><div style="font-family:var(--font-mono);font-size:10px;color:#000;font-weight:700;margin-bottom:4px;">svg1d (1D GS1-128)</div>${data.svg1d}</div>
+                <div style="background:#fff;padding:10px;border-radius:8px;min-width:240px;"><div style="font-family:var(--font-mono);font-size:10px;color:#000;font-weight:700;margin-bottom:4px;">svg1d (1D GS1-128)</div>${data.svg1d}</div>
                 <div style="background:#fff;padding:10px;border-radius:8px;"><div style="font-family:var(--font-mono);font-size:10px;color:#000;font-weight:700;margin-bottom:4px;">svgQr (2D QR Digital Link)</div>${data.svgQr}</div>
             </div>`;
         } else if (data.svg1d || data.svgQr) {
-            visualHtml = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;">${data.svg1d || data.svgQr}</div>`;
+            visualHtml = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;min-width:220px;">${data.svg1d || data.svgQr}</div>`;
         }
         preview.innerHTML = visualHtml;
         preview.classList.add('visible');
         bodyEl.style.display = 'block';
         bodyEl.innerHTML = syntaxHighlight(data);
     } else if (fmt === 'zpl') {
-        const zplText = await res.text();
         document.getElementById('res-status-qr').textContent = `${res.status} OK · text/plain (ZPL-II · type=${type}) · ${ms} ms`;
         preview.classList.remove('visible');
         bodyEl.style.display = 'block';
-        bodyEl.textContent = zplText;
+        bodyEl.textContent = rawText;
     } else {
-        const svgText = await res.text();
         document.getElementById('res-status-qr').textContent = `${res.status} OK · image/svg+xml (type=${type}) · ${ms} ms`;
         bodyEl.style.display = 'none';
         preview.classList.add('visible');
-        preview.innerHTML = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;max-width:100%;overflow-x:auto;">${svgText}</div>
+        preview.innerHTML = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;max-width:100%;min-width:240px;overflow-x:auto;">${rawText}</div>
             <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:8px;">Mode: <strong style="color:var(--primary);">${type.toUpperCase()}</strong> · GS1 Digital Link URI: <code style="color:var(--primary);">https://pormenores.net/sscc/?sscc=${sscc}${batch ? '&10='+batch : ''}</code></div>`;
     }
 }

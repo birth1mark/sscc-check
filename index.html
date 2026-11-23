@@ -17,23 +17,23 @@
         form-action 'self';
     ">
 
-    <title>SSCC Validator, Barcode Scanner &amp; GS1 Pallet Label Generator | SSCC Pro Vision</title>
-    <meta name="description" content="Free online SSCC validator, check digit calculator, GS1-128 barcode scanner and GS1 pallet label generator (ZPL &amp; PDF). Extract SSCCs from EDIFACT, IDoc, XML or CSV files. 100% client-side, offline PWA.">
-    <meta name="keywords" content="SSCC validator, GS1 pallet label generator, ZPL label export, SSCC check digit, SSCC generator, GS1-128 scanner, SSCC API, EDIFACT SSCC, IDoc SSCC, serial shipping container code, logistics barcode">
+    <title>SSCC Validator, GS1-128 &amp; 2D QR Barcode Generator, ZPL Pallet Labels &amp; API | SSCC Pro Vision</title>
+    <meta name="description" content="Validate SSCC-18 codes, generate standalone GS1-128 &amp; 2D QR Digital Link barcodes (SVG, 300 DPI PNG, Zebra ZPL-II) or full A5/4x6&quot; GS1 logistics pallet labels. Extract SSCCs from EDIFACT, SAP IDoc, XML &amp; CSV. Free Web Studio &amp; Cloud REST API.">
+    <meta name="keywords" content="SSCC validator, GS1-128 barcode generator, SSCC barcode SVG PNG ZPL, GS1 pallet label generator, Zebra ZPL label API, GS1 Digital Link QR code, Sunrise 2027 barcode, SSCC check digit calculator, EDIFACT SSCC, SAP IDoc EXIDV">
     <meta name="author" content="birth1mark">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://pormenores.net/sscc/">
     <link rel="alternate" type="text/plain" href="https://pormenores.net/sscc/llms.txt" title="LLMs.txt AI Agent Documentation">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="SSCC Validator, Barcode Scanner &amp; GS1 Pallet Label Generator | SSCC Pro Vision">
-    <meta property="og:description" content="Free SSCC validator, GS1-128 barcode scanner, and GS1 logistics pallet label generator (Print / ZPL). 100% client-side, offline PWA.">
+    <meta property="og:title" content="SSCC Pro Vision — GS1-128 &amp; 2D QR Barcode Generator, ZPL Pallet Labels &amp; API">
+    <meta property="og:description" content="Validate SSCC-18 codes, generate standalone GS1-128 &amp; 2D QR Digital Link barcodes (SVG, 300 DPI PNG, ZPL-II) or full A5/4x6&quot; pallet labels, and integrate via REST API.">
     <meta property="og:url" content="https://pormenores.net/sscc/">
     <meta property="og:image" content="https://pormenores.net/sscc/og-image.png">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="SSCC Validator, Barcode Scanner &amp; GS1 Pallet Label Generator">
-    <meta name="twitter:description" content="Free SSCC validator, GS1-128 barcode scanner, and GS1 logistics pallet label generator (Print / ZPL). 100% client-side, offline PWA.">
+    <meta name="twitter:title" content="SSCC Pro Vision — GS1-128 &amp; 2D QR Barcode Generator, ZPL Pallet Labels &amp; API">
+    <meta name="twitter:description" content="Validate SSCC-18 codes, generate standalone GS1-128 &amp; 2D QR barcodes (SVG, 300 DPI PNG, ZPL-II) or full pallet labels, and integrate via REST API.">
     <meta name="twitter:image" content="https://pormenores.net/sscc/og-image.png">
 
     <script type="application/ld+json">
@@ -43,27 +43,50 @@
         {
           "@type": "WebApplication",
           "name": "SSCC Pro Vision",
+          "version": "5.9.0",
           "url": "https://pormenores.net/sscc/",
-          "description": "Free SSCC validator, check digit calculator, GS1-128 barcode scanner and GS1 pallet label generator (ZPL and PDF/Print). Validates 18-digit Serial Shipping Container Codes, generates check digits, and extracts SSCCs from EDIFACT, IDoc, XML and CSV files.",
+          "description": "GS1 SSCC-18 validator, Modulo 10 check digit calculator, standalone GS1-128 & 2D QR Digital Link barcode generator (SVG, 300 DPI PNG, Zebra ZPL-II), A5/A6/4x6\" logistics pallet label studio, EDIFACT/SAP IDoc extractor, and Cloud REST API.",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "Any",
           "browserRequirements": "Requires JavaScript",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "EUR"
-          },
+          "offers": [
+            {
+              "@type": "Offer",
+              "name": "Free Evaluation Tier & Validator",
+              "price": "0",
+              "priceCurrency": "EUR",
+              "description": "Unlimited SSCC validation, EDI extraction, and 25 free GS1 pallet labels / barcodes."
+            },
+            {
+              "@type": "Offer",
+              "name": "Emergency Pack (250 Label Credits)",
+              "price": "5.00",
+              "priceCurrency": "EUR",
+              "url": "https://buy.stripe.com/cNieVd4cm1UU7bAgcre3e01"
+            },
+            {
+              "@type": "Offer",
+              "name": "Business Pack (1,000 Label Credits)",
+              "price": "15.00",
+              "priceCurrency": "EUR",
+              "url": "https://buy.stripe.com/bJe9AT9wGarq67wf8ne3e02"
+            },
+            {
+              "@type": "Offer",
+              "name": "Pro Unlimited (1 Year API & Label Studio)",
+              "price": "29.00",
+              "priceCurrency": "EUR",
+              "url": "https://buy.stripe.com/28EeVdeR0eHG53s3pFe3e03"
+            }
+          ],
           "featureList": [
-            "Real-time 18-digit SSCC validation",
-            "Automatic GS1 Modulo 10 check digit calculation",
-            "GS1-128 camera and hardware laser barcode scanner",
-            "Generate and Print GS1 Logistics Pallet Labels (A5, A6, 4x6 inch thermal)",
-            "Batch ZPL export for industrial Zebra thermal printers",
-            "Extract SSCCs from EDIFACT, SAP IDoc, XML and CSV files",
-            "Offline audit history persistence",
-            "Free REST API",
-            "Works offline as PWA",
-            "100% client-side processing"
+            "Real-time 18-digit SSCC validation & duplicate detection",
+            "1-click invalid GS1 Modulo 10 check digit auto-fixer",
+            "Standalone SSCC Barcode Generator: 1D GS1-128, 2D QR Digital Link, or Both (SVG, 300 DPI PNG, Zebra ZPL-II)",
+            "Full GS1 Logistics Pallet Labels (A5, A6, 4x6 inch thermal) with Multi-AI (02 GTIN, 10 Batch, 15 Expiry, 37 Count)",
+            "Batch ZPL-II export for industrial Zebra thermal printers (TCP Port 9100)",
+            "Extract SSCCs from UN/EDIFACT (GIN+BJ), SAP IDoc (EXIDV), XML and CSV files",
+            "Interactive Swagger OpenAPI 3.1 Sandbox & Commercial Cloud REST API"
           ]
         },
         {
@@ -74,23 +97,23 @@
               "name": "What does SSCC stand for?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "SSCC stands for Serial Shipping Container Code. It is an 18-digit GS1 standard number used to uniquely identify logistics units such as pallets, containers, or cartons across global supply chains."
+                "text": "SSCC stands for Serial Shipping Container Code. It is an 18-digit GS1 standard number (Application Identifier 00) used to uniquely identify logistics units such as pallets, containers, or cartons across global supply chains."
               }
             },
             {
               "@type": "Question",
-              "name": "How is the GS1 check digit calculated?",
+              "name": "Can I generate only the SSCC barcode (1D GS1-128 or 2D QR Code) without the full pallet label?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "The check digit is calculated using the official GS1 Modulo 10 algorithm. Starting from the right (excluding the check digit), alternate digits are multiplied by 3 and 1, summed together, and subtracted from the next highest multiple of 10."
+                "text": "Yes. Both the Web Studio (Barcode Only mode) and the REST API (GET /v1/barcode?sscc=...&type=gs1-128|qr|both) allow you to generate standalone 1D GS1-128 barcodes, 2D GS1 Digital Link QR codes, or both in Vector SVG, 300 DPI PNG, JSON, or Zebra ZPL-II."
               }
             },
             {
               "@type": "Question",
-              "name": "Can I print GS1 pallet labels directly from the browser?",
+              "name": "Can I print GS1 pallet labels or export Zebra ZPL directly from the browser or via API?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Yes, SSCC Pro Vision generates standard GS1 logistics pallet labels (A5, A6, and 4x6 thermal format) with GS1-128 vector barcodes, human-readable interpretation, and allows instant printing or batch export to Zebra ZPL."
+                "text": "Yes, SSCC Pro Vision generates standard GS1 logistics pallet labels (A5, A6, and 4x6 thermal format) with dual 1D GS1-128 and 2D QR Digital Link barcodes, and provides a REST API (POST /v1/labels) returning native Zebra ZPL-II, SVG, HTML, and JSON."
               }
             }
           ]
@@ -1660,12 +1683,14 @@
 
 <header class="site-header">
     <div class="header-inner">
-        <a href="https://pormenores.net/" class="brand" title="Back to pormenores.net">
-            <span class="brand-dot"></span>
-            <span>pormenores.net</span>
+        <div class="brand">
+            <a href="https://pormenores.net/" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="pormenores.net Home">
+                <span class="brand-dot"></span>
+                <span>pormenores.net</span>
+            </a>
             <span class="brand-sep">/</span>
-            <span class="brand-sub">sscc</span>
-        </a>
+            <a href="index.html" class="brand-sub" style="text-decoration:none;" title="SSCC Pro Vision Home">sscc</a>
+        </div>
         <nav class="header-nav">
             <div class="nav-group-links">
                 <a href="calculator.html" class="nav-pill" title="Universal GS1 Check Digit Calculator">Calculator</a>

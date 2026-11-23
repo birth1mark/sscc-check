@@ -309,10 +309,19 @@
                     "type": "integer",
                     "example": 5
                   },
+                  "layout": {
+                    "type": "string",
+                    "enum": [
+                      "full",
+                      "barcode-only"
+                    ],
+                    "default": "full"
+                  },
                   "symbology": {
                     "type": "string",
                     "enum": [
                       "dual",
+                      "both",
                       "gs1-128",
                       "qr"
                     ],
@@ -375,6 +384,64 @@
           },
           "402": {
             "description": "Free quota (25 labels) exceeded or Pro credits exhausted"
+          }
+        }
+      }
+    },
+    "/v1/barcode": {
+      "get": {
+        "summary": "Generate Standalone SSCC Barcode (1D GS1-128, 2D QR Digital Link, or Both)",
+        "parameters": [
+          {
+            "name": "sscc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "356012345600000016"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "both",
+                "dual",
+                "gs1-128",
+                "qr"
+              ],
+              "default": "both"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "svg",
+                "json",
+                "zpl"
+              ],
+              "default": "svg"
+            }
+          },
+          {
+            "name": "batch",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Standalone barcode in Vector SVG (image/svg+xml), JSON, or Zebra ZPL-II"
           }
         }
       }

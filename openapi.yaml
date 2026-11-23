@@ -206,10 +206,16 @@ paths:
                 quantity:
                   type: integer
                   example: 5
+                layout:
+                  type: string
+                  enum: [full, barcode-only]
+                  default: full
+                  description: Choose complete GS1 logistics pallet label ('full') or standalone SSCC barcode strip ('barcode-only')
                 symbology:
                   type: string
-                  enum: [dual, gs1-128, qr]
+                  enum: [dual, both, gs1-128, qr]
                   default: dual
+                  description: Choose 'gs1-128' (1D only), 'qr' (2D QR Digital Link only), or 'dual'/'both' (1D + 2D QR)
                 format:
                   type: string
                   enum: [json, zpl, html, svg]
@@ -247,14 +253,54 @@ paths:
                   example: "2026-12-31"
       responses:
         '200':
-          description: Generated GS1 labels (JSON, ZPL-II, HTML, or SVG)
+          description: Generated GS1 labels or barcodes (JSON, ZPL-II, HTML, or SVG)
         '402':
           description: Free quota (25 labels) exceeded or Pro credits exhausted
+
+  /v1/barcode:
+    get:
+      summary: Generate Standalone SSCC Barcode (1D GS1-128, 2D QR Digital Link, or Both)
+      description: |
+        Dedicated endpoint for users who compose their own label layouts and only need the SSCC barcode(s).
+        Use 'type' (or 'symbology') to request 'gs1-128' (1D linear barcode), 'qr' (2D QR Code), or 'both' (1D + 2D QR).
+        Use 'format=json' with 'type=both' to receive 'svg1d', 'svgQr', 'zpl1d', and 'zplQr' as separate fields.
+      parameters:
+        - name: sscc
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "356012345600000016"
+        - name: type
+          in: query
+          required: false
+          description: "Barcode symbology to generate: 'gs1-128' (1D only), 'qr' (2D QR only), or 'both'/'dual' (both 1D and 2D QR)"
+          schema:
+            type: string
+            enum: [both, dual, gs1-128, qr]
+            default: both
+        - name: format
+          in: query
+          required: false
+          description: "Output format: 'svg' (image/svg+xml), 'json' (separated svg1d & svgQr + zpl), or 'zpl' (Zebra ZPL-II)"
+          schema:
+            type: string
+            enum: [svg, json, zpl]
+            default: svg
+        - name: batch
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "LOT-99A"
+      responses:
+        '200':
+          description: Standalone barcode in Vector SVG (image/svg+xml), JSON, or Zebra ZPL-II
 
   /v1/qr:
     get:
       summary: Generate Standalone 2D GS1 Digital Link QR Code (SVG)
-      description: Returns an ISO/IEC 18004 vector SVG QR Code encoding the GS1 Digital Link URI for an SSCC.
+      description: Alias for /v1/barcode?type=qr. Returns an ISO/IEC 18004 vector SVG QR Code encoding the GS1 Digital Link URI for an SSCC.
       parameters:
         - name: sscc
           in: query

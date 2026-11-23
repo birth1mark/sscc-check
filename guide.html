@@ -409,12 +409,16 @@
 
 <header class="site-header">
     <div class="header-inner">
-        <a class="nav-brand" href="index.html" title="Back to SSCC Pro Vision">
-            <span class="brand-dot"></span>
-            <span>pormenores.net</span>
+        <div class="nav-brand">
+            <a href="https://pormenores.net/" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;" title="pormenores.net Home">
+                <span class="brand-dot"></span>
+                <span>pormenores.net</span>
+            </a>
             <span class="brand-sep">/</span>
-            <span class="brand-sub">guide</span>
-        </a>
+            <a href="index.html" class="brand-sub" style="text-decoration:none;" title="SSCC Pro Vision">sscc</a>
+            <span class="brand-sep">/</span>
+            <span style="color:var(--muted);font-weight:500;">guide</span>
+        </div>
         <nav class="nav-links">
             <a class="nav-pill" href="index.html">Vision Tool</a>
             <a class="nav-pill" href="calculator.html">Calculator</a>
@@ -841,21 +845,23 @@
         </details>
     </div>
 
-    <h2 id="tool">Free Online Validator</h2>
-    <p>If you need to validate SSCCs without writing code, <strong>SSCC Pro Vision</strong> is a free, open-source tool that runs entirely in the browser. No installation, no backend, no data leaves your device.</p>
+    <h2 id="tool">GS1 Pallet Label Studio, Barcode Generator &amp; Cloud REST API</h2>
+    <p>Whether you need to validate an EDIFACT/SAP IDoc shipment, generate standalone <strong>1D GS1-128</strong> &amp; <strong>2D QR Digital Link</strong> barcodes (<code>.svg</code>, <code>300 DPI .png</code>, <code>.zpl</code>) to compose in your own template, or automate full <strong>4×6" Zebra thermal pallet labels</strong> from your ERP:</p>
 
     <ul>
-        <li>Scan GS1 128 barcodes directly with your phone camera</li>
-        <li>Validate or generate check digits for single or batch SSCCs</li>
-        <li>Expand SSCC ranges to generate every code between two values</li>
-        <li>Upload EDIFACT, IDoc SAP, XML, CSV or TXT files, all SSCCs extracted automatically</li>
-        <li>Installs as a PWA on Android and iOS</li>
+        <li><strong>Standalone Barcodes or Full Pallet Labels</strong>: Switch between <em>Full GS1 Pallet Label</em> (A5 / A6 / 4×6") and <em>Barcode Only (SSCC Strip)</em> in 1D GS1-128, 2D QR Digital Link, or Dual mode.</li>
+        <li><strong>4 Industrial Output Formats</strong>: Direct Print/PDF, native Zebra ZPL-II (<code>^BCN</code> + <code>^BQN</code>), pure Vector <code>.svg</code>, and high-resolution <code>300 DPI .png</code>.</li>
+        <li><strong>Cloudflare Edge REST API</strong>: Validate for free on <code>sscc.birth1mark.workers.dev</code> or generate labels &amp; barcodes via <code>sscc-labels.birth1mark.workers.dev</code> (25 free labels included; Pro packs from <strong>5 €</strong>).</li>
+        <li><strong>Custom ERP &amp; Retailer Templates</strong>: Need bespoke label layouts (Sonae, Jerónimo Martins, Mercadona, Amazon) or SAP/Odoo connectors? Contact us for custom engineering.</li>
     </ul>
 
     <div class="cta-box">
-        <h3>Try SSCC Pro Vision</h3>
-        <p>Free, open-source SSCC validator and check digit calculator, runs entirely in your browser.</p>
-        <a class="cta-btn" href="./">Open Validator →</a>
+        <h3>Start Validating or Generating GS1 Barcodes &amp; ZPL Labels</h3>
+        <p>Free Web Studio, Universal GS1 Check Digit Calculator, and Interactive OpenAPI 3.1 Swagger Sandbox.</p>
+        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+            <a class="cta-btn" href="index.html">Open Validator &amp; Label Studio →</a>
+            <a class="cta-btn" href="sscc-api-guide.html" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">Explore REST API &amp; Sandbox →</a>
+        </div>
     </div>
 
 </div>

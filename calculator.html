@@ -415,12 +415,16 @@
 
 <header class="site-header">
     <div class="header-inner">
-        <a href="index.html" class="brand" title="Back to SSCC Pro Vision">
-            <span class="brand-dot"></span>
-            <span>pormenores.net</span>
+        <div class="brand">
+            <a href="https://pormenores.net/" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="pormenores.net Home">
+                <span class="brand-dot"></span>
+                <span>pormenores.net</span>
+            </a>
             <span class="brand-sep">/</span>
-            <span class="brand-sub">calculator</span>
-        </a>
+            <a href="index.html" class="brand-sub" style="text-decoration:none;" title="SSCC Pro Vision">sscc</a>
+            <span class="brand-sep">/</span>
+            <span style="color:var(--text-muted);font-weight:500;">calculator</span>
+        </div>
         <nav class="header-nav">
             <a href="index.html" class="nav-pill">Vision Tool</a>
             <a href="calculator.html" class="nav-pill active">Calculator</a>
@@ -466,12 +470,18 @@
                 </div>
             </div>
 
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
                 <span style="font-size:11.5px;font-weight:700;font-family:var(--font-mono);">Step-by-Step Calculation (GS1 Modulo 10):</span>
-                <button class="btn-copy-full" onclick="copyFullResult()">
-                    <i data-lucide="copy" style="width:13px;height:13px;"></i>
-                    <span>Copy Full Code</span>
-                </button>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button class="btn-copy-full" onclick="openCalculatedInLabelStudio()" style="border-color:rgba(245,158,11,0.45);color:var(--primary);" title="Generate 1D GS1-128 Barcode, 2D QR Code, Zebra ZPL or Full Pallet Label">
+                        <i data-lucide="barcode" style="width:13px;height:13px;"></i>
+                        <span>Generate Barcode / Pallet Label</span>
+                    </button>
+                    <button class="btn-copy-full" onclick="copyFullResult()">
+                        <i data-lucide="copy" style="width:13px;height:13px;"></i>
+                        <span>Copy Full Code</span>
+                    </button>
+                </div>
             </div>
 
             <div class="math-table-wrap">
@@ -491,12 +501,18 @@
         </div>
 
         <div class="cta-box">
-            <h3>Need to scan barcodes or print pallet labels?</h3>
-            <p>SSCC Pro Vision includes a GS1-128 camera scanner, A5/4×6" pallet label generator, and industrial Zebra ZPL exporter.</p>
-            <a href="index.html" class="cta-btn">
-                <i data-lucide="printer" style="width:14px;height:14px;"></i>
-                <span>Open SSCC Pro Vision</span>
-            </a>
+            <h3>Generate GS1-128 &amp; 2D QR Barcodes, Zebra ZPL or Full Pallet Labels</h3>
+            <p>Export standalone SSCC barcodes (<code>SVG</code>, <code>300 DPI PNG</code>, <code>ZPL-II</code>) or complete A5/4×6" GS1 logistics pallet labels in the Web Studio or via our Cloud REST API (25 free labels included · Pro packs from 5 €).</p>
+            <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+                <a href="index.html#labels" class="cta-btn">
+                    <i data-lucide="printer" style="width:14px;height:14px;"></i>
+                    <span>Open Label &amp; Barcode Studio</span>
+                </a>
+                <a href="sscc-api-guide.html" class="cta-btn" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">
+                    <i data-lucide="terminal" style="width:14px;height:14px;"></i>
+                    <span>REST API &amp; Swagger Sandbox</span>
+                </a>
+            </div>
         </div>
     </main>
 
@@ -604,6 +620,17 @@ function copyFullResult() {
     navigator.clipboard.writeText(raw + cd).then(() => {
         alert('Code copied to clipboard: ' + raw + cd);
     });
+}
+
+function openCalculatedInLabelStudio() {
+    const raw = document.getElementById('calc-input').value.replace(/\D/g, '');
+    const cd = document.getElementById('res-cd-val').textContent;
+    const full = raw + cd;
+    if (full.length === 18) {
+        window.location.href = `index.html?sscc=${encodeURIComponent(full)}&label=1`;
+    } else {
+        window.location.href = `index.html?sscc=${encodeURIComponent(full)}`;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

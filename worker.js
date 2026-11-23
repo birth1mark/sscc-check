@@ -614,8 +614,9 @@ export default {
                 default:
                     return json({
                         name:    'SSCC Pro Vision API',
-                        version: '1.2.2',
+                        version: '5.9.0',
                         docs:    'https://pormenores.net/sscc/sscc-api-guide.html',
+                        webApp:  'https://pormenores.net/sscc/',
                         endpoints: {
                             validate: '/validate?sscc=356012345600000016',
                             generate: '/generate?body=35601234560000001',
@@ -625,6 +626,16 @@ export default {
                             health:   '/health',
                             robots:   '/robots.txt',
                         },
+                        labelsAndBarcodesApi: {
+                            baseUrl:     'https://sscc-labels.birth1mark.workers.dev',
+                            description: 'Generate GS1 Pallet Labels or Standalone SSCC Barcodes (1D GS1-128, 2D QR Digital Link, or Both) in Zebra ZPL-II, Vector SVG, HTML & JSON',
+                            freeQuota:   '25 free labels included per GS1 Company Prefix (GCP)',
+                            endpoints: {
+                                batchLabels:       'POST https://sscc-labels.birth1mark.workers.dev/v1/labels',
+                                standaloneBarcode: 'GET https://sscc-labels.birth1mark.workers.dev/v1/barcode?sscc=356012345600000016&type=both',
+                                checkQuota:        'GET https://sscc-labels.birth1mark.workers.dev/v1/quota?gcp=5601234'
+                            }
+                        }
                     });
             }
         } catch (err) {

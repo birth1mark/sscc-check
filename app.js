@@ -84,6 +84,193 @@ function toBody(raw) {
     return null;
 }
 
+/**
+ * Computes Modulo-10 check digit for any GS1 key body (GTIN-8/12/13/14, GLN-13, SSCC-18).
+ */
+function calcAnyGS1CheckDigit(bodyDigits) {
+    let sum = 0;
+    const rev = String(bodyDigits).replace(/\D/g, '').split('').reverse();
+    for (let i = 0; i < rev.length; i++) {
+        sum += parseInt(rev[i], 10) * (i % 2 === 0 ? 3 : 1);
+    }
+    return (10 - (sum % 10)) % 10;
+}
+
+function formatYYMMDD(yymmdd) {
+    if (!/^\d{6}$/.test(yymmdd)) return yymmdd;
+    const yy = parseInt(yymmdd.slice(0, 2), 10);
+    const mm = yymmdd.slice(2, 4);
+    const dd = yymmdd.slice(4, 6);
+    const yyyy = yy >= 50 ? 1900 + yy : 2000 + yy;
+    return `${yyyy}-${mm}-${dd} (YYMMDD: ${yymmdd})`;
+}
+
+/**
+ * Universal GS1-128 & 2D Digital Link Multi-AI Deconstructor.
+ * Parses parenthesized HRI strings, raw ]C1 scanner strings, or GS1 Digital Link URIs.
+ */
+function parseGS1MultiAIString(rawLine) {
+    const line = String(rawLine || '').trim();
+    if (!line) return null;
+
+    const extracted = {};
+
+    // Case A: GS1 Digital Link URI (e.g. https://ssccapi.com/?sscc=356012345600000016&02=05601234567892&15=261231&37=48&10=LOT99)
+    if (/^https?:\/\//i.test(line) || line.includes('?sscc=') || line.includes('/00/')) {
+        try {
+            const u = new URL(line.startsWith('http') ? line : 'https://ssccapi.com/' + line.replace(/^\//, ''));
+            const pathM = u.pathname.match(/\/00\/(\d{18})/);
+            if (pathM) extracted['00'] = pathM[1];
+            for (const [k, v] of u.searchParams.entries()) {
+                const key = k.toLowerCase();
+                if (key === 'sscc' || key === 'code' || key === '00') extracted['00'] = v.replace(/\D/g, '');
+                else if (key === 'gtin' || key === '02' || key === '01') extracted['02'] = v.replace(/\D/g, '');
+                else if (key === 'batch' || key === '10') extracted['10'] = v;
+                else if (key === 'expiry' || key === '15') extracted['15'] = v.replace(/\D/g, '');
+                else if (key === '17') extracted['17'] = v.replace(/\D/g, '');
+                else if (key === '11') extracted['11'] = v.replace(/\D/g, '');
+                else if (key === 'count' || key === '37') extracted['37'] = v.replace(/\D/g, '');
+                else if (key === '400' || key === 'order') extracted['400'] = v;
+                else if (/^3[13]0[0-5]$/.test(key)) extracted[key] = v.replace(/\D/g, '');
+            }
+        } catch (_) {}
+    }
+
+    // Case B: Parenthesized GS1 HRI String: e.g. (00)356012345600000016(02)05601234567892(15)261231(37)48(10)LOT-26A
+    if (/\(\d{2,4}\)/.test(line)) {
+        const re = /\((\d{2,4})\)\s*([^\(\)]+)/g;
+        let m;
+        while ((m = re.exec(line)) !== null) {
+            extracted[m[1]] = m[2].trim();
+        }
+    }
+
+    // Case C: Raw unparenthesized GS1-128 stream starting with ]C1 or 00 + extra AIs (> 22 chars)
+    const cleanRaw = line.replace(/^\]C1/i, '').trim();
+    if (Object.keys(extracted).length === 0 && /^00\d{18}.{4,}$/.test(cleanRaw)) {
+        extracted['00'] = cleanRaw.slice(2, 20);
+        let rest = cleanRaw.slice(20);
+        let safety = 0;
+        while (rest.length >= 2 && safety++ < 12) {
+            rest = rest.replace(/^[\x1d\s]+/, '');
+            if (rest.startsWith('01') || rest.startsWith('02')) {
+                const ai = rest.slice(0, 2);
+                extracted[ai] = rest.slice(2, 16);
+                rest = rest.slice(16);
+            } else if (/^(11|13|15|17)\d{6}/.test(rest)) {
+                const ai = rest.slice(0, 2);
+                extracted[ai] = rest.slice(2, 8);
+                rest = rest.slice(8);
+            } else if (/^3[13]0[0-5]\d{6}/.test(rest)) {
+                const ai = rest.slice(0, 4);
+                extracted[ai] = rest.slice(4, 10);
+                rest = rest.slice(10);
+            } else if (/^41[04]\d{13}/.test(rest)) {
+                const ai = rest.slice(0, 3);
+                extracted[ai] = rest.slice(3, 16);
+                rest = rest.slice(16);
+            } else if (rest.startsWith('37')) {
+                const m37 = rest.slice(2).match(/^(\d{1,8})(?:[\x1d]|(?=(?:10|400)[A-Za-z0-9])|$)/);
+                if (m37) {
+                    extracted['37'] = m37[1];
+                    rest = rest.slice(2 + m37[1].length);
+                } else break;
+            } else if (rest.startsWith('10')) {
+                const parts = rest.slice(2).split(/[\x1d]/);
+                extracted['10'] = parts[0].slice(0, 20);
+                rest = parts.slice(1).join('\x1d');
+            } else if (rest.startsWith('400')) {
+                const parts = rest.slice(3).split(/[\x1d]/);
+                extracted['400'] = parts[0].slice(0, 30);
+                rest = parts.slice(1).join('\x1d');
+            } else {
+                break;
+            }
+        }
+    }
+
+    const keys = Object.keys(extracted);
+    if (!extracted['00'] || keys.length <= 1) return null;
+
+    const breakdown = [];
+    const metaForStudio = {};
+
+    for (const ai of keys) {
+        const val = extracted[ai];
+        if (ai === '00') {
+            const d = val.replace(/\D/g, '');
+            metaForStudio.sscc = d;
+            const b17 = d.slice(0, 17);
+            const exp = b17.length === 17 ? calcAnyGS1CheckDigit(b17) : null;
+            const prov = d.length === 18 ? parseInt(d[17], 10) : null;
+            breakdown.push({
+                ai: '00',
+                name: 'SSCC-18 (Logistics Unit ID)',
+                value: d,
+                status: (prov !== null && prov === exp) ? 'Check Digit OK (' + exp + ')' : (exp !== null ? 'Expected CD ' + exp : 'Invalid length'),
+                ok: prov === null || prov === exp
+            });
+        } else if (ai === '01' || ai === '02') {
+            const d = val.replace(/\D/g, '').padStart(14, '0');
+            metaForStudio.gtin = d;
+            const b13 = d.slice(0, 13);
+            const exp = calcAnyGS1CheckDigit(b13);
+            const prov = parseInt(d[13], 10);
+            breakdown.push({
+                ai,
+                name: ai === '02' ? 'GTIN of Contained Trade Items' : 'GTIN-14 Trade Item',
+                value: d,
+                status: prov === exp ? 'GTIN Check Digit OK (' + exp + ')' : `Check Digit Mismatch (exp ${exp})`,
+                ok: prov === exp
+            });
+        } else if (ai === '10') {
+            metaForStudio.batchNo = val;
+            breakdown.push({ ai: '10', name: 'Batch / Lot Number', value: val, status: `${val.length}/20 chars`, ok: true });
+        } else if (ai === '11' || ai === '13' || ai === '15' || ai === '17') {
+            const names = { '11': 'Production Date', '13': 'Packaging Date', '15': 'Best Before Date', '17': 'Expiration Date' };
+            if (ai === '15' || ai === '17') metaForStudio.expiryDate = val;
+            breakdown.push({ ai, name: names[ai], value: formatYYMMDD(val), status: 'ISO Date Decoded', ok: /^\d{6}$/.test(val) });
+        } else if (ai === '37') {
+            metaForStudio.unitCount = val.replace(/\D/g, '');
+            breakdown.push({ ai: '37', name: 'Count of Trade Items', value: `${metaForStudio.unitCount} units`, status: 'Variable length (1–8 digits)', ok: true });
+        } else if (/^3[13]0[0-5]$/.test(ai)) {
+            const dec = parseInt(ai[3], 10);
+            const num = parseInt(val.replace(/\D/g, ''), 10) / Math.pow(10, dec);
+            const wStr = `${num.toFixed(dec)} KG`;
+            metaForStudio.weight = wStr;
+            breakdown.push({
+                ai,
+                name: ai.startsWith('310') ? 'Net Weight (kg)' : 'Logistic Gross Weight (kg)',
+                value: wStr,
+                status: `${dec} decimal place(s)`,
+                ok: true
+            });
+        } else if (ai === '400') {
+            metaForStudio.orderNo = val;
+            breakdown.push({ ai: '400', name: 'Customer Purchase Order', value: val, status: 'Order Reference', ok: true });
+        } else if (ai === '410' || ai === '414') {
+            const d = val.replace(/\D/g, '');
+            const exp = d.length === 13 ? calcAnyGS1CheckDigit(d.slice(0, 12)) : null;
+            const prov = d.length === 13 ? parseInt(d[12], 10) : null;
+            breakdown.push({
+                ai,
+                name: ai === '410' ? 'Ship-To Location GLN-13' : 'Physical Location GLN-13',
+                value: d,
+                status: prov === exp ? 'GLN Check Digit OK' : 'GLN-13',
+                ok: prov === exp
+            });
+        } else {
+            breakdown.push({ ai, name: `GS1 Application Identifier (${ai})`, value: val, status: 'Parsed', ok: true });
+        }
+    }
+
+    return {
+        ssccRaw: extracted['00'],
+        breakdown,
+        metaForStudio
+    };
+}
+
 const MAX_RANGE = 500;
 
 function parseRangeLine(line) {
@@ -386,6 +573,33 @@ function process(saveImmediate = true) {
             return;
         }
 
+        const multiAI = parseGS1MultiAIString(trimmed);
+        if (multiAI && multiAI.ssccRaw) {
+            const val = multiAI.ssccRaw;
+            const body = toBody(val);
+            if (body) {
+                const cd = getCD(body);
+                const provided = parseInt(val.length === 18 ? val[17] : val[19], 10);
+                const ok = provided === cd;
+                const flag = getFlag(body + cd);
+                store.push({
+                    code: formatSSCC(body, cd, provided),
+                    label: ok ? 'VALID' : `FAIL · exp ${cd}`,
+                    status: ok ? 'valid' : 'invalid',
+                    flag,
+                    plain: plainSSCC(body, cd),
+                    submittedPlain: body + provided,
+                    body17: body,
+                    expectedCD: cd,
+                    providedCD: provided,
+                    lineIdx,
+                    multiAIBreakdown: multiAI.breakdown,
+                    metaForStudio: multiAI.metaForStudio
+                });
+                return;
+            }
+        }
+
         const val = trimmed.replace(/\D/g, '');
 
         if (val.length === 18 || (val.length === 20 && val.startsWith('00'))) {
@@ -525,6 +739,14 @@ function render() {
             <i data-lucide="download" style="width:12px;height:12px;"></i>
             <span>CSV</span>
         </button>`;
+        summary += `<button type="button" class="btn-export" onclick="exportEDIFACT_DESADV()" title="Export UN/EDIFACT D.96A DESADV for WMS test pipelines">
+            <i data-lucide="file-text" style="width:12px;height:12px;"></i>
+            <span>EDIFACT</span>
+        </button>`;
+        summary += `<button type="button" class="btn-export" onclick="exportSAP_IDoc()" title="Export SAP IDoc DELVRY03 XML (E1EDL44/EXIDV)">
+            <i data-lucide="file-code" style="width:12px;height:12px;"></i>
+            <span>SAP IDoc</span>
+        </button>`;
         summary += `<button type="button" class="btn-export" onclick="shareBatch()" title="Copy shareable link to this batch">
             <i data-lucide="share-2" style="width:12px;height:12px;"></i>
             <span>Share</span>
@@ -559,6 +781,9 @@ function render() {
         const labelBtn = (item.status === 'valid' || item.status === 'gen') && item.plain
             ? `<button type="button" class="btn-copy" onclick="openLabelModal('${item.plain}')" title="Open GS1 Pallet Label for this SSCC"><i data-lucide="tag" style="width:13px;height:13px;"></i></button>`
             : '';
+        const multiBtn = item.multiAIBreakdown && item.multiAIBreakdown.length
+            ? `<button type="button" class="micro-btn" onclick="openMultiAIDrawerForIdx(${idx})" title="View GS1 Multi-AI Breakdown (${item.multiAIBreakdown.length} AIs)" style="border-color:var(--primary);color:var(--primary);font-size:10px;padding:2px 6px;">Multi-AI (${item.multiAIBreakdown.length})</button>`
+            : '';
         const sourceSub = item.source ? `<span class="result-source">${escapeHtml(item.source)}</span>` : '';
 
         return `
@@ -570,6 +795,7 @@ function render() {
             <span class="result-meta">
                 <span class="flag">${item.flag || ''}</span>
                 ${dupBadge}
+                ${multiBtn}
                 <span class="badge ${badgeClass}">${item.label}</span>
                 ${fixBtn}
                 ${copyBtn}
@@ -842,4 +1068,153 @@ function showToast(msg, type = 'info') {
     toast._timeout = setTimeout(() => {
         toast.className = 'app-toast';
     }, 2800);
+}
+
+// ─── GS1 Multi-AI Deconstructor UI & EDI Export Handlers ──────────────────────
+
+function inspectMultiAIInput(customText) {
+    const raw = (customText || (document.getElementById('multi-ai-input')?.value || '')).trim();
+    const resultBox = document.getElementById('multi-ai-result-table');
+    if (!resultBox) return;
+
+    if (!raw) {
+        resultBox.innerHTML = '<span style="color:var(--text-muted);">Paste any multi-AI GS1-128 barcode scan, parenthesized HRI, or GS1 Digital Link URI to inspect all elements.</span>';
+        return;
+    }
+
+    const parsed = parseGS1MultiAIString(raw);
+    if (!parsed || !parsed.breakdown || !parsed.breakdown.length) {
+        resultBox.innerHTML = `<div style="padding:8px 10px;border-radius:6px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--danger);font-size:11.5px;">
+            ⚠️ Could not parse multiple GS1 Application Identifiers. Ensure string includes (00), (02), (15), (37), (10), ]C1... or GS1 Digital Link URI.
+        </div>`;
+        return;
+    }
+
+    const rows = parsed.breakdown.map(b => `
+        <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:6px 8px;font-family:var(--font-mono);font-weight:700;color:var(--primary);">(${escapeHtml(b.ai)})</td>
+            <td style="padding:6px 8px;color:var(--text-main);font-weight:600;">${escapeHtml(b.name)}</td>
+            <td style="padding:6px 8px;font-family:var(--font-mono);color:var(--text-main);">${escapeHtml(b.value)}</td>
+            <td style="padding:6px 8px;">
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:4px;font-size:10.5px;font-weight:600;background:${b.ok ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'};color:${b.ok ? 'var(--success)' : 'var(--danger)'};border:1px solid ${b.ok ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};">
+                    ${b.ok ? '✓' : '⚠️'} ${escapeHtml(b.status)}
+                </span>
+            </td>
+        </tr>
+    `).join('');
+
+    const metaStr = JSON.stringify(parsed.metaForStudio || {}).replace(/"/g, '&quot;');
+
+    resultBox.innerHTML = `
+        <div style="margin-top:6px;overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:11.5px;text-align:left;">
+                <thead>
+                    <tr style="border-bottom:1px solid var(--border);color:var(--text-muted);font-size:10.5px;text-transform:uppercase;">
+                        <th style="padding:6px 8px;">AI</th>
+                        <th style="padding:6px 8px;">GS1 Data Element</th>
+                        <th style="padding:6px 8px;">Decoded Value</th>
+                        <th style="padding:6px 8px;">Validation</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);flex-wrap:wrap;gap:6px;">
+            <span style="font-size:11px;color:var(--text-muted);">Parsed <strong>${parsed.breakdown.length}</strong> GS1 Application Identifier(s)</span>
+            <button type="button" class="micro-btn" onclick="loadMultiAIToStudio(JSON.parse('${metaStr}'))" style="border-color:var(--primary);color:var(--primary);padding:5px 10px;">
+                <i data-lucide="arrow-right" style="width:11px;height:11px;"></i>
+                <span>Load into Pallet Label Studio</span>
+            </button>
+        </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+}
+
+function loadSampleMultiAI() {
+    const input = document.getElementById('multi-ai-input');
+    if (input) {
+        input.value = '(00)356012345600000016(02)05601234567892(15)261231(37)48(10)LOT-2026A(400)PO-9941';
+        inspectMultiAIInput();
+    }
+}
+
+function loadMultiAIToStudio(meta) {
+    if (!meta) return;
+    switchWorkspaceTab('labels');
+    if (meta.sscc && typeof openLabelModal === 'function') {
+        openLabelModal(meta.sscc);
+    }
+    const gtinEl = document.getElementById('lbl-gtin');
+    const cntEl = document.getElementById('lbl-count');
+    const batEl = document.getElementById('lbl-batch');
+    const expEl = document.getElementById('lbl-expiry');
+    const ordEl = document.getElementById('lbl-order');
+    const wEl = document.getElementById('lbl-weight');
+
+    if (gtinEl && meta.gtin) gtinEl.value = meta.gtin;
+    if (cntEl && meta.unitCount) cntEl.value = meta.unitCount;
+    if (batEl && meta.batchNo) batEl.value = meta.batchNo;
+    if (expEl && meta.expiryDate) expEl.value = meta.expiryDate;
+    if (ordEl && meta.orderNo) ordEl.value = meta.orderNo;
+    if (wEl && meta.weight) wEl.value = meta.weight;
+
+    if (typeof setLabelLayoutMode === 'function') setLabelLayoutMode('full');
+    if (typeof updateLabelPreview === 'function') updateLabelPreview();
+    showToast('✓ Loaded Multi-AI logistics metadata into Pallet Studio!', 'success');
+}
+
+function openMultiAIDrawerForIdx(idx) {
+    const item = store[idx];
+    if (!item) return;
+    const drawer = document.getElementById('multi-ai-drawer');
+    if (drawer) drawer.open = true;
+    const input = document.getElementById('multi-ai-input');
+    const rawVal = item.submittedPlain || item.plain || '';
+    if (input) {
+        const fullLine = document.getElementById('input')?.value.split(/\r?\n/)[item.lineIdx] || rawVal;
+        input.value = fullLine;
+        inspectMultiAIInput();
+    }
+}
+
+function exportEDIFACT_DESADV() {
+    const validOrGen = store.filter(i => (i.status === 'valid' || i.status === 'gen') && i.plain);
+    if (!validOrGen.length) {
+        showToast('⚠️ No valid SSCC codes to export to EDIFACT', 'error');
+        return;
+    }
+    if (typeof generateEDIFACT_DESADV !== 'function') {
+        showToast('⚠️ EDIFACT generator module not loaded', 'error');
+        return;
+    }
+    const edifact = generateEDIFACT_DESADV(validOrGen, {
+        orderNo: 'PO-2026-VAL',
+        senderGln: '5601234000019',
+        recipientGln: '5609876000018'
+    });
+    const ts = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    if (typeof downloadEDIFile === 'function') {
+        downloadEDIFile(edifact, `sscc_desadv_${ts}.edi`, 'application/edifact');
+    }
+    showToast(`✓ Exported ${validOrGen.length} SSCCs as UN/EDIFACT D.96A DESADV`, 'success');
+}
+
+function exportSAP_IDoc() {
+    const validOrGen = store.filter(i => (i.status === 'valid' || i.status === 'gen') && i.plain);
+    if (!validOrGen.length) {
+        showToast('⚠️ No valid SSCC codes to export to SAP IDoc', 'error');
+        return;
+    }
+    if (typeof generateSAP_IDoc_DELVRY03 !== 'function') {
+        showToast('⚠️ SAP IDoc generator module not loaded', 'error');
+        return;
+    }
+    const idoc = generateSAP_IDoc_DELVRY03(validOrGen, {
+        orderNo: 'PO-2026-SAP'
+    });
+    const ts = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    if (typeof downloadEDIFile === 'function') {
+        downloadEDIFile(idoc, `sscc_idoc_delvry03_${ts}.xml`, 'application/xml');
+    }
+    showToast(`✓ Exported ${validOrGen.length} SSCCs as SAP IDoc DELVRY03 XML`, 'success');
 }

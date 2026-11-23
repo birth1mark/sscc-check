@@ -406,3 +406,184 @@ document.addEventListener('drop', e => {
     e.preventDefault();
     e.stopPropagation();
 });
+
+// ─── EDI & SAP IDoc Generators & Export Helpers ──────────────────────────────
+
+/**
+ * Downloads arbitrary text/blob data as a file in the browser.
+ */
+function downloadEDIFile(content, filename, mimeType = 'text/plain') {
+    const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+/**
+ * Generates a standard UN/EDIFACT D.96A DESADV (Despatch Advice) message for WMS/EDI test pipelines.
+ * @param {Array<string|Object>} ssccList - List of 18-digit SSCC codes or item objects.
+ * @param {Object} options - Shipment metadata (orderNo, senderGln, recipientGln, gtin, count, batch, expiry, weight).
+ * @returns {string} Fully compliant EDIFACT DESADV message.
+ */
+function generateEDIFACT_DESADV(ssccList, options = {}) {
+    const list = Array.isArray(ssccList) ? ssccList : [ssccList];
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const dateYYMMDD = `${String(now.getFullYear()).slice(-2)}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+    const timeHHMM = `${pad(now.getHours())}${pad(now.getMinutes())}`;
+    const dateYYYYMMDD = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+
+    const orderNo = (options.orderNo || options.order || 'PO-2026-994').replace(/[^A-Za-z0-9_-]/g, '');
+    const docRef = (options.docRef || 'DESADV-' + dateYYMMDD + '-' + Math.floor(Math.random() * 8999 + 1000));
+    const senderGln = (options.senderGln || '5601234000019').replace(/\D/g, '').padEnd(13, '0').slice(0, 13);
+    const recipientGln = (options.recipientGln || '5609876000018').replace(/\D/g, '').padEnd(13, '0').slice(0, 13);
+    const senderName = (options.senderName || options.sender || 'LOGISTICS DISPATCH SERVICES LTD').slice(0, 35);
+    const recipientName = (options.recipientName || options.recipient || 'CENTRAL DISTRIBUTION HUB').slice(0, 35);
+
+    const segments = [];
+    segments.push("UNA:+.? '");
+    segments.push(`UNB+UNOC:3+${senderGln}:14+${recipientGln}:14+${dateYYMMDD}:${timeHHMM}+10001'`);
+    segments.push(`UNH+1+DESADV:D:96A:UN:EAN005'`);
+    segments.push(`BGM+351+${docRef}+9'`);
+    segments.push(`DTM+137:${dateYYYYMMDD}:102'`);
+    segments.push(`RFF+ON:${orderNo}'`);
+    segments.push(`NAD+CZ+${recipientGln}::9++${recipientName}'`);
+    segments.push(`NAD+SU+${senderGln}::9++${senderName}'`);
+
+    let segCount = 7;
+    let cpsIndex = 0;
+
+    list.forEach((item, idx) => {
+        const sscc = typeof item === 'string' ? item.replace(/\D/g, '') : (item.sscc || item.plain || '').replace(/\D/g, '');
+        if (!sscc || sscc.length !== 18) return;
+
+        cpsIndex++;
+        segments.push(`CPS+${cpsIndex}'`);
+        segments.push(`PAC+1++201::9'`);
+        if (options.weight) {
+            const wNum = parseFloat(String(options.weight).replace(/[^\d.]/g, '')) || 450;
+            segments.push(`MEA+PD+G+KGM:${wNum}'`);
+            segCount++;
+        }
+        segments.push(`PCI+33E'`);
+        segments.push(`GIN+BJ+${sscc}'`);
+        segCount += 4;
+
+        const gtin = options.gtin ? options.gtin.replace(/\D/g, '') : (typeof item === 'object' && item.gtin ? item.gtin.replace(/\D/g, '') : '');
+        const count = options.unitCount || options.count || (typeof item === 'object' && item.count ? item.count : '48');
+        const batch = options.batchNo || options.batch || (typeof item === 'object' && item.batch ? item.batch : '');
+        const expiry = options.expiryDate || options.expiry || (typeof item === 'object' && item.expiry ? item.expiry : '');
+
+        if (gtin) {
+            segments.push(`LIN+${idx + 1}++${gtin}:SRV'`);
+            segments.push(`QTY+52:${count}:PCE'`);
+            segCount += 2;
+            if (expiry) {
+                const expClean = expiry.replace(/\D/g, '');
+                const expFmt = expClean.length === 6 ? `20${expClean}` : expClean.slice(0, 8);
+                segments.push(`DTM+361:${expFmt}:102'`);
+                segCount++;
+            }
+            if (batch) {
+                segments.push(`PCI+17'`);
+                segments.push(`GIN+BX+${batch.replace(/[^A-Za-z0-9_-]/g, '')}'`);
+                segCount += 2;
+            }
+        }
+    });
+
+    segments.push(`CNT+2:${cpsIndex}'`);
+    segCount += 2;
+    segments.push(`UNT+${segCount}+1'`);
+    segments.push(`UNZ+1+10001'`);
+
+    return segments.join('\n');
+}
+
+/**
+ * Generates a standard SAP IDoc DELVRY03 XML document with E1EDL20, E1EDL37 & E1EDL44 handling units.
+ * @param {Array<string|Object>} ssccList - List of 18-digit SSCC codes or item objects.
+ * @param {Object} options - Shipment metadata (orderNo, senderGln, recipientGln, gtin, count, batch, expiry, weight).
+ * @returns {string} Fully compliant SAP IDoc DELVRY03 XML document.
+ */
+function generateSAP_IDoc_DELVRY03(ssccList, options = {}) {
+    const list = Array.isArray(ssccList) ? ssccList : [ssccList];
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const dateYYYYMMDD = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+    const timeHHMMSS = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+
+    const orderNo = (options.orderNo || options.order || 'PO-2026-994').replace(/[^A-Za-z0-9_-]/g, '');
+    const deliveryNo = '0080' + String(Math.floor(Math.random() * 899999 + 100000));
+    const docNum = '000000000' + String(Math.floor(Math.random() * 8999999 + 1000000));
+    const sender = (options.sender || 'LOGISTICS_WMS').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 10) || 'WMS_NODE';
+    const recipient = (options.recipient || 'RETAILER_HUB').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 10) || 'EDI_HUB';
+    const gtin = (options.gtin || '05601234567892').replace(/\D/g, '');
+    const count = parseInt(options.unitCount || options.count || '48', 10) || 48;
+    const batch = (options.batchNo || options.batch || 'LOT-2026').replace(/[^A-Za-z0-9_-]/g, '');
+    const weightNum = parseFloat(String(options.weight || '450').replace(/[^\d.]/g, '')) || 450.0;
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<DELVRY03>\n`;
+    xml += `  <IDOC BEGIN="1">\n`;
+    xml += `    <EDI_DC40 SEGMENT="1">\n`;
+    xml += `      <TABNAM>EDI_DC40</TABNAM>\n`;
+    xml += `      <MANDT>100</MANDT>\n`;
+    xml += `      <DOCNUM>${docNum}</DOCNUM>\n`;
+    xml += `      <DOCREL>740</DOCREL>\n`;
+    xml += `      <STATUS>30</STATUS>\n`;
+    xml += `      <DIRECT>1</DIRECT>\n`;
+    xml += `      <OUTMOD>2</OUTMOD>\n`;
+    xml += `      <IDOCTYP>DELVRY03</IDOCTYP>\n`;
+    xml += `      <MESTYP>DESADV</MESTYP>\n`;
+    xml += `      <SNDPOR>SAPWMS</SNDPOR>\n`;
+    xml += `      <SNDPRT>LS</SNDPRT>\n`;
+    xml += `      <SNDPRN>${sender}</SNDPRN>\n`;
+    xml += `      <RCVPOR>SAPEDI</RCVPOR>\n`;
+    xml += `      <RCVPRT>LS</RCVPRT>\n`;
+    xml += `      <RCVPRN>${recipient}</RCVPRN>\n`;
+    xml += `      <CREDAT>${dateYYYYMMDD}</CREDAT>\n`;
+    xml += `      <CRETIM>${timeHHMMSS}</CRETIM>\n`;
+    xml += `    </EDI_DC40>\n`;
+    xml += `    <E1EDL20 SEGMENT="1">\n`;
+    xml += `      <VBELN>${deliveryNo}</VBELN>\n`;
+    xml += `      <VKORG>1000</VKORG>\n`;
+    xml += `      <LFDAT>${dateYYYYMMDD}</LFDAT>\n`;
+    xml += `      <LFART>NL</LFART>\n`;
+    xml += `      <BOLNR>${orderNo}</BOLNR>\n`;
+
+    list.forEach((item, idx) => {
+        const sscc = typeof item === 'string' ? item.replace(/\D/g, '') : (item.sscc || item.plain || '').replace(/\D/g, '');
+        if (!sscc || sscc.length !== 18) return;
+
+        const posNr = String((idx + 1) * 10).padStart(6, '0');
+        xml += `      <E1EDL37 SEGMENT="1">\n`;
+        xml += `        <EXIDV>${sscc}</EXIDV>\n`;
+        xml += `        <VHILM>PALLET_EUR</VHILM>\n`;
+        xml += `        <VHILM_KU>00</VHILM_KU>\n`;
+        xml += `        <BRGEW>${weightNum.toFixed(3)}</BRGEW>\n`;
+        xml += `        <GEWEI>KGM</GEWEI>\n`;
+        xml += `        <E1EDL44 SEGMENT="1">\n`;
+        xml += `          <VELIN>1</VELIN>\n`;
+        xml += `          <VBELN>${deliveryNo}</VBELN>\n`;
+        xml += `          <POSNR>${posNr}</POSNR>\n`;
+        xml += `          <MATNR>${gtin}</MATNR>\n`;
+        xml += `          <CHARG>${batch}</CHARG>\n`;
+        xml += `          <VEMNG>${count.toFixed(3)}</VEMNG>\n`;
+        xml += `          <VEMEH>PCE</VEMEH>\n`;
+        xml += `          <EXIDV>${sscc}</EXIDV>\n`;
+        xml += `        </E1EDL44>\n`;
+        xml += `      </E1EDL37>\n`;
+    });
+
+    xml += `    </E1EDL20>\n`;
+    xml += `  </IDOC>\n`;
+    xml += `</DELVRY03>\n`;
+
+    return xml;
+}

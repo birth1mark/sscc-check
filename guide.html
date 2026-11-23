@@ -791,6 +791,51 @@
 <span class="comment">; 1D GS1-128 Linear Barcode (Subset C &gt;5, FNC1 &gt;8, AI 00 + 18-digit SSCC)</span>
 <span class="kw">^FO</span>65,565<span class="kw">^BY</span>3,3,210<span class="kw">^BCN</span>,210,N,N,N,D<span class="kw">^FD</span>&gt;8&gt;500356012345600000016<span class="kw">^FS</span></code></pre>
 
+    <h2 id="retailer-compliance">Retailer GS1 Compliance Profiles &amp; Reverse Diagnostics</h2>
+    <p>Leading European retailers enforce strict pallet labeling and electronic dispatch advice guidelines to guarantee automated intake at high-throughput distribution hubs. Failing compliance results in physical inspection delays, chargebacks, or shipment rejections.</p>
+
+    <table class="segment-table">
+        <tr>
+            <th>Retailer Profile</th>
+            <th>Primary Hubs</th>
+            <th>Pallet Label &amp; EDI Requirements</th>
+        </tr>
+        <tr>
+            <td><strong>🇵🇹 Sonae MC / Continente</strong></td>
+            <td>Azambuja, Maia</td>
+            <td>A5 Portrait format · Lower <code>AI (00)</code> SSCC-18 (min 32 mm height) · Secondary GS1-128 barcode encoding <code>AI (02)</code> GTIN-14, <code>AI (15)</code> Best Before, <code>AI (37)</code> Quantity, and <code>AI (10)</code> Batch/Lot. Must match EDI <code>DESADV D.96A GIN+BJ</code> segment.</td>
+        </tr>
+        <tr>
+            <td><strong>🇵🇹 Jerónimo Martins / Pingo Doce</strong></td>
+            <td>Azambuja, Alfena, Algoz</td>
+            <td>A5 Portrait format · Dual Barcode layout mandatory · SSCC-18 check digit verified against GS1 Portugal company prefix · Electronic DESADV must be received before truck gate check-in.</td>
+        </tr>
+        <tr>
+            <td><strong>🇪🇸 Mercadona</strong></td>
+            <td>Póvoa de Varzim, Santarém, Almacén Central</td>
+            <td>A5 Portrait standard · High-contrast GS1-128 barcodes (PCS &gt; 80%) · Upper logistics barcode mandatory for homogeneous multi-pack pallets.</td>
+        </tr>
+        <tr>
+            <td><strong>🇩🇪 Lidl / Schwarz Group</strong></td>
+            <td>Sintra, Santo Tirso Hubs</td>
+            <td>Schwarz Group GS1 Logistics Spec: A5 Portrait · Dual-symbology ready (1D GS1-128 + 2D QR Digital Link) · <code>DESADV D.96A</code> with <code>CPS/PAC/MEA/GIN+BJ</code> hierarchy.</td>
+        </tr>
+        <tr>
+            <td><strong>📦 Amazon Vendor / FBA Pallet</strong></td>
+            <td>Fulfillment Centers (MAD4, BCN1, etc.)</td>
+            <td>4×6" (100×150 mm) Direct Thermal ZPL-II · <code>AI (00)</code> SSCC-18 + Amazon PO Reference · 4 identical labels placed squarely on all 4 pallet faces.</td>
+        </tr>
+    </table>
+
+    <h3>Zebra ZPL-II Linter Diagnostic Rules</h3>
+    <p>When compiling or troubleshooting Zebra ZPL-II code for industrial label applicators, our built-in <strong>ZPL-II GS1 Linter</strong> validates four critical supply chain requirements:</p>
+    <ul>
+        <li><strong>FNC1 Escape (<code>&gt;8</code>)</strong>: In Zebra ZPL-II <code>^BC</code> commands, omitting <code>&gt;8</code> causes barcode scanners to interpret the data as plain generic Code 128 rather than certified GS1-128, triggering intake rejection at retail hubs.</li>
+        <li><strong>Code 128 Subset C (<code>&gt;5</code>)</strong>: Mandated for double-density numeric pairs, drastically reducing label footprint and optical scan errors.</li>
+        <li><strong>Valid Framing</strong>: Verifies that every label block begins with <code>^XA</code> and cleanly terminates with <code>^XZ</code>.</li>
+        <li><strong>Embedded SSCC Check Digit</strong>: Automatically parses the <code>(00)</code> 18-digit sequence from the <code>^FD</code> field and recalculates the Modulo 10 check digit.</li>
+    </ul>
+
     <h2 id="faq">Frequently Asked Questions</h2>
     <div class="faq-container">
         <details>

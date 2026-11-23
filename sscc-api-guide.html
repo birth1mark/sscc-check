@@ -810,7 +810,7 @@
         <!-- ==================== 02. QUOTAS, AUTH & PRICING ==================== -->
         <section id="quotas-pricing" class="doc-section">
             <h2>02. Authentication, Quotas &amp; Credit Plans</h2>
-            <p>The Validation API (<code>sscc.birth1mark.workers.dev</code>) is 100% free. The Commercial Pallet Label &amp; ZPL API (<code>sscc-labels.birth1mark.workers.dev</code>) includes <strong>25 free pallet labels</strong> per company prefix (<code>GCP</code>) for evaluation. High-volume production requires an <code>X-API-Key</code> header (`sscc_pro_...`).</p>
+            <p>The Validation API (<code>ssccapi.com</code>) is 100% free. The Commercial Pallet Label &amp; ZPL API (<code>ssccapi.com</code>) includes <strong>25 free pallet labels</strong> per company prefix (<code>GCP</code>) for evaluation. High-volume production requires an <code>X-API-Key</code> header (`sscc_pro_...`).</p>
 
             <div class="pricing-grid">
                 <div class="price-box">
@@ -861,7 +861,7 @@
                 <div class="swagger-title-left">
                     <span class="swagger-method m-post">POST</span>
                     <span class="swagger-path">/v1/labels</span>
-                    <span class="swagger-server-pill pro">sscc-labels.birth1mark.workers.dev</span>
+                    <span class="swagger-server-pill pro">ssccapi.com</span>
                 </div>
                 <span style="font-family:var(--font-mono);font-size:11px;color:var(--primary);">1D GS1-128 + 2D QR Digital Link · ZPL / HTML / SVG / JSON</span>
             </div>
@@ -982,7 +982,7 @@
                 <div class="swagger-title-left">
                     <span class="swagger-method m-get">GET</span>
                     <span class="swagger-path">/v1/barcode</span>
-                    <span class="swagger-server-pill pro">sscc-labels.birth1mark.workers.dev</span>
+                    <span class="swagger-server-pill pro">ssccapi.com</span>
                 </div>
                 <span style="font-family:var(--font-mono);font-size:11px;color:var(--success);">1D GS1-128 · 2D QR · Or Both (SVG / JSON / ZPL)</span>
             </div>
@@ -1061,7 +1061,7 @@
                 <div class="swagger-title-left">
                     <span class="swagger-method m-get">GET</span>
                     <span class="swagger-path">/v1/quota</span>
-                    <span class="swagger-server-pill pro">sscc-labels.birth1mark.workers.dev</span>
+                    <span class="swagger-server-pill pro">ssccapi.com</span>
                 </div>
                 <span style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">Zero-Cost Quota &amp; Key Balance Check</span>
             </div>
@@ -1083,7 +1083,7 @@
                 <div class="swagger-title-left">
                     <span class="swagger-method m-get">GET</span>
                     <span class="swagger-path">/validate</span>
-                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                    <span class="swagger-server-pill">ssccapi.com</span>
                 </div>
                 <span style="font-family:var(--font-mono);font-size:11px;color:var(--success);">Free Public Endpoint</span>
             </div>
@@ -1103,10 +1103,10 @@
                         <button class="tab-btn" onclick="switchTab(this,'v-js')">JavaScript</button>
                         <button class="tab-btn" onclick="switchTab(this,'v-py')">Python</button>
                     </div>
-                    <div id="v-curl" class="tab-content active"><pre><code id="v-curl-code">curl "https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016"</code></pre></div>
-                    <div id="v-js" class="tab-content"><pre><code id="v-js-code">const res = await fetch('https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016');
+                    <div id="v-curl" class="tab-content active"><pre><code id="v-curl-code">curl "https://ssccapi.com/validate?sscc=356012345600000016"</code></pre></div>
+                    <div id="v-js" class="tab-content"><pre><code id="v-js-code">const res = await fetch('https://ssccapi.com/validate?sscc=356012345600000016');
 const data = await res.json();</code></pre></div>
-                    <div id="v-py" class="tab-content"><pre><code id="v-py-code">r = requests.get('https://sscc.birth1mark.workers.dev/validate', params={'sscc': '356012345600000016'})</code></pre></div>
+                    <div id="v-py" class="tab-content"><pre><code id="v-py-code">r = requests.get('https://ssccapi.com/validate', params={'sscc': '356012345600000016'})</code></pre></div>
                 </div>
             </div>
         </div>
@@ -1116,7 +1116,7 @@ const data = await res.json();</code></pre></div>
                 <div class="swagger-title-left">
                     <span class="swagger-method m-get">GET</span>
                     <span class="swagger-path">/generate</span>
-                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                    <span class="swagger-server-pill">ssccapi.com</span>
                 </div>
             </div>
             <div class="swagger-body">
@@ -1135,9 +1135,9 @@ const data = await res.json();</code></pre></div>
                         <button class="tab-btn" onclick="switchTab(this,'g-js')">JavaScript</button>
                         <button class="tab-btn" onclick="switchTab(this,'g-py')">Python</button>
                     </div>
-                    <div id="g-curl" class="tab-content active"><pre><code id="g-curl-code">curl "https://sscc.birth1mark.workers.dev/generate?body=35601234560000001"</code></pre></div>
-                    <div id="g-js" class="tab-content"><pre><code id="g-js-code">const res = await fetch('https://sscc.birth1mark.workers.dev/generate?body=35601234560000001');</code></pre></div>
-                    <div id="g-py" class="tab-content"><pre><code id="g-py-code">r = requests.get('https://sscc.birth1mark.workers.dev/generate', params={'body': '35601234560000001'})</code></pre></div>
+                    <div id="g-curl" class="tab-content active"><pre><code id="g-curl-code">curl "https://ssccapi.com/generate?body=35601234560000001"</code></pre></div>
+                    <div id="g-js" class="tab-content"><pre><code id="g-js-code">const res = await fetch('https://ssccapi.com/generate?body=35601234560000001');</code></pre></div>
+                    <div id="g-py" class="tab-content"><pre><code id="g-py-code">r = requests.get('https://ssccapi.com/generate', params={'body': '35601234560000001'})</code></pre></div>
                 </div>
             </div>
         </div>
@@ -1147,7 +1147,7 @@ const data = await res.json();</code></pre></div>
                 <div class="swagger-title-left">
                     <span class="swagger-method m-get">GET</span>
                     <span class="swagger-path">/range</span>
-                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                    <span class="swagger-server-pill">ssccapi.com</span>
                 </div>
             </div>
             <div class="swagger-body">
@@ -1171,7 +1171,7 @@ const data = await res.json();</code></pre></div>
                 <div class="swagger-title-left">
                     <span class="swagger-method m-get">GET</span>
                     <span class="swagger-path">/prefix</span>
-                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                    <span class="swagger-server-pill">ssccapi.com</span>
                 </div>
             </div>
             <div class="swagger-body">
@@ -1192,7 +1192,7 @@ const data = await res.json();</code></pre></div>
                 <div class="swagger-title-left">
                     <span class="swagger-method m-post">POST</span>
                     <span class="swagger-path">/extract</span>
-                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                    <span class="swagger-server-pill">ssccapi.com</span>
                 </div>
             </div>
             <div class="swagger-body">
@@ -1215,7 +1215,7 @@ const data = await res.json();</code></pre></div>
 
             <h3>A. Direct Linux / Bash Dispatch to Zebra Printer (Port 9100)</h3>
             <pre><code># Generate Dual (1D GS1-128 + 2D QR Digital Link) ZPL and pipe directly to Zebra printer IP 192.168.1.200:9100
-curl -s -X POST "https://sscc-labels.birth1mark.workers.dev/v1/labels" \
+curl -s -X POST "https://ssccapi.com/v1/labels" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: sscc_pro_YOUR_KEY" \
   -d '{"gcp":"5601234","startSerial":1001,"quantity":5,"symbology":"dual","format":"zpl"}' \
@@ -1226,7 +1226,7 @@ curl -s -X POST "https://sscc-labels.birth1mark.workers.dev/v1/labels" \
 
 def print_gs1_pallet_batch(api_key, zebra_ip, gcp, start_serial, qty, lot_no):
     res = requests.post(
-        "https://sscc-labels.birth1mark.workers.dev/v1/labels",
+        "https://ssccapi.com/v1/labels",
         headers={"X-API-Key": api_key, "Content-Type": "application/json"},
         json={
             "gcp": gcp,

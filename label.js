@@ -77,6 +77,12 @@ function updateLabelPreview() {}
 function syncBatchStudioCount() {}
 function openProUpgradeModal() { window.location.href = 'https://ssccapi.com/sscc-api-guide.html#quotas-pricing'; }
 function closeProUpgradeModal() {}
+function applyRetailerComplianceProfile() { redirectToHostedLabelStudio(); }
+function updateRetailerComplianceBanner() {}
+function inspectCurrentOrCustomZPL() { redirectToHostedLabelStudio(); }
+function copyInspectedZPL() {}
+function downloadStudioEDIFACT() { redirectToHostedLabelStudio(); }
+function downloadStudioSAPIDoc() { redirectToHostedLabelStudio(); }
 function contactForCustomFeatures() {
     const email = atob('cGVkcm8=') + '@' + atob('cG9ybWVub3Jlcy5uZXQ=');
     window.location.href = 'mailto:' + email + '?subject=' + encodeURIComponent('SSCC Pro Vision — Custom Features / ERP Integration');

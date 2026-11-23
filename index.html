@@ -1713,8 +1713,8 @@
 <div class="container">
     <main class="card">
         <div class="card-header">
-            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.9.0</span></h1>
-            <p class="tagline">GS1-128 &amp; 2D QR Digital Link validator, EDI extractor &amp; pallet label studio</p>
+            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.10.0</span></h1>
+            <p class="tagline">GS1-128 &amp; 2D QR Digital Link validator, Multi-AI inspector, EDI &amp; pallet label studio</p>
         </div>
 
         <!-- Primary Workspace Mode Switcher -->
@@ -1773,6 +1773,26 @@
 
             <textarea id="input" placeholder="Paste or type SSCCs (18-digit to validate, 17-digit to calculate check digit, or START - END range)…" oninput="handleLiveInput()"></textarea>
 
+            <!-- GS1 Multi-AI Deconstructor & 2D Digital Link Inspector -->
+            <details class="label-edit-details" id="multi-ai-drawer" style="margin-top:10px;">
+                <summary>
+                    <span style="display:inline-flex;align-items:center;gap:6px;">
+                        <i data-lucide="scan-line" style="width:13px;height:13px;color:var(--primary);"></i>
+                        <span>GS1 Multi-AI Deconstructor &amp; 2D Digital Link Inspector</span>
+                    </span>
+                </summary>
+                <div style="padding:12px 14px;background:var(--surface-card);border:1px solid var(--border);border-radius:8px;margin-top:8px;">
+                    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                        <input type="text" id="multi-ai-input" placeholder="Paste scanner dump (e.g. ]C1003560... or (00)...(02)... or Digital Link URI)" style="flex:1;padding:8px 10px;font-family:var(--font-mono);font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text-main);" onkeydown="if(event.key==='Enter')inspectMultiAIInput()">
+                        <button type="button" class="micro-btn" onclick="inspectMultiAIInput()" style="border-color:var(--primary);color:var(--primary);padding:7px 12px;">Deconstruct</button>
+                        <button type="button" class="micro-btn" onclick="loadSampleMultiAI()" title="Load sample multi-AI string">Sample</button>
+                    </div>
+                    <div id="multi-ai-result-table" style="font-size:12px;">
+                        <span style="color:var(--text-muted);">Paste any multi-AI GS1-128 barcode scan, parenthesized HRI, or GS1 Digital Link URI to inspect all elements.</span>
+                    </div>
+                </div>
+            </details>
+
             <div class="results" id="output"></div>
         </section>
 
@@ -1787,6 +1807,27 @@
                     <i data-lucide="key" style="width:11px;height:11px;"></i>
                     <span>Pro Key / Credits</span>
                 </button>
+            </div>
+
+            <!-- Retailer GS1 Compliance Profiles -->
+            <div class="retailer-profile-card" style="margin-bottom:12px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface-card);">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-main);">
+                        <i data-lucide="building-2" style="width:13px;height:13px;color:var(--primary);"></i>
+                        <span>Retailer GS1 Compliance Profile</span>
+                    </div>
+                    <select id="lbl-retailer-profile" onchange="applyRetailerComplianceProfile(this.value)" style="padding:4px 8px;font-size:11px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text-main);">
+                        <option value="standard" selected>Standard GS1 Global (Default)</option>
+                        <option value="sonae">🇵🇹 Sonae MC / Continente (Azambuja / Maia)</option>
+                        <option value="jeronimo">🇵🇹 Jerónimo Martins / Pingo Doce (Azambuja / Alfena)</option>
+                        <option value="mercadona">🇪🇸 Mercadona (Póvoa / Santarém / Almacén)</option>
+                        <option value="lidl">🇪🇺 Lidl / Schwarz Group (Sintra / Santo Tirso)</option>
+                        <option value="amazon">📦 Amazon Vendor / FBA LTL Pallet (4×6" Thermal)</option>
+                    </select>
+                </div>
+                <div id="retailer-compliance-banner" style="font-size:11px;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,0.02);border:1px solid var(--border);">
+                    <div style="color:var(--text-muted);">ISO/IEC 15417 &amp; GS1 General Specifications v25 · Supports 1D GS1-128 &amp; Sunrise 2027 2D QR Digital Link.</div>
+                </div>
             </div>
 
             <!-- Output Layout Switcher (Full GS1 Pallet Label vs. Standalone Barcode Strip Only) -->
@@ -2005,7 +2046,39 @@
                 </div>
             </details>
 
-            <!-- Primary Output Actions (Print/PDF, ZPL-II, Vector SVG, 300 DPI PNG) -->
+            <!-- Zebra ZPL-II Linter & Reverse Diagnostic Inspector -->
+            <details id="zpl-linter-accordion" class="label-edit-details" style="margin-top:10px;">
+                <summary>
+                    <span style="display:inline-flex;align-items:center;gap:6px;">
+                        <i data-lucide="file-check-2" style="width:13px;height:13px;color:var(--primary);"></i>
+                        <span>Zebra ZPL-II GS1 Linter &amp; Reverse Diagnostic Inspector</span>
+                    </span>
+                </summary>
+                <div style="padding:12px;background:var(--surface-card);border:1px solid var(--border);border-radius:8px;margin-top:8px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                        <div style="display:flex;gap:6px;">
+                            <button type="button" class="micro-btn" onclick="inspectCurrentOrCustomZPL(true)">
+                                <i data-lucide="refresh-cw" style="width:11px;height:11px;"></i>
+                                <span>Inspect Current Pallet ZPL</span>
+                            </button>
+                            <button type="button" class="micro-btn" onclick="copyInspectedZPL()">
+                                <i data-lucide="copy" style="width:11px;height:11px;"></i>
+                                <span>Copy ZPL</span>
+                            </button>
+                        </div>
+                        <button type="button" class="micro-btn" onclick="inspectCurrentOrCustomZPL(false)" style="border-color:var(--primary);color:var(--primary);">
+                            <i data-lucide="play" style="width:11px;height:11px;"></i>
+                            <span>Run Linter</span>
+                        </button>
+                    </div>
+                    <textarea id="zpl-inspector-input" placeholder="Paste raw ^XA ... ^XZ ZPL-II code here to lint and verify GS1 compliance..." style="width:100%;height:110px;padding:8px 10px;font-family:var(--font-mono);font-size:11px;line-height:1.4;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text-main);resize:vertical;" oninput="inspectCurrentOrCustomZPL(false)"></textarea>
+                    <div id="zpl-inspector-report" style="margin-top:8px;font-size:11px;">
+                        <span style="color:var(--text-muted);">Paste or generate ZPL-II code above to run GS1 compliance diagnostics.</span>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Primary Output Actions (Print/PDF, ZPL-II, Vector SVG, 300 DPI PNG, EDI DESADV, SAP IDoc) -->
             <div class="studio-actions-footer">
                 <button type="button" class="main-btn btn-live" onclick="printGS1Label()" title="Print directly or Save as PDF (A5 / A6 / 4×6&quot;)">
                     <i data-lucide="printer" style="width:14px;height:14px;"></i>
@@ -2022,6 +2095,14 @@
                 <button type="button" class="main-btn btn-audit" onclick="downloadGS1PNG()" title="Download high-resolution 300 DPI PNG (.png) barcode image">
                     <i data-lucide="image" style="width:14px;height:14px;"></i>
                     <span>BARCODE PNG (300 DPI)</span>
+                </button>
+                <button type="button" class="main-btn btn-audit" onclick="downloadStudioEDIFACT()" title="Export UN/EDIFACT D.96A DESADV for this shipment">
+                    <i data-lucide="file-text" style="width:14px;height:14px;"></i>
+                    <span>EDI DESADV</span>
+                </button>
+                <button type="button" class="main-btn btn-audit" onclick="downloadStudioSAPIDoc()" title="Export SAP IDoc DELVRY03 XML (E1EDL44/EXIDV) for this shipment">
+                    <i data-lucide="code" style="width:14px;height:14px;"></i>
+                    <span>SAP IDOC</span>
                 </button>
             </div>
         </section>
@@ -2063,6 +2144,7 @@
         <details class="info-accordion">
             <summary>Changelog</summary>
             <div class="changelog" style="margin-top:10px;">
+                <p><span class="version">v5.10.0</span> Center of Excellence Release. Universal <strong>GS1 Multi-AI Deconstructor &amp; 2D Digital Link Inspector</strong> (<code>]C1</code>, HRI &amp; URIs), <strong>Retailer GS1 Compliance Profiles</strong> (Sonae MC, Jerónimo Martins, Mercadona, Lidl/Schwarz &amp; Amazon FBA), <strong>1-Click UN/EDIFACT D.96A DESADV &amp; SAP IDoc DELVRY03 XML</strong> generator, and <strong>Zebra ZPL-II GS1 Linter</strong>.</p>
                 <p><span class="version">v5.9.0</span> GS1 Sunrise 2027 &amp; Cloud API. Dual-symbology pallet labels (1D <code>GS1-128</code> + 2D <code>QR Code GS1 Digital Link</code> in SVG, 300 DPI PNG &amp; Zebra ZPL <code>^BQN</code>), <strong>Barcode-Only mode</strong> for custom label composers, 25-label free quota with Pro credit packs, and interactive Swagger API Portal.</p>
                 <p><span class="version">v5.8.0</span> Logistics Intelligence. Duplicate SSCC detection across batches &amp; EDI files, 1-click invalid check digit auto-fixer, continuous batch camera scanner, secondary GS1-128 barcode for GTIN/Batch/Expiry (AI 02/10/15/37), and <code>llms.txt</code> for AI agents.</p>
                 <p><span class="version">v5.7.0</span> UX Overhaul. Unified 2-tab workspace (Validate &amp; Extract vs. Pallet Labels &amp; ZPL Studio), real-time zero-click validation, interactive sample chips, and streamlined EDI file feedback.</p>
@@ -2191,10 +2273,10 @@
 
 <script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="parser.js"></script>
 <script src="app.js"></script>
 <script src="label.js"></script>
 <script src="scanner.js"></script>
-<script src="parser.js"></script>
 <script src="init.js"></script>
 </body>
 </html>

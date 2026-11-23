@@ -1,11 +1,11 @@
-# 📦 SSCC Pro Vision — GS1-128 & 2D QR Barcode Generator, ZPL Pallet Label Studio & REST API
+# 📦 SSCCAPI.com (SSCC Pro Vision) — GS1-128 & 2D QR Barcode Generator, ZPL Pallet Label Studio & REST API
 
 **Enterprise-grade SSCC-18 validator, standalone GS1-128 & 2D QR Digital Link barcode generator (`SVG`, `300 DPI PNG`, `Zebra ZPL-II`), A5/4×6" pallet label studio, EDIFACT/SAP IDoc extractor, and Cloudflare Edge REST API.**
 
-🔗 **[Launch Web Studio →](https://pormenores.net/sscc/)**
-🔗 **[Interactive Swagger API Sandbox →](https://pormenores.net/sscc/sscc-api-guide.html)**
-🔗 **[Universal GS1 Check Digit Calculator →](https://pormenores.net/sscc/calculator.html)**
-🔗 **[Technical Guide (GS1-128, Sunrise 2027, SAP IDoc, EDIFACT) →](https://pormenores.net/sscc/guide.html)**
+🔗 **[Launch Web Studio (ssccapi.com) →](https://ssccapi.com/)** *(Mirror: [pormenores.net/sscc](https://pormenores.net/sscc/))*
+🔗 **[Interactive Swagger API Sandbox →](https://ssccapi.com/sscc-api-guide.html)**
+🔗 **[Universal GS1 Check Digit Calculator →](https://ssccapi.com/calculator.html)**
+🔗 **[Technical Guide (GS1-128, Sunrise 2027, SAP IDoc, EDIFACT) →](https://ssccapi.com/guide.html)**
 
 ![Version](https://img.shields.io/badge/version-5.9.0-amber)
 ![GS1 Sunrise 2027](https://img.shields.io/badge/GS1_Sunrise_2027-1D_GS1--128_%2B_2D_QR-10b981)

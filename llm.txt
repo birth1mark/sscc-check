@@ -2,14 +2,15 @@
 
 > Free, open-source GS1 Serial Shipping Container Code (SSCC-18) validator, Modulo 10 check digit calculator, EDIFACT/SAP IDoc/XML extractor, GS1-128 pallet label generator (A5/A6/4x6" & Zebra ZPL-II), and zero-auth public REST API.
 
-- Canonical Web App: https://pormenores.net/sscc/
-- Public Validation REST API Base URL: https://sscc.birth1mark.workers.dev
-- Commercial GS1 Labels, ZPL & 2D QR Digital Link API Base URL: https://sscc-labels.birth1mark.workers.dev
-- OpenAPI 3.0 Specification (JSON): https://pormenores.net/sscc/openapi.json
-- OpenAPI 3.0 Specification (YAML): https://pormenores.net/sscc/openapi.yaml
-- Universal GS1 Check Digit Calculator: https://pormenores.net/sscc/calculator.html
-- Technical Guide & GS1-128 Spec: https://pormenores.net/sscc/guide.html
-- API Documentation & Playground: https://pormenores.net/sscc/sscc-api-guide.html
+- Primary Web App & GS1 Digital Link Resolver: https://ssccapi.com/
+- Mirror Web App: https://pormenores.net/sscc/
+- Commercial GS1 Labels, ZPL & 2D QR Digital Link API Base URL: https://api.ssccapi.com (Mirror: https://sscc-labels.birth1mark.workers.dev)
+- Public Validation REST API Base URL: https://ssccapi.com (Mirror: https://sscc.birth1mark.workers.dev)
+- OpenAPI 3.1 Specification (JSON): https://ssccapi.com/openapi.json
+- OpenAPI 3.1 Specification (YAML): https://ssccapi.com/openapi.yaml
+- Universal GS1 Check Digit Calculator: https://ssccapi.com/calculator.html
+- Technical Guide & GS1-128 Spec: https://ssccapi.com/guide.html
+- API Documentation & Playground: https://ssccapi.com/sscc-api-guide.html
 - Source Repository: https://github.com/birth1mark/sscc-check
 - License: MIT
 

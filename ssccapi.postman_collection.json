@@ -1,0 +1,324 @@
+{
+  "info": {
+    "_postman_id": "a7b4f902-5c21-4d8e-9b14-55cc18a91001",
+    "name": "SSCCAPI — Validation, EDI & GS1 Pallet Label API",
+    "description": "Official Postman Collection v2.1 for SSCCAPI (https://ssccapi.com).\n\nIncludes:\n- Core Validation & EDI Extraction (Free: /validate, /generate, /range, /prefix, /extract)\n- GS1 Pallet Labels, Standalone Barcodes (1D GS1-128 & 2D QR Digital Link) and Zebra ZPL-II (/v1/labels, /v1/barcode, /v1/qr, /v1/quota)\n- Discovery & Health (/api)\n\nSet the collection variable `apiKey` with your Pro Key (`sscc_pro_...`) when printing beyond the 25 free evaluation labels.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://ssccapi.com",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleSscc",
+      "value": "356012345600000016",
+      "type": "string"
+    },
+    {
+      "key": "sampleBody17",
+      "value": "35601234560000001",
+      "type": "string"
+    },
+    {
+      "key": "sampleGcp",
+      "value": "5601234",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01. Core Validation & EDI (Free)",
+      "item": [
+        {
+          "name": "Validate SSCC-18",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('SSCC is valid', () => {",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.valid).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/validate?sscc={{sampleSscc}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["validate"],
+              "query": [
+                { "key": "sscc", "value": "{{sampleSscc}}" }
+              ]
+            },
+            "description": "Validates an 18-digit SSCC or 20-digit code with AI (00). Returns GS1 Modulo 10 check digit verification and issuing country prefix."
+          }
+        },
+        {
+          "name": "Generate Check Digit (17-digit body)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns 18-digit SSCC', () => {",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.sscc).to.have.lengthOf(18);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/generate?body={{sampleBody17}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["generate"],
+              "query": [
+                { "key": "body", "value": "{{sampleBody17}}" }
+              ]
+            },
+            "description": "Calculates and appends the 18th GS1 Modulo 10 check digit to a 17-digit SSCC body."
+          }
+        },
+        {
+          "name": "Expand Pallet Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/range?from=35601234560000001&to=35601234560000005",
+              "host": ["{{baseUrl}}"],
+              "path": ["range"],
+              "query": [
+                { "key": "from", "value": "35601234560000001" },
+                { "key": "to", "value": "35601234560000005" }
+              ]
+            },
+            "description": "Expands a range of 17-digit bodies (up to 500 pallets) and computes valid Modulo 10 check digits for each."
+          }
+        },
+        {
+          "name": "Lookup GS1 Prefix Country",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/prefix?code={{sampleSscc}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["prefix"],
+              "query": [
+                { "key": "code", "value": "{{sampleSscc}}" }
+              ]
+            },
+            "description": "Returns the issuing GS1 Member Organization / country for an SSCC or GS1 prefix."
+          }
+        },
+        {
+          "name": "Extract SSCCs from EDIFACT DESADV",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "text/plain" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "UNA:+.? '\nUNB+UNOC:3+5601234000019:14+5609876000018:14+261123:1200+10001'\nUNH+1+DESADV:D:96A:UN:EAN005'\nBGM+351+DESADV-261123+9'\nCPS+1'\nPAC+1++201::9'\nPCI+33E'\nGIN+BJ+356012345600000016'\nCPS+2'\nPAC+1++201::9'\nPCI+33E'\nGIN+BJ+356012345600000023'\nUNT+11+1'\nUNZ+1+10001'"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/extract",
+              "host": ["{{baseUrl}}"],
+              "path": ["extract"]
+            },
+            "description": "Extracts and validates all SSCC-18 codes from raw UN/EDIFACT (GIN+BJ), SAP IDoc XML (EXIDV), CSV, or TXT payloads."
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. Pallet Labels, Barcodes & ZPL-II (v1)",
+      "item": [
+        {
+          "name": "Generate Batch Labels (Zebra ZPL-II · Dual 1D+2D QR)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Valid ZPL-II with GS1 FNC1 (>8)', () => {",
+                  "  const txt = pm.response.text();",
+                  "  pm.expect(txt).to.include('^XA');",
+                  "  pm.expect(txt).to.include('>8');",
+                  "  pm.expect(txt).to.include('^XZ');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gcp\": \"{{sampleGcp}}\",\n  \"startSerial\": 1001,\n  \"quantity\": 2,\n  \"symbology\": \"dual\",\n  \"paperSize\": \"thermal\",\n  \"sender\": \"LOGISTICS DISPATCH LTD\",\n  \"recipient\": \"SONAE MC — HUB AZAMBUJA\",\n  \"orderNo\": \"PO-2026-994\",\n  \"gtin\": \"05601234567892\",\n  \"unitCount\": \"48\",\n  \"batchNo\": \"LOT-26PT\",\n  \"expiryDate\": \"2026-12-31\",\n  \"weight\": \"450 KG\",\n  \"format\": \"zpl\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/labels",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "labels"]
+            },
+            "description": "Compiles native Zebra ZPL-II (1D ^BCN + 2D ^BQN QR Digital Link + Multi-AI secondary barcode) ready for TCP Port 9100."
+          }
+        },
+        {
+          "name": "Generate Batch Labels (JSON with SVG + ZPL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ssccs\": [\"{{sampleSscc}}\"],\n  \"symbology\": \"dual\",\n  \"layout\": \"full\",\n  \"paperSize\": \"a5\",\n  \"sender\": \"LOGISTICS DISPATCH LTD\",\n  \"recipient\": \"CENTRAL DISTRIBUTION HUB\",\n  \"orderNo\": \"PO-2026-994\",\n  \"format\": \"json\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/labels",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "labels"]
+            },
+            "description": "Returns structured JSON containing SSCC metadata, SVG barcodes, ZPL-II stream, and quota balance."
+          }
+        },
+        {
+          "name": "Generate Printable A5 HTML Pallet Label",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ssccs\": [\"{{sampleSscc}}\"],\n  \"symbology\": \"dual\",\n  \"paperSize\": \"a5\",\n  \"format\": \"html\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/labels",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "labels"]
+            },
+            "description": "Returns print-ready HTML/CSS A5 pallet label sheet."
+          }
+        },
+        {
+          "name": "Standalone Barcode Strip (SVG · 1D + 2D QR)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK (SVG)', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include('<svg');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/barcode?sscc={{sampleSscc}}&type=both&format=svg",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "barcode"],
+              "query": [
+                { "key": "sscc", "value": "{{sampleSscc}}" },
+                { "key": "type", "value": "both", "description": "gs1-128 | qr | both" },
+                { "key": "format", "value": "svg", "description": "svg | zpl | json" }
+              ]
+            },
+            "description": "Generates a standalone vector SSCC barcode strip (1D GS1-128, 2D QR Digital Link, or Both) for embedding in custom ERP/WMS label layouts."
+          }
+        },
+        {
+          "name": "Standalone 2D QR Digital Link (SVG)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/qr?sscc={{sampleSscc}}&batch=LOT-26A&expiry=261231",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "qr"],
+              "query": [
+                { "key": "sscc", "value": "{{sampleSscc}}" },
+                { "key": "batch", "value": "LOT-26A" },
+                { "key": "expiry", "value": "261231" }
+              ]
+            },
+            "description": "Generates a standalone Sunrise 2027 2D QR Code encoding the GS1 Digital Link URI."
+          }
+        },
+        {
+          "name": "Check Quota / Pro Key Credits",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/quota?gcp={{sampleGcp}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "quota"],
+              "query": [
+                { "key": "gcp", "value": "{{sampleGcp}}" }
+              ]
+            },
+            "description": "Checks remaining free evaluation quota for a GCP or credit balance for an X-API-Key."
+          }
+        }
+      ]
+    },
+    {
+      "name": "03. Discovery & Health",
+      "item": [
+        {
+          "name": "API Health & Endpoint Catalog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            },
+            "description": "Returns API service status, version, supported symbologies, and live endpoint directory."
+          }
+        }
+      ]
+    }
+  ]
+}

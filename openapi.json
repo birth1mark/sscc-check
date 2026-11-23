@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "SSCCAPI — Validation, EDI & GS1 Pallet Label API",
-    "version": "5.9.0",
-    "description": "Free, high-performance REST API for Serial Shipping Container Code (SSCC-18) validation,\ncheck digit calculation (GS1 Modulo 10), range expansion, country/company prefix lookup,\nand multi-format file extraction (UN/EDIFACT, SAP IDoc, XML, CSV, TXT).\nPowered by Cloudflare Workers. Zero authentication required.\n",
+    "version": "5.11.0",
+    "description": "High-performance Cloudflare Edge REST API for Serial Shipping Container Code (SSCC-18) validation,\ncheck digit calculation (GS1 Modulo 10), range expansion, country/company prefix lookup,\nmulti-format file extraction (UN/EDIFACT, SAP IDoc, XML, CSV, TXT), and Dual 1D GS1-128 + 2D QR\nDigital Link pallet labels & Zebra ZPL-II generation.\n",
     "contact": {
       "name": "birth1mark",
       "url": "https://ssccapi.com/"
@@ -15,12 +15,16 @@
   },
   "servers": [
     {
-      "url": "https://sscc.birth1mark.workers.dev",
-      "description": "Server 1 — Free Validation & EDI Extraction API"
+      "url": "https://ssccapi.com",
+      "description": "Primary Unified Edge API — Validation, EDI Extraction, Barcodes, ZPL & Pallet Labels"
     },
     {
       "url": "https://sscc-labels.birth1mark.workers.dev",
-      "description": "Server 2 — Commercial GS1 Pallet Labels, ZPL & 2D QR Digital Link API (25 Free / Pro X-API-Key)"
+      "description": "Direct Edge Mirror — Pallet Labels, ZPL & 2D QR Digital Link API"
+    },
+    {
+      "url": "https://sscc.birth1mark.workers.dev",
+      "description": "Direct Edge Mirror — Free Validation & EDI Extraction API"
     }
   ],
   "paths": {

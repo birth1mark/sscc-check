@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>SSCCAPI — Universal GS1 Check Digit Calculator (GTIN-8, 12, 13, 14, GLN &amp; SSCC)</title>
     <meta name="description" content="Free online universal GS1 check digit calculator by SSCCAPI. Calculate and verify check digits for GTIN-8, GTIN-12 (UPC), GTIN-13 (EAN), GTIN-14, GLN, and SSCC pallet codes. Interactive step-by-step Modulo 10 algorithm.">
@@ -94,6 +94,11 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        html, body {
+            overflow-x: clip;
+            max-width: 100%;
+        }
+
         body {
             font-family: var(--font-sans);
             background-color: var(--bg);
@@ -175,8 +180,28 @@
         }
         @media (max-width: 640px) {
             .site-header { padding: 0.55rem 0.75rem; }
-            .nav-pill { font-size: 0.7rem; padding: 0.22rem 0.45rem; }
+            .header-inner { flex-wrap: wrap; gap: 0.5rem; }
+            .brand { font-size: 0.88rem; }
             .brand-sub, .brand-sep { display: none; }
+            .header-nav {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 0.35rem;
+                width: 100%;
+            }
+            .nav-pill {
+                font-size: 0.7rem;
+                padding: 0.38rem 0.3rem;
+                text-align: center;
+            }
+            .container { padding: 14px 10px 44px; }
+            .card, .seo-article { padding: 16px 14px; }
+            .calc-input { font-size: 15px; padding: 10px 12px; letter-spacing: 0.04em; }
+            .calc-input-box label { flex-wrap: wrap; gap: 4px; }
+            .result-highlight { flex-wrap: wrap; gap: 10px; }
+            .result-code-large { font-size: 15px; }
+            .cd-pill { margin-left: 0; font-size: 17px; }
+            .btn-copy-full { width: 100%; justify-content: center; }
         }
 
         .container {
@@ -191,6 +216,7 @@
             gap: 24px;
             align-items: start;
         }
+        .calc-grid > * { min-width: 0; max-width: 100%; }
         @media (max-width: 900px) {
             .calc-grid { grid-template-columns: 1fr; }
         }
@@ -427,6 +453,17 @@
         .seo-article p { margin-bottom: 10px; }
         .seo-article ul { padding-left: 20px; margin-bottom: 12px; }
         .seo-article li { margin-bottom: 4px; }
+
+        @media (max-width: 640px) {
+            .container { padding: 14px 10px 44px; }
+            .card, .seo-article { padding: 16px 14px; }
+            .calc-input { font-size: 15px; padding: 10px 12px; letter-spacing: 0.04em; }
+            .calc-input-box label { flex-wrap: wrap; gap: 4px; }
+            .result-highlight { flex-wrap: wrap; gap: 10px; }
+            .result-code-large { font-size: 15px; }
+            .cd-pill { margin-left: 0; font-size: 17px; }
+            .btn-copy-full { width: 100%; justify-content: center; }
+        }
     </style>
     <script>
     (function() {

@@ -99,9 +99,11 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; overflow-x: clip; max-width: 100%; }
 
         body {
+            overflow-x: clip;
+            max-width: 100%;
             background-color: var(--bg);
             color: var(--text);
             font-family: var(--font-sans);
@@ -180,8 +182,27 @@
         }
         @media (max-width: 640px) {
             .site-header { padding: 0.55rem 0.75rem; }
-            .nav-pill { font-size: 0.7rem; padding: 0.22rem 0.45rem; }
+            .header-inner { flex-wrap: wrap; gap: 0.5rem; }
+            .nav-brand { font-size: 0.88rem; }
             .brand-sub, .brand-sep { display: none; }
+            .nav-links {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 0.35rem;
+                width: 100%;
+            }
+            .nav-pill {
+                font-size: 0.7rem;
+                padding: 0.38rem 0.3rem;
+                text-align: center;
+            }
+            .course-hero { padding: 18px 14px; }
+            .sscc-visual-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .sscc-seg { min-width: 0; padding: 8px 6px; }
+            .sscc-seg .seg-val { font-size: 13.5px; word-break: break-all; }
+            .code-tabs { flex-wrap: wrap; }
+            .code-tab-group { flex-wrap: wrap; }
+            pre { font-size: 11px; padding: 12px; }
         }
 
         /* ─── Unified 1120px 2-Column Roadmap Layout ─── */
@@ -194,6 +215,7 @@
             gap: 28px;
             align-items: start;
         }
+        .wrapper > * { min-width: 0; max-width: 100%; }
         .guide-article { min-width: 0; }
         @media (max-width: 920px) {
             .wrapper { grid-template-columns: 1fr; gap: 20px; padding: 20px 14px 64px; }
@@ -873,6 +895,17 @@
             background: rgba(245, 158, 11, 0.12);
             color: var(--primary);
             border: 1px solid rgba(245, 158, 11, 0.45);
+        }
+
+        @media (max-width: 640px) {
+            .course-hero { padding: 18px 14px; }
+            .sscc-visual-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .sscc-seg { min-width: 0; padding: 8px 6px; }
+            .sscc-seg .seg-val { font-size: 13.5px; word-break: break-all; }
+            .code-tabs { flex-wrap: wrap; }
+            .code-tab-group { flex-wrap: wrap; }
+            pre { font-size: 11px; padding: 12px; }
+            .cta-box { padding: 18px 14px; }
         }
     </style>
 

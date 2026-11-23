@@ -14,14 +14,12 @@ info:
     name: MIT
     url: https://github.com/birth1mark/sscc-check/blob/main/LICENSE
 servers:
-  - url: https://api.ssccapi.com
-    description: Primary Commercial GS1 Pallet Labels, ZPL & 2D QR Digital Link API (25 Free / Pro X-API-Key)
   - url: https://ssccapi.com
-    description: Primary Free Validation & EDI Extraction API
+    description: Official SSCCAPI.com Edge Endpoint — GS1 Labels, Barcodes, ZPL, 2D QR & Validation API
   - url: https://sscc-labels.birth1mark.workers.dev
-    description: Cloudflare Direct Edge Endpoint — Labels, Barcodes & 2D QR Engine
+    description: Cloudflare Direct Edge Mirror — Labels, Barcodes & 2D QR Engine
   - url: https://sscc.birth1mark.workers.dev
-    description: Cloudflare Direct Edge Endpoint — Free Validation & EDI Extraction API
+    description: Cloudflare Direct Edge Mirror — Free Validation & EDI Extraction API
 
 paths:
   /validate:

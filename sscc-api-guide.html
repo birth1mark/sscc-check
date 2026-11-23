@@ -723,13 +723,13 @@
 
             <div class="servers-grid">
                 <div class="server-card">
-                    <div class="server-label">Server 1 · Validation &amp; EDI Extraction (Free)</div>
-                    <div class="server-url">https://ssccapi.com <span style="font-size:11px;color:var(--muted);">/ sscc.birth1mark.workers.dev</span></div>
+                    <div class="server-label">Endpoint Group 1 · Validation &amp; EDI Extraction (Free)</div>
+                    <div class="server-url">https://ssccapi.com/validate</div>
                     <div class="server-desc">Open access · 500 req/hr · Validate, calculate check digits, expand ranges &amp; parse EDIFACT/XML.</div>
                 </div>
                 <div class="server-card commercial">
-                    <div class="server-label">Server 2 · GS1 Pallet Labels, ZPL &amp; 2D QR Engine</div>
-                    <div class="server-url">https://api.ssccapi.com <span style="font-size:11px;color:var(--muted);">/ sscc-labels.birth1mark.workers.dev</span></div>
+                    <div class="server-label">Endpoint Group 2 · GS1 Pallet Labels, ZPL &amp; 2D QR Engine</div>
+                    <div class="server-url">https://ssccapi.com/v1/labels</div>
                     <div class="server-desc">25 free labels included · Pro <code>X-API-Key</code> unlocks high-volume ZPL, Dual 1D+2D QR &amp; A5 labels.</div>
                 </div>
             </div>
@@ -1275,8 +1275,8 @@ function contactApiSupport() {
     }
     window.location.href = 'mailto:' + addr + '?subject=' + subj;
 }
-const VAL_API    = 'https://sscc.birth1mark.workers.dev';
-const LABELS_API = 'https://sscc-labels.birth1mark.workers.dev';
+const VAL_API    = 'https://ssccapi.com';
+const LABELS_API = 'https://ssccapi.com';
 
 // Load saved Pro Key from main app localStorage if available
 window.addEventListener('DOMContentLoaded', () => {

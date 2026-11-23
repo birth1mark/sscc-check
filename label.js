@@ -9,7 +9,7 @@
  * - Pro API Keys (X-API-Key: sscc_pro_...): https://pormenores.net/sscc/sscc-api-guide.html
  */
 
-const LABELS_API_BASE_URL = 'https://sscc-labels.birth1mark.workers.dev';
+const LABELS_API_BASE_URL = 'https://ssccapi.com';
 const PRO_API_KEY_STORAGE_KEY = 'sscc_pro_api_key_v1';
 
 /**

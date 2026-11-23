@@ -1,21 +1,27 @@
-MIT License
+Open-Core License (MIT + Commercial Label & Barcode Engine)
 
-Copyright (c) 2026 Pedro
+Copyright (c) 2026 birth1mark (https://pormenores.net/)
+
+1. CORE VALIDATOR & EDI EXTRACTOR (MIT LICENSE)
+The SSCC-18 Modulo 10 validator, check digit calculator, EDIFACT/SAP IDoc/XML/CSV parser,
+and OpenAPI/LLM documentation in this repository are licensed under the MIT License:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
+of the core validation software and associated documentation files, to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+copies of the Software, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
+2. COMMERCIAL GS1 PALLET LABEL, ZPL-II & 2D QR ENGINE (PROPRIETARY)
+The commercial GS1 Logistics Pallet Label Studio, Dual-Symbology (1D GS1-128 + 2D QR Digital Link)
+barcode engine, and Zebra ZPL-II compiler hosted at https://pormenores.net/sscc/ and
+https://sscc-labels.birth1mark.workers.dev are proprietary software. All rights reserved.
+Free evaluation quota (25 labels) and commercial API keys are governed by the terms at:
+https://pormenores.net/sscc/sscc-api-guide.html
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.

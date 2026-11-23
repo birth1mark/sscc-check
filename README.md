@@ -187,6 +187,7 @@ If SSCC Pro Vision saves you time or helps your logistics workflow, consider [bu
 
 ---
 
-## 📄 License
+## 📄 License (Open-Core)
 
-MIT — free to use, modify and distribute.
+- **Core Validator, Check Digit Calculator & EDI Extractor**: Open-source under the **MIT License**.
+- **GS1 Pallet Label, ZPL-II & 2D QR Digital Link Cloud Engine (`sscc-labels.birth1mark.workers.dev` & Hosted Studio at `pormenores.net/sscc/`)**: Commercial service (includes 25 free evaluation labels; Pro credit packs and unlimited annual API keys available at [pormenores.net/sscc/sscc-api-guide.html](https://pormenores.net/sscc/sscc-api-guide.html)).

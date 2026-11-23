@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check URL parameters (?code=..., #share=..., #labels)
     if (typeof checkUrlShare === 'function') checkUrlShare();
 
+    // Check Stripe Checkout redirect (?session_id=cs_...) to auto-claim Pro API Key
+    if (typeof checkStripeCheckoutClaim === 'function') checkStripeCheckoutClaim();
+
     // Update session audit count in history pill
     if (typeof updateHistoryCount === 'function') updateHistoryCount();
 

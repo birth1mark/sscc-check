@@ -823,6 +823,50 @@ function saveProApiKeyFromModal() {
     }
 }
 
+/**
+ * Automatically claims & activates a newly purchased Pro API Key when returning from Stripe Checkout
+ * (?session_id=cs_live_... or ?stripe_session=...).
+ */
+async function checkStripeCheckoutClaim() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const sessionId = params.get('session_id') || params.get('stripe_session');
+        if (!sessionId) return;
+
+        if (typeof switchWorkspaceTab === 'function') switchWorkspaceTab('labels');
+        if (typeof showToast === 'function') showToast('Verifying Stripe payment & provisioning Pro Key…');
+
+        // Poll up to 3 times in case webhook takes 1-2 seconds
+        for (let attempt = 0; attempt < 3; attempt++) {
+            const res = await fetch(`${LABELS_API_BASE_URL}/v1/claim?session_id=${encodeURIComponent(sessionId)}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.apiKey) {
+                    setStoredProApiKey(data.apiKey);
+                    const q = getLocalQuotaStore();
+                    q.proRemaining = data.creditsRemaining;
+                    q.proLimit = data.creditsLimit;
+                    saveLocalQuotaStore(q);
+                    updateQuotaUI({ tier: data.plan || 'pro', limit: data.creditsLimit, remaining: data.creditsRemaining });
+
+                    openProUpgradeModal();
+                    const reasonBox = document.getElementById('pro-modal-reason');
+                    if (reasonBox) {
+                        reasonBox.style.display = 'block';
+                        reasonBox.style.background = 'rgba(16,185,129,0.14)';
+                        reasonBox.style.borderColor = 'var(--success)';
+                        reasonBox.style.color = 'var(--success)';
+                        reasonBox.innerHTML = `🎉 <strong>Payment Confirmed!</strong> Your Pro API Key (<strong>${data.creditsLimit.toLocaleString()} credits</strong>) has been activated automatically. Copy and save your key below:`;
+                    }
+                    history.replaceState(null, null, window.location.pathname + '#labels');
+                    return;
+                }
+            }
+            await new Promise(r => setTimeout(r, 1400));
+        }
+    } catch (_) {}
+}
+
 // ============================================================================
 // 4. STUDIO STATE & UI CONTROLLERS
 // ============================================================================

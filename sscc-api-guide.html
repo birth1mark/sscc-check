@@ -888,6 +888,17 @@
                             <td>Number of sequential pallet labels (1–500)</td>
                         </tr>
                         <tr>
+                            <td><span class="param-name">layout</span><span class="param-opt">enum</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>
+                                <select id="sb-lbl-layout" class="param-select" onchange="updateLabelsCode()">
+                                    <option value="full" selected>full (Complete GS1 Pallet Label Sheet + Barcodes)</option>
+                                    <option value="barcode-only">barcode-only (Standalone SSCC Barcode Strip Only)</option>
+                                </select>
+                            </td>
+                            <td>Choose full logistics label or standalone SSCC barcode strip</td>
+                        </tr>
+                        <tr>
                             <td><span class="param-name">symbology</span><span class="param-opt">enum</span></td>
                             <td><span class="param-type">string</span></td>
                             <td>
@@ -1206,11 +1217,27 @@ def print_gs1_pallet_batch(api_key, zebra_ip, gcp, start_serial, qty, lot_no):
                     <tr><td><span class="status-pill err">429 Too Many Requests</span></td><td><code>RATE_LIMITED</code></td><td>Validation API rate limit (500 req/hr per IP) exceeded.</td></tr>
                 </tbody>
             </table>
+
+            <div style="margin-top:18px;padding:14px 16px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.35);border-radius:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+                <div>
+                    <div style="font-family:var(--font-mono);font-size:12.5px;font-weight:800;color:var(--primary);margin-bottom:3px;">💬 Need Custom Features, Retailer Label Templates or ERP/WMS Integration?</div>
+                    <div style="font-size:12px;color:var(--muted);">Contact us for custom ZPL layouts (Sonae, Jerónimo Martins, Mercadona, Amazon), SAP/Odoo connectors, or dedicated enterprise endpoints.</div>
+                </div>
+                <button type="button" class="btn-execute" onclick="contactApiSupport()">✉ Contact for Custom Features</button>
+            </div>
         </section>
     </main>
 </div>
 
 <script>
+function contactApiSupport() {
+    const addr = atob('cGVkcm8=') + '@' + atob('cG9ybWVub3Jlcy5uZXQ=');
+    const subj = encodeURIComponent('SSCC Pro Vision API — Custom Features / ERP Integration');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr).catch(() => {});
+    }
+    window.location.href = 'mailto:' + addr + '?subject=' + subj;
+}
 const VAL_API    = 'https://sscc.birth1mark.workers.dev';
 const LABELS_API = 'https://sscc-labels.birth1mark.workers.dev';
 
@@ -1260,6 +1287,7 @@ function getLabelsPayloadFromForm() {
         gcp:        document.getElementById('sb-lbl-gcp').value.trim() || '5601234',
         startSerial: parseInt(document.getElementById('sb-lbl-start').value, 10) || 1001,
         quantity:   parseInt(document.getElementById('sb-lbl-qty').value, 10) || 1,
+        layout:     document.getElementById('sb-lbl-layout')?.value || 'full',
         symbology:  document.getElementById('sb-lbl-sym').value,
         format:     document.getElementById('sb-lbl-fmt').value,
         sender:     document.getElementById('sb-lbl-sender').value.trim(),

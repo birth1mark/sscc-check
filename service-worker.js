@@ -1,4 +1,4 @@
-const CACHE = 'sscc-v33';
+const CACHE = 'sscc-v34';
 const ASSETS = [
   './',
   './index.html',

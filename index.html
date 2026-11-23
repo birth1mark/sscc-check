@@ -1764,6 +1764,25 @@
                 </button>
             </div>
 
+            <!-- Output Layout Switcher (Full GS1 Pallet Label vs. Standalone Barcode Strip Only) -->
+            <div class="studio-source-bar" style="margin-bottom:8px;">
+                <span class="source-label">Output Mode:</span>
+                <div class="source-pills">
+                    <button type="button" class="source-pill active" data-layout="full" onclick="setLabelLayoutMode('full')" title="Generate complete GS1 logistics pallet label (Sender, Consignee, Order, Weight + Barcodes)">
+                        <i data-lucide="file-text" style="width:12px;height:12px;"></i>
+                        <span>Full Pallet Label</span>
+                    </button>
+                    <button type="button" class="source-pill" data-layout="barcode-only" onclick="setLabelLayoutMode('barcode-only')" title="Generate ONLY the SSCC barcode strip (SVG, 300 DPI PNG, ZPL, or Print) to embed in your own label layout">
+                        <i data-lucide="barcode" style="width:12px;height:12px;"></i>
+                        <span>Barcode Only (SSCC Strip)</span>
+                    </button>
+                </div>
+                <select id="lbl-layout" style="display:none;" onchange="updateLabelPreview()">
+                    <option value="full" selected>Full Pallet Label</option>
+                    <option value="barcode-only">Barcode Only (SSCC Strip)</option>
+                </select>
+            </div>
+
             <!-- GS1 Symbology Mode Switcher (Dual 1D+2D QR vs 1D Only vs 2D QR Only) -->
             <div class="sym-bar" role="group" aria-label="GS1 Barcode Symbology">
                 <button type="button" class="sym-pill active" data-sym="dual" onclick="setLabelSymbology('dual')" title="Print both 1D GS1-128 linear barcode and 2D GS1 Digital Link QR Code">
@@ -1897,7 +1916,7 @@
             <div id="lbl-preview-box"></div>
 
             <!-- Shipping Metadata & Format Customization -->
-            <details class="label-edit-details" open>
+            <details id="shipping-details-accordion" class="label-edit-details" open>
                 <summary>Shipping Details &amp; Label Format (A5 / A6 / 4×6" Thermal)</summary>
                 <div class="label-edit-grid">
                     <div class="lbl-input-row-2">
@@ -1961,15 +1980,23 @@
                 </div>
             </details>
 
-            <!-- Primary Output Actions -->
+            <!-- Primary Output Actions (Print/PDF, ZPL-II, Vector SVG, 300 DPI PNG) -->
             <div class="studio-actions-footer">
-                <button type="button" class="main-btn btn-live" onclick="printGS1Label()">
+                <button type="button" class="main-btn btn-live" onclick="printGS1Label()" title="Print directly or Save as PDF (A5 / A6 / 4×6&quot;)">
                     <i data-lucide="printer" style="width:14px;height:14px;"></i>
-                    <span id="lbl-print-btn-text">PRINT LABEL (A5 / 4×6")</span>
+                    <span id="lbl-print-btn-text">PRINT / PDF (A5 / 4×6")</span>
                 </button>
-                <button type="button" class="main-btn btn-audit" onclick="downloadGS1ZPL()" title="Download industrial Zebra ZPL-II file">
+                <button type="button" class="main-btn btn-audit" onclick="downloadGS1ZPL()" title="Download industrial Zebra ZPL-II (.zpl) file">
                     <i data-lucide="download" style="width:14px;height:14px;"></i>
-                    <span id="lbl-zpl-btn-text">DOWNLOAD ZPL</span>
+                    <span id="lbl-zpl-btn-text">ZPL-II (.ZPL)</span>
+                </button>
+                <button type="button" class="main-btn btn-audit" onclick="downloadGS1SVG()" title="Download standalone Vector SVG (.svg) barcode strip to embed in your own label layout">
+                    <i data-lucide="file-code" style="width:14px;height:14px;"></i>
+                    <span>BARCODE SVG (.SVG)</span>
+                </button>
+                <button type="button" class="main-btn btn-audit" onclick="downloadGS1PNG()" title="Download high-resolution 300 DPI PNG (.png) barcode image">
+                    <i data-lucide="image" style="width:14px;height:14px;"></i>
+                    <span>BARCODE PNG (300 DPI)</span>
                 </button>
             </div>
         </section>
@@ -1981,6 +2008,10 @@
                 <i data-lucide="shield-check" style="width:15px;height:15px;"></i>
                 <span>100% Client-Side &amp; Offline PWA — Shipping data never leaves your browser</span>
             </span>
+            <button type="button" class="micro-btn" onclick="contactForCustomFeatures()" style="border-color:rgba(245,158,11,0.45);color:var(--primary);" title="Request custom features, bespoke retailer label templates, or ERP/WMS integrations">
+                <i data-lucide="message-square-plus" style="width:12px;height:12px;"></i>
+                <span>Request Custom Features / ERP Integration</span>
+            </button>
         </div>
 
         <details class="info-accordion">
@@ -1989,6 +2020,7 @@
                 <li><strong>Instant Validation (18 or 20 digits)</strong>: Paste full SSCCs (with or without AI <code>00</code>) to verify the Modulo 10 check digit and identify country prefix.</li>
                 <li><strong>Check Digit Generation (17 digits)</strong>: Paste a 17-digit payload to automatically compute and append the 18th GS1 check digit.</li>
                 <li><strong>Range Expansion</strong>: Enter <code>START - END</code> (up to 500 codes) to expand and compute check digits for an entire sequence.</li>
+                <li><strong>Full Pallet Labels vs. Barcode Only</strong>: Generate complete GS1 A5/A6/4×6" pallet labels or switch to <strong>Barcode Only (SSCC Strip)</strong> to export standalone <code>.svg</code>, <code>300 DPI .png</code>, or <code>.zpl</code> barcodes to compose in your own software.</li>
                 <li><strong>EDI &amp; ERP File Extraction</strong>: Drop any <strong>EDIFACT</strong> (<code>GIN+BJ</code>, <code>RFF+SI</code>), <strong>SAP IDoc</strong> (<code>EXIDV</code>), <strong>XML</strong>, or <strong>CSV</strong> file to extract all SSCCs automatically.</li>
                 <li><strong>Hardware Laser Scanners</strong>: USB and Bluetooth HID barcode scanners are detected automatically anywhere on the page.</li>
             </ul>
@@ -1998,15 +2030,15 @@
             <summary>Frequently Asked Questions</summary>
             <div style="margin-top:10px; color:var(--text-muted); line-height:1.6; font-size:12px;">
                 <p style="margin-bottom:8px;"><strong>Can I generate commercial SSCCs without being registered with GS1?</strong><br>Valid, globally unique SSCCs legally require an official <strong>GS1 Company Prefix (GCP)</strong> issued to your organization by a GS1 Member Organization (e.g. GS1 Portugal, GS1 US, GS1 UK).</p>
-                <p style="margin-bottom:8px;"><strong>What does SSCC stand for?</strong><br>Serial Shipping Container Code — an 18-digit GS1 identification key used to track logistics units (pallets, containers, totes) across global supply chains.</p>
-                <p><strong>How do I print pallet labels or export to Zebra thermal printers?</strong><br>Switch to the <strong>Pallet Labels &amp; ZPL</strong> tab (or click <em>Print Labels</em> from any validated list) to print A5/A6/4×6" sheets or export native Zebra ZPL-II code.</p>
+                <p style="margin-bottom:8px;"><strong>What formats are returned for labels and barcodes?</strong><br>In the Web Studio you can export <strong>Print / PDF</strong> (A5, A6, 4×6" or standalone barcode strips), <strong>Zebra ZPL-II (<code>.zpl</code>)</strong>, <strong>Pure Vector (<code>.svg</code>)</strong>, and <strong>High-Res 300 DPI Raster (<code>.png</code>)</strong>. Via the REST API (<code>POST /v1/labels</code>, <code>GET /v1/barcode</code>, <code>GET /v1/qr</code>) we return <code>application/json</code>, <code>text/plain</code> (ZPL-II), <code>text/html</code>, and <code>image/svg+xml</code>.</p>
+                <p><strong>Need a custom retailer label template or bespoke ERP feature?</strong><br>Click <a href="#contact" onclick="contactForCustomFeatures();return false;" style="color:var(--primary);text-decoration:underline;font-weight:600;">Request Custom Features</a> to contact us for custom ZPL templates (Sonae, Jerónimo Martins, Mercadona, Amazon), SAP/Odoo connectors, or dedicated features.</p>
             </div>
         </details>
 
         <details class="info-accordion">
             <summary>Changelog</summary>
             <div class="changelog" style="margin-top:10px;">
-                <p><span class="version">v5.9.0</span> GS1 Sunrise 2027 &amp; Cloud API. Dual-symbology pallet labels (1D <code>GS1-128</code> + 2D <code>QR Code GS1 Digital Link</code> in SVG &amp; Zebra ZPL <code>^BQN</code>), 100-label free quota with Pro credit packs, and dedicated Cloudflare Labels API.</p>
+                <p><span class="version">v5.9.0</span> GS1 Sunrise 2027 &amp; Cloud API. Dual-symbology pallet labels (1D <code>GS1-128</code> + 2D <code>QR Code GS1 Digital Link</code> in SVG, 300 DPI PNG &amp; Zebra ZPL <code>^BQN</code>), <strong>Barcode-Only mode</strong> for custom label composers, 25-label free quota with Pro credit packs, and interactive Swagger API Portal.</p>
                 <p><span class="version">v5.8.0</span> Logistics Intelligence. Duplicate SSCC detection across batches &amp; EDI files, 1-click invalid check digit auto-fixer, continuous batch camera scanner, secondary GS1-128 barcode for GTIN/Batch/Expiry (AI 02/10/15/37), and <code>llms.txt</code> for AI agents.</p>
                 <p><span class="version">v5.7.0</span> UX Overhaul. Unified 2-tab workspace (Validate &amp; Extract vs. Pallet Labels &amp; ZPL Studio), real-time zero-click validation, interactive sample chips, and streamlined EDI file feedback.</p>
                 <p><span class="version">v5.6.0</span> Major Release. Batch GS1 Pallet Label printing &amp; multi-label ZPL export, Universal Check Digit Calculator, Offline Session History, Laser Scanner listener &amp; Serverless URL sharing.</p>
@@ -2020,6 +2052,10 @@
         <a href="https://pormenores.net/" style="color:var(--text-muted); text-decoration:none;">pormenores.net</a>
         <span>•</span>
         <span>Free &amp; Open Source</span>
+        <span>•</span>
+        <button type="button" onclick="contactForCustomFeatures()" style="background:none;border:none;color:var(--text-muted);font-family:var(--font-mono);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;" title="Contact for custom features or enterprise integrations">
+            💬 Custom Features / Contact
+        </button>
         <span>•</span>
         <a href="https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00" target="_blank" rel="noopener noreferrer" style="color:var(--primary); text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-weight:600; padding:3px 10px; border-radius:12px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35);" title="Buy me a coffee">
             ☕ Buy me a coffee
@@ -2113,6 +2149,13 @@
                 </div>
             </div>
             <div id="pro-recovered-box" style="display:none;margin-top:10px;padding:10px 12px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.4);border-radius:8px;font-family:var(--font-mono);font-size:11.5px;color:var(--success);line-height:1.5;"></div>
+            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11.5px;color:var(--text-muted);">
+                <span>Need bespoke retailer layouts, SAP/Odoo connectors, or custom features?</span>
+                <button type="button" class="micro-btn" onclick="contactForCustomFeatures()" style="border-color:rgba(245,158,11,0.45);color:var(--primary);">
+                    <i data-lucide="mail" style="width:11px;height:11px;"></i>
+                    <span>Contact Us</span>
+                </button>
+            </div>
         </div>
         <div class="label-modal-footer">
             <button class="main-btn btn-audit" onclick="closeProUpgradeModal()">CLOSE</button>

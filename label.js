@@ -52,7 +52,8 @@ function getLabelDefaults() {
         batchNo: '',
         expiryDate: '',
         format: 'a5',
-        symbology: 'dual'
+        symbology: 'dual',
+        layout: 'full'
     };
 }
 
@@ -504,6 +505,16 @@ function generateGS1ZPL(sscc18, meta, indexInfo = '') {
 
     const palletTagZPL = indexInfo ? `^FO520,62^A0N,22,22^FD${indexInfo.toUpperCase()}^FS` : '';
     const secondary = buildSecondaryGS1Barcode(meta, 50);
+
+    if (meta.layout === 'barcode-only') {
+        if (symbology === 'qr') {
+            return `^XA\n^PW812\n^LL520\n^FO60,35^A0N,26,26^FDSSCC — GS1 2D DIGITAL LINK:^FS\n^FO60,72^A0N,36,36^FD${hri}^FS\n^FO260,125^BQN,2,7^FDQA,${digitalLink}^FS\n^XZ`;
+        }
+        if (symbology === 'gs1-128') {
+            return `^XA\n^PW812\n^LL380\n^FO60,35^A0N,26,26^FDSSCC (SERIAL SHIPPING CONTAINER CODE):^FS\n^FO60,72^A0N,38,38^FD${hri}^FS\n^FO65,130^BY3,3,190^BCN,190,N,N,N,D^FD>8>500${s18}^FS\n^XZ`;
+        }
+        return `^XA\n^PW812\n^LL440\n^FO50,35^A0N,26,26^FDSSCC (GS1-128 + 2D DIGITAL LINK):^FS\n^FO50,72^A0N,34,34^FD${hri}^FS\n^FO50,125^BY2,3,180^BCN,180,N,N,N,D^FD>8>500${s18}^FS\n^FO580,55^BQN,2,4^FDQA,${digitalLink}^FS\n^XZ`;
+    }
 
     if (symbology === 'qr') {
         return `^XA
@@ -975,10 +986,110 @@ function initLabelStudioIfNeeded() {
 function setLabelSymbology(sym) {
     const select = document.getElementById('lbl-symbology');
     if (select) select.value = sym;
-    document.querySelectorAll('.sym-pill').forEach(btn => {
+    document.querySelectorAll('.sym-pill[data-sym]').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-sym') === sym);
     });
     updateLabelPreview();
+}
+
+function setLabelLayoutMode(layoutMode) {
+    const select = document.getElementById('lbl-layout');
+    if (select) select.value = layoutMode;
+    document.querySelectorAll('.sym-pill[data-layout]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-layout') === layoutMode);
+    });
+    const shipDetails = document.getElementById('shipping-details-accordion');
+    if (shipDetails) {
+        shipDetails.style.display = layoutMode === 'barcode-only' ? 'none' : 'block';
+    }
+    updateLabelPreview();
+}
+
+/**
+ * Generates a standalone vector SVG containing the HRI text + 1D GS1-128 and/or 2D QR Code ("barcode-only" mode).
+ */
+function generateStandaloneBarcodeStripSVG(s18, meta = {}) {
+    const symbology = (meta.symbology || 'dual').toLowerCase();
+    const hri = formatDynamicSSCCHRI(s18);
+    const dlUri = buildGS1DigitalLinkURI(s18, meta);
+
+    if (symbology === 'qr') {
+        const { size, modules } = encodeQRMatrix(dlUri);
+        const scale = 5;
+        const qrPx = size * scale;
+        const pad = 16;
+        const w = Math.max(280, qrPx + pad * 2);
+        const h = qrPx + 58;
+        const ox = Math.floor((w - qrPx) / 2);
+        let paths = '';
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+                if (modules[r][c]) paths += `M${ox + c * scale},${14 + r * scale}h${scale}v${scale}h-${scale}z`;
+            }
+        }
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="max-width:${w}px;background:#ffffff;font-family:monospace;margin:0 auto;display:block;">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <path d="${paths}" fill="#000000" shape-rendering="crispEdges"/>
+  <text x="${w / 2}" y="${qrPx + 34}" text-anchor="middle" font-size="14" font-weight="bold" fill="#000000">${escapeHtml(hri)}</text>
+  <text x="${w / 2}" y="${qrPx + 50}" text-anchor="middle" font-size="9" fill="#444444">GS1 2D DIGITAL LINK</text>
+</svg>`;
+    }
+
+    const fullDigits = '00' + s18;
+    const values = [102];
+    for (let i = 0; i < 20; i += 2) values.push(parseInt(fullDigits.substring(i, i + 2), 10));
+    let checksum = 105;
+    for (let idx = 0; idx < values.length; idx++) checksum += values[idx] * (idx + 1);
+    checksum = checksum % 103;
+    const allCodes = [105, ...values, checksum, 106];
+
+    const barScale = 2;
+    const barHeight = 84;
+    let curX = 20;
+    const rects = [];
+    for (const code of allCodes) {
+        const pattern = C128_PATTERNS[code];
+        let isBar = true;
+        for (let j = 0; j < pattern.length; j++) {
+            const wBar = parseInt(pattern[j], 10) * barScale;
+            if (isBar) rects.push(`<rect x="${curX}" y="28" width="${wBar}" height="${barHeight}" fill="#000000"/>`);
+            curX += wBar;
+            isBar = !isBar;
+        }
+    }
+    const barsWidth = curX + 20;
+
+    if (symbology === 'gs1-128') {
+        const totalH = barHeight + 56;
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${barsWidth} ${totalH}" width="100%" height="${totalH}" style="max-width:${barsWidth}px;background:#ffffff;font-family:monospace;margin:0 auto;display:block;">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="${barsWidth / 2}" y="19" text-anchor="middle" font-size="11" font-weight="bold" fill="#000000">SSCC (GS1-128)</text>
+  ${rects.join('')}
+  <text x="${barsWidth / 2}" y="${barHeight + 46}" text-anchor="middle" font-size="15" font-weight="bold" fill="#000000">${escapeHtml(hri)}</text>
+</svg>`;
+    }
+
+    const { size, modules } = encodeQRMatrix(dlUri);
+    const qrScale = 3;
+    const qrPx = size * qrScale;
+    const totalW = barsWidth + qrPx + 32;
+    const totalH = Math.max(barHeight + 58, qrPx + 42);
+    const qrOx = barsWidth + 12;
+    const qrOy = 18;
+    let qrPaths = '';
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if (modules[r][c]) qrPaths += `M${qrOx + c * qrScale},${qrOy + r * qrScale}h${qrScale}v${qrScale}h-${qrScale}z`;
+        }
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalW} ${totalH}" width="100%" height="${totalH}" style="max-width:${totalW}px;background:#ffffff;font-family:monospace;margin:0 auto;display:block;">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="${barsWidth / 2}" y="19" text-anchor="middle" font-size="11" font-weight="bold" fill="#000000">SSCC (GS1-128 + 2D DIGITAL LINK)</text>
+  ${rects.join('')}
+  <text x="${barsWidth / 2}" y="${barHeight + 46}" text-anchor="middle" font-size="15" font-weight="bold" fill="#000000">${escapeHtml(hri)}</text>
+  <path d="${qrPaths}" fill="#000000" shape-rendering="crispEdges"/>
+  <text x="${qrOx + qrPx / 2}" y="${qrOy + qrPx + 14}" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#000000">GS1 2D QR</text>
+</svg>`;
 }
 
 function setLabelSourceMode(mode, customAuditedCodes = null) {
@@ -1242,9 +1353,17 @@ function loadStoredFormDefaults() {
     if (document.getElementById('lbl-expiry')) document.getElementById('lbl-expiry').value = d.expiryDate || '';
     if (document.getElementById('lbl-format')) document.getElementById('lbl-format').value = d.format || 'a5';
     if (document.getElementById('lbl-symbology')) document.getElementById('lbl-symbology').value = d.symbology || 'dual';
-    document.querySelectorAll('.sym-pill').forEach(btn => {
+    if (document.getElementById('lbl-layout')) document.getElementById('lbl-layout').value = d.layout || 'full';
+    document.querySelectorAll('.sym-pill[data-sym]').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-sym') === (d.symbology || 'dual'));
     });
+    document.querySelectorAll('.sym-pill[data-layout]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-layout') === (d.layout || 'full'));
+    });
+    const shipDetails = document.getElementById('shipping-details-accordion');
+    if (shipDetails) {
+        shipDetails.style.display = (d.layout === 'barcode-only') ? 'none' : 'block';
+    }
 }
 
 function persistCurrentFormValues() {
@@ -1259,7 +1378,8 @@ function persistCurrentFormValues() {
         batchNo: document.getElementById('lbl-batch')?.value || '',
         expiryDate: document.getElementById('lbl-expiry')?.value || '',
         format: document.getElementById('lbl-format')?.value || 'a5',
-        symbology: document.getElementById('lbl-symbology')?.value || 'dual'
+        symbology: document.getElementById('lbl-symbology')?.value || 'dual',
+        layout: document.getElementById('lbl-layout')?.value || 'full'
     };
     saveLabelDefaults(data);
     return data;
@@ -1280,7 +1400,14 @@ function buildLabelSheetHTML(s18, meta, indexInfo = '') {
     const unitCount = meta.unitCount || '';
     const today = new Date().toISOString().slice(0, 10);
 
-    const hriFormatted = formatDynamicSSCCHRI(s18);
+    if (meta.layout === 'barcode-only') {
+        const stripSvg = generateStandaloneBarcodeStripSVG(s18, meta);
+        return `
+        <div class="gs1-label-sheet" style="text-align:center;padding:16px 12px;">
+            ${indexInfo ? `<div style="text-align:right;margin-bottom:4px;"><span class="lbl-pallet-tag">${indexInfo.toUpperCase()}</span></div>` : ''}
+            ${stripSvg}
+        </div>`;
+    }
     const digitalLink  = buildGS1DigitalLinkURI(s18, meta);
     const barcode1dSvg = (symbology === 'dual' || symbology === 'gs1-128') ? generateGS1BarcodeSVG(s18, 70) : '';
     const qr2dSvg      = (symbology === 'dual' || symbology === 'qr') ? generateGS1QRCodeSVG(digitalLink, symbology === 'qr' ? 136 : 84) : '';
@@ -1463,4 +1590,75 @@ async function downloadGS1ZPL() {
         : `gs1_sscc_label_${currentLabelSSCC}.zpl`;
     a.click();
     URL.revokeObjectURL(url);
+}
+
+/**
+ * Downloads a standalone Vector SVG (.svg) of the currently previewed SSCC barcode strip.
+ */
+async function downloadGS1SVG() {
+    if (!currentLabelSSCC) return;
+    const meta = persistCurrentFormValues();
+    const authorized = await authorizeLabelDispatch([currentLabelSSCC], meta);
+    if (!authorized) return;
+
+    const svgContent = generateStandaloneBarcodeStripSVG(currentLabelSSCC, meta);
+    const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gs1_sscc_${currentLabelSSCC}_${meta.symbology || 'dual'}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+/**
+ * Downloads a high-resolution 300 DPI PNG (.png) of the currently previewed SSCC barcode strip.
+ */
+async function downloadGS1PNG() {
+    if (!currentLabelSSCC) return;
+    const meta = persistCurrentFormValues();
+    const authorized = await authorizeLabelDispatch([currentLabelSSCC], meta);
+    if (!authorized) return;
+
+    const svgContent = generateStandaloneBarcodeStripSVG(currentLabelSSCC, meta);
+    const svgBlob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    const img = new Image();
+    img.onload = () => {
+        const scale = 2.5; // High-DPI crisp export
+        const canvas = document.createElement('canvas');
+        canvas.width = (img.width || 560) * scale;
+        canvas.height = (img.height || 180) * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+
+        canvas.toBlob(pngBlob => {
+            if (!pngBlob) return;
+            const pngUrl = URL.createObjectURL(pngBlob);
+            const a = document.createElement('a');
+            a.href = pngUrl;
+            a.download = `gs1_sscc_${currentLabelSSCC}_${meta.symbology || 'dual'}.png`;
+            a.click();
+            URL.revokeObjectURL(pngUrl);
+        }, 'image/png');
+    };
+    img.src = url;
+}
+
+/**
+ * Anti-spam protected direct contact helper for custom features & enterprise ERP integrations.
+ */
+function contactForCustomFeatures() {
+    const email = atob('cGVkcm8=') + '@' + atob('cG9ybWVub3Jlcy5uZXQ=');
+    const subject = encodeURIComponent('SSCC Pro Vision — Custom Features / ERP Integration Inquiry');
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(email).catch(() => {});
+    }
+    if (typeof showToast === 'function') {
+        showToast(`✉️ Opening email client (${email} copied to clipboard)`, 'success');
+    }
+    window.location.href = `mailto:${email}?subject=${subject}`;
 }

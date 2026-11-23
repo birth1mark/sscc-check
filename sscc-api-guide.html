@@ -697,9 +697,9 @@
         <a href="#quotas-pricing" class="sidebar-link">02. Quotas &amp; Credit Plans</a>
         <a href="#erp-manuals" class="sidebar-link">03. Zebra TCP &amp; ERP Manuals</a>
 
-        <div class="nav-section-title">Labels &amp; 2D QR API (v1)</div>
+        <div class="nav-section-title">Labels &amp; Barcodes API (v1)</div>
         <a href="#ep-labels-batch" class="sidebar-link"><span class="m-badge m-post">POST</span><span>/v1/labels</span></a>
-        <a href="#ep-qr-svg" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/v1/qr</span></a>
+        <a href="#ep-qr-svg" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/v1/barcode</span></a>
         <a href="#ep-quota" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/v1/quota</span></a>
 
         <div class="nav-section-title">Core Validation API</div>
@@ -974,46 +974,81 @@
             </div>
         </div>
 
-        <!-- ==================== SWAGGER ENDPOINT 2: GET /v1/qr ==================== -->
+        <!-- ==================== SWAGGER ENDPOINT 2: GET /v1/barcode ==================== -->
         <div id="ep-qr-svg" class="swagger-card pro-endpoint">
             <div class="swagger-header">
                 <div class="swagger-title-left">
                     <span class="swagger-method m-get">GET</span>
-                    <span class="swagger-path">/v1/qr</span>
+                    <span class="swagger-path">/v1/barcode</span>
                     <span class="swagger-server-pill pro">sscc-labels.birth1mark.workers.dev</span>
                 </div>
-                <span style="font-family:var(--font-mono);font-size:11px;color:var(--success);">Free Unlimited · Returns image/svg+xml</span>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--success);">1D GS1-128 · 2D QR · Or Both (SVG / JSON / ZPL)</span>
             </div>
             <div class="swagger-body">
-                <p class="swagger-desc">Generates a standalone, pure vector <strong>ISO/IEC 18004 2D QR Code (`image/svg+xml`)</strong> encoding the official <strong>GS1 Digital Link URI</strong> for an 18-digit SSCC and optional batch/expiry attributes. Does not consume label quota credits.</p>
+                <p class="swagger-desc">Dedicated endpoint for developers and ERPs that compose their own label layouts and only need the <strong>SSCC barcode(s)</strong>. Use the <code>type</code> (or <code>symbology</code>) parameter to request the <strong>1D GS1-128 linear barcode</strong> (<code>gs1-128</code>), the <strong>2D QR Code GS1 Digital Link</strong> (<code>qr</code>), or <strong>both together / separated</strong> (<code>both</code> / <code>dual</code>). Alias <code>GET /v1/qr</code> is also supported.</p>
 
                 <table class="param-table">
-                    <thead><tr><th>Parameter</th><th>Type</th><th>Value</th><th>Description</th></tr></thead>
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Value (Live Sandbox Input)</th><th>Description</th></tr></thead>
                     <tbody>
                         <tr>
                             <td><span class="param-name">sscc</span><span class="param-req">required</span></td>
                             <td><span class="param-type">string</span></td>
-                            <td><input type="text" id="sb-qr-sscc" class="param-input" value="356012345600000016"></td>
-                            <td>17, 18, or 20-digit SSCC code</td>
+                            <td><input type="text" id="sb-qr-sscc" class="param-input" value="356012345600000016" oninput="updateBarcodeEndpointCode()"></td>
+                            <td>17, 18, or 20-digit SSCC code (auto-computes check digit if 17 digits)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">type</span><span class="param-req">enum</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>
+                                <select id="sb-qr-type" class="param-select" onchange="updateBarcodeEndpointCode()">
+                                    <option value="both" selected>both / dual (Ambos: 1D GS1-128 Barcode + 2D QR Code)</option>
+                                    <option value="gs1-128">gs1-128 (Só Código de Barras Linear 1D GS1-128)</option>
+                                    <option value="qr">qr (Só Código QR 2D GS1 Digital Link)</option>
+                                </select>
+                            </td>
+                            <td>Choose which barcode(s) to generate: <code>gs1-128</code>, <code>qr</code>, or <code>both</code> (alias: <code>symbology</code>)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">format</span><span class="param-opt">enum</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>
+                                <select id="sb-qr-fmt" class="param-select" onchange="updateBarcodeEndpointCode()">
+                                    <option value="svg" selected>svg (Pure Vector image/svg+xml)</option>
+                                    <option value="json">json (Returns separate svg1d + svgQr + svgCombined + zpl)</option>
+                                    <option value="zpl">zpl (Standalone Zebra ZPL-II barcode block)</option>
+                                </select>
+                            </td>
+                            <td>Output format (<code>svg</code> image, <code>json</code> with separated assets, or <code>zpl</code>)</td>
                         </tr>
                         <tr>
                             <td><span class="param-name">batch</span><span class="param-opt">optional</span></td>
                             <td><span class="param-type">string</span></td>
-                            <td><input type="text" id="sb-qr-batch" class="param-input" value="LOT-99A"></td>
-                            <td>Batch / Lot number (AI 10)</td>
+                            <td><input type="text" id="sb-qr-batch" class="param-input" value="LOT-99A" oninput="updateBarcodeEndpointCode()"></td>
+                            <td>Optional Batch / Lot number (AI 10) encoded into 2D QR Digital Link</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div class="sandbox-toolbar">
-                    <button class="btn-execute" onclick="executeQrSandbox()">▶ Execute &amp; Render 2D QR SVG</button>
+                    <button class="btn-execute" onclick="executeQrSandbox()">▶ Execute /v1/barcode</button>
+                    <span style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">Tip: Use <code>format=json&amp;type=both</code> to receive <code>svg1d</code> and <code>svgQr</code> as two separate properties</span>
+                </div>
+
+                <div class="code-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchTab(this,'bc-curl')">cURL</button>
+                        <button class="tab-btn" onclick="switchTab(this,'bc-img')">HTML &lt;img&gt; Embed</button>
+                    </div>
+                    <div id="bc-curl" class="tab-content active"><pre><code id="bc-curl-code"></code></pre></div>
+                    <div id="bc-img" class="tab-content"><pre><code id="bc-img-code"></code></pre></div>
                 </div>
 
                 <div id="res-box-qr" class="response-console">
                     <div class="response-meta-bar">
-                        <span id="res-status-qr" class="status-pill ok">200 OK · image/svg+xml</span>
+                        <span id="res-status-qr" class="status-pill ok">200 OK</span>
                     </div>
                     <div id="res-preview-qr" class="response-visual-preview visible" style="text-align:center;"></div>
+                    <div id="res-body-qr" class="response-body-pre" style="display:none;"></div>
                 </div>
             </div>
         </div>
@@ -1248,6 +1283,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (savedKey) document.getElementById('global-api-key').value = savedKey;
     } catch (_) {}
     updateLabelsCode();
+    updateBarcodeEndpointCode();
     checkSandboxQuota(false);
 });
 
@@ -1397,21 +1433,65 @@ async function executeLabelsSandbox() {
     }
 }
 
+function updateBarcodeEndpointCode() {
+    const sscc  = (document.getElementById('sb-qr-sscc')?.value || '356012345600000016').trim();
+    const type  = document.getElementById('sb-qr-type')?.value || 'both';
+    const fmt   = document.getElementById('sb-qr-fmt')?.value || 'svg';
+    const batch = (document.getElementById('sb-qr-batch')?.value || '').trim();
+    const qs = `sscc=${encodeURIComponent(sscc)}&type=${encodeURIComponent(type)}${fmt !== 'svg' ? '&format=' + fmt : ''}${batch ? '&batch=' + encodeURIComponent(batch) : ''}`;
+    const fullUrl = `${LABELS_API}/v1/barcode?${qs}`;
+
+    const curlEl = document.getElementById('bc-curl-code');
+    const imgEl  = document.getElementById('bc-img-code');
+    if (curlEl) curlEl.textContent = `curl "${fullUrl}"`;
+    if (imgEl)  imgEl.textContent  = `<!-- Embed 1D GS1-128, 2D QR, or Both directly in any HTML / ERP template -->\n<img src="${LABELS_API}/v1/barcode?sscc=${sscc}&type=${type}" alt="SSCC ${sscc}" />`;
+}
+
 async function executeQrSandbox() {
-    const sscc = document.getElementById('sb-qr-sscc').value.trim();
+    const sscc  = document.getElementById('sb-qr-sscc').value.trim();
+    const type  = document.getElementById('sb-qr-type').value;
+    const fmt   = document.getElementById('sb-qr-fmt').value;
     const batch = document.getElementById('sb-qr-batch').value.trim();
-    const box = document.getElementById('res-box-qr');
+    const box     = document.getElementById('res-box-qr');
     const preview = document.getElementById('res-preview-qr');
+    const bodyEl  = document.getElementById('res-body-qr');
     const t0 = performance.now();
 
-    const res = await fetch(`${LABELS_API}/v1/qr?sscc=${encodeURIComponent(sscc)}&batch=${encodeURIComponent(batch)}`);
+    const url = `${LABELS_API}/v1/barcode?sscc=${encodeURIComponent(sscc)}&type=${encodeURIComponent(type)}&format=${encodeURIComponent(fmt)}&batch=${encodeURIComponent(batch)}`;
+    const res = await fetch(url);
     const ms = Math.round(performance.now() - t0);
-    const svgText = await res.text();
 
     box.classList.add('visible');
-    document.getElementById('res-status-qr').textContent = `${res.status} OK · image/svg+xml · ${ms} ms`;
-    preview.innerHTML = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;">${svgText}</div>
-        <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:8px;">GS1 Digital Link URI: <code style="color:var(--primary);">https://pormenores.net/sscc/?sscc=${sscc}${batch ? '&10='+batch : ''}</code></div>`;
+    if (fmt === 'json') {
+        const data = await res.json();
+        document.getElementById('res-status-qr').textContent = `${res.status} OK · application/json (type=${type}) · ${ms} ms`;
+        let visualHtml = '';
+        if (data.svg1d && data.svgQr) {
+            visualHtml = `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;align-items:center;">
+                <div style="background:#fff;padding:10px;border-radius:8px;"><div style="font-family:var(--font-mono);font-size:10px;color:#000;font-weight:700;margin-bottom:4px;">svg1d (1D GS1-128)</div>${data.svg1d}</div>
+                <div style="background:#fff;padding:10px;border-radius:8px;"><div style="font-family:var(--font-mono);font-size:10px;color:#000;font-weight:700;margin-bottom:4px;">svgQr (2D QR Digital Link)</div>${data.svgQr}</div>
+            </div>`;
+        } else if (data.svg1d || data.svgQr) {
+            visualHtml = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;">${data.svg1d || data.svgQr}</div>`;
+        }
+        preview.innerHTML = visualHtml;
+        preview.classList.add('visible');
+        bodyEl.style.display = 'block';
+        bodyEl.innerHTML = syntaxHighlight(data);
+    } else if (fmt === 'zpl') {
+        const zplText = await res.text();
+        document.getElementById('res-status-qr').textContent = `${res.status} OK · text/plain (ZPL-II · type=${type}) · ${ms} ms`;
+        preview.classList.remove('visible');
+        bodyEl.style.display = 'block';
+        bodyEl.textContent = zplText;
+    } else {
+        const svgText = await res.text();
+        document.getElementById('res-status-qr').textContent = `${res.status} OK · image/svg+xml (type=${type}) · ${ms} ms`;
+        bodyEl.style.display = 'none';
+        preview.classList.add('visible');
+        preview.innerHTML = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;max-width:100%;overflow-x:auto;">${svgText}</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:8px;">Mode: <strong style="color:var(--primary);">${type.toUpperCase()}</strong> · GS1 Digital Link URI: <code style="color:var(--primary);">https://pormenores.net/sscc/?sscc=${sscc}${batch ? '&10='+batch : ''}</code></div>`;
+    }
 }
 
 async function checkSandboxQuota(showConsole = false) {

@@ -9,7 +9,7 @@ info:
     native Zebra ZPL-II, Vector SVG, and Printable A5/4x6" HTML).
   contact:
     name: birth1mark
-    url: https://pormenores.net/sscc/
+    url: https://ssccapi.com/
   license:
     name: MIT
     url: https://github.com/birth1mark/sscc-check/blob/main/LICENSE

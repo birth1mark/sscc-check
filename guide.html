@@ -9,25 +9,25 @@
     <meta name="keywords" content="SSCC validation, SSCC check digit, GS1 128 format, serial shipping container code, EDI DESADV SSCC, SSCC algorithm, check digit calculator, logistics barcode">
     <meta name="author" content="SSCC Pro Vision">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://pormenores.net/sscc/guide.html">
-    <link rel="alternate" type="text/plain" href="https://pormenores.net/sscc/llms.txt" title="LLMs.txt AI Agent Documentation">
+    <link rel="canonical" href="https://ssccapi.com/guide.html">
+    <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
 
     <!-- Open Graph -->
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://pormenores.net/sscc/guide.html">
+    <meta property="og:url" content="https://ssccapi.com/guide.html">
     <meta property="og:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
     <meta property="og:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
-    <meta property="og:image" content="https://pormenores.net/sscc/og-image.png">
+    <meta property="og:image" content="https://ssccapi.com/og-image.png">
     <meta property="og:site_name" content="SSCC Pro Vision">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="How to Validate SSCC Codes — Check Digit Algorithm & Format Guide">
     <meta name="twitter:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
-    <meta name="twitter:image" content="https://pormenores.net/sscc/og-image.png">
+    <meta name="twitter:image" content="https://ssccapi.com/og-image.png">
 
     <!-- Schema.org Technical Article -->
     <script type="application/ld+json">
@@ -36,10 +36,10 @@
       "@type": "TechArticle",
       "headline": "How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools",
       "description": "Complete guide to SSCC validation: structure, GS1 128 format, check digit algorithm with worked example, and JavaScript implementation.",
-      "url": "https://pormenores.net/sscc/guide.html",
+      "url": "https://ssccapi.com/guide.html",
       "author": { "@type": "Organization", "name": "SSCC Pro Vision" },
       "publisher": { "@type": "Organization", "name": "SSCC Pro Vision" },
-      "mainEntityOfPage": "https://pormenores.net/sscc/guide.html"
+      "mainEntityOfPage": "https://ssccapi.com/guide.html"
     }
     </script>
 
@@ -53,13 +53,13 @@
           "@type": "ListItem",
           "position": 1,
           "name": "SSCC Pro Vision",
-          "item": "https://pormenores.net/sscc/"
+          "item": "https://ssccapi.com/"
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "How to Validate SSCC Codes",
-          "item": "https://pormenores.net/sscc/guide.html"
+          "item": "https://ssccapi.com/guide.html"
         }
       ]
     }
@@ -166,7 +166,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Grelha sutil de fundo retro-terminal (em sintonia com pormenores.net) */
+        /* Grelha sutil de fundo retro-terminal  */
         body::before {
             content: "";
             position: fixed;
@@ -397,11 +397,11 @@
             h2 { font-size: 19px; }
         }
     </style>
-    <!-- Auto-Redirect GitHub Pages to pormenores.net/sscc/ -->
+    <!-- Auto-Redirect GitHub Pages to ssccapi.com/ -->
     <script>
-    if (window.location.hostname.includes('github.io')) {
-        var path = window.location.pathname.replace(/^\/sscc-check\//, '');
-        window.location.replace('https://pormenores.net/sscc/' + path + window.location.search + window.location.hash);
+    if (window.location.hostname.includes('github.io') || window.location.hostname.includes('pormenores.net')) {
+        var path = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '');
+        window.location.replace('https://ssccapi.com/' + path + window.location.search + window.location.hash);
     }
     </script>
 </head>
@@ -773,7 +773,7 @@
         <tr>
             <td>2D QR Digital Link</td>
             <td>ISO/IEC 18004 QR Code (ECC M)</td>
-            <td><code>https://pormenores.net/sscc/?sscc=356012345600000016&amp;10=LOT99&amp;15=261231</code> — Scannable by both industrial 2D imagers and standard smartphones.</td>
+            <td><code>https://ssccapi.com/?sscc=356012345600000016&amp;10=LOT99&amp;15=261231</code> — Scannable by both industrial 2D imagers and standard smartphones.</td>
         </tr>
         <tr>
             <td>Dual (1D + 2D)</td>
@@ -786,7 +786,7 @@
     <p>When printing on 4×6" (100×150mm, 203 dpi) industrial Zebra thermal printers, <strong>SSCC Pro Vision</strong> and the <a href="sscc-api-guide.html">Labels REST API (<code>POST /v1/labels</code>)</a> compile native ZPL-II streams combining <code>^BCN</code> (Code 128 Subset C with FNC1 escape <code>&gt;8</code>) and <code>^BQN</code> (QR Code Model 2):</p>
 
 <pre><code><span class="comment">; 2D GS1 Digital Link QR Code (Model 2, Magnification 4, Error Correction Q/M)</span>
-<span class="kw">^FO</span>575,168<span class="kw">^BQN</span>,2,4<span class="kw">^FD</span>QA,https://pormenores.net/sscc/?sscc=356012345600000016&amp;10=LOT99<span class="kw">^FS</span>
+<span class="kw">^FO</span>575,168<span class="kw">^BQN</span>,2,4<span class="kw">^FD</span>QA,https://ssccapi.com/?sscc=356012345600000016&amp;10=LOT99<span class="kw">^FS</span>
 
 <span class="comment">; 1D GS1-128 Linear Barcode (Subset C &gt;5, FNC1 &gt;8, AI 00 + 18-digit SSCC)</span>
 <span class="kw">^FO</span>65,565<span class="kw">^BY</span>3,3,210<span class="kw">^BCN</span>,210,N,N,N,D<span class="kw">^FD</span>&gt;8&gt;500356012345600000016<span class="kw">^FS</span></code></pre>

@@ -7,23 +7,23 @@
     <meta name="description" content="Interactive API documentation, Swagger live sandbox, technical architecture diagrams and ERP integration manuals for SSCC validation, GS1 pallet labels, 2D QR Digital Link and Zebra ZPL-II.">
     <meta name="keywords" content="SSCC API, GS1 pallet label API, Zebra ZPL API, GS1 Digital Link QR API, SSCC validation API, EDIFACT SSCC extract, Swagger sandbox">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://pormenores.net/sscc/sscc-api-guide.html">
-    <link rel="alternate" type="text/plain" href="https://pormenores.net/sscc/llms.txt" title="LLMs.txt AI Agent Documentation">
+    <link rel="canonical" href="https://ssccapi.com/sscc-api-guide.html">
+    <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://pormenores.net/sscc/sscc-api-guide.html">
+    <meta property="og:url" content="https://ssccapi.com/sscc-api-guide.html">
     <meta property="og:title" content="SSCC Pro Vision — Developer Portal &amp; Interactive API Sandbox">
     <meta property="og:description" content="Live Swagger-style API sandbox, architecture diagrams and ERP manuals for GS1-128, 2D QR Digital Link and Zebra ZPL pallet labels.">
-    <meta property="og:image" content="https://pormenores.net/sscc/og-image.png">
+    <meta property="og:image" content="https://ssccapi.com/og-image.png">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "TechArticle",
       "headline": "SSCC Pro Vision — Developer Portal, Interactive API Sandbox & ERP Integration Manual",
       "description": "Complete technical documentation and live sandbox for SSCC-18 validation, EDI extraction, GS1-128 & 2D QR Digital Link pallet labels, and Zebra ZPL-II generation.",
-      "url": "https://pormenores.net/sscc/sscc-api-guide.html"
+      "url": "https://ssccapi.com/sscc-api-guide.html"
     }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -655,9 +655,9 @@
         .lbl-pallet-tag { font-size: 9px; font-weight: 800; color: #000; background: #e2e8f0; padding: 1px 5px; border-radius: 3px; font-family: monospace; }
     </style>
     <script>
-    if (window.location.hostname.includes('github.io')) {
-        var path = window.location.pathname.replace(/^\/sscc-check\//, '');
-        window.location.replace('https://pormenores.net/sscc/' + path + window.location.search + window.location.hash);
+    if (window.location.hostname.includes('github.io') || window.location.hostname.includes('pormenores.net')) {
+        var path = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '');
+        window.location.replace('https://ssccapi.com/' + path + window.location.search + window.location.hash);
     }
     </script>
 </head>
@@ -760,7 +760,7 @@
                         </div>
                         <div class="arch-box cyan">
                             <div class="arch-box-title">📱 Web Studio &amp; Scanners</div>
-                            <div class="arch-box-sub">pormenores.net/sscc/ PWA, Camera &amp; USB Laser Wedge</div>
+                            <div class="arch-box-sub">ssccapi.com/ PWA, Camera &amp; USB Laser Wedge</div>
                         </div>
                     </div>
 
@@ -1489,7 +1489,7 @@ async function executeQrSandbox() {
                     sscc,
                     hri: `(00) ${sscc}`,
                     symbology: type === 'both' ? 'both (gs1-128 + qr)' : type,
-                    digitalLinkUri: `https://pormenores.net/sscc/?sscc=${sscc}${batch ? '&10=' + batch : ''}`
+                    digitalLinkUri: `https://ssccapi.com/?sscc=${sscc}${batch ? '&10=' + batch : ''}`
                 };
                 if (res1d) fbObj.svg1d = res1d;
                 if (resQr) fbObj.svgQr = resQr;
@@ -1529,7 +1529,7 @@ async function executeQrSandbox() {
         bodyEl.style.display = 'none';
         preview.classList.add('visible');
         preview.innerHTML = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;max-width:100%;min-width:240px;overflow-x:auto;">${rawText}</div>
-            <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:8px;">Mode: <strong style="color:var(--primary);">${type.toUpperCase()}</strong> · GS1 Digital Link URI: <code style="color:var(--primary);">https://pormenores.net/sscc/?sscc=${sscc}${batch ? '&10='+batch : ''}</code></div>`;
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:8px;">Mode: <strong style="color:var(--primary);">${type.toUpperCase()}</strong> · GS1 Digital Link URI: <code style="color:var(--primary);">https://ssccapi.com/?sscc=${sscc}${batch ? '&10='+batch : ''}</code></div>`;
     }
 }
 

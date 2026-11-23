@@ -615,8 +615,8 @@ export default {
                     return json({
                         name:    'SSCC Pro Vision API',
                         version: '5.9.0',
-                        docs:    'https://pormenores.net/sscc/sscc-api-guide.html',
-                        webApp:  'https://pormenores.net/sscc/',
+                        docs:    'https://ssccapi.com/sscc-api-guide.html',
+                        webApp:  'https://ssccapi.com/',
                         endpoints: {
                             validate: '/validate?sscc=356012345600000016',
                             generate: '/generate?body=35601234560000001',

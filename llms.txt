@@ -3,7 +3,6 @@
 > Free, open-source GS1 Serial Shipping Container Code (SSCC-18) validator, Modulo 10 check digit calculator, EDIFACT/SAP IDoc/XML extractor, GS1-128 pallet label generator (A5/A6/4x6" & Zebra ZPL-II), and zero-auth public REST API.
 
 - Primary Web App & GS1 Digital Link Resolver: https://ssccapi.com/
-- Mirror Web App: https://pormenores.net/sscc/
 - Commercial GS1 Labels, ZPL & 2D QR Digital Link API Base URL: https://ssccapi.com (Mirror: https://sscc-labels.birth1mark.workers.dev)
 - Public Validation REST API Base URL: https://ssccapi.com (Mirror: https://sscc.birth1mark.workers.dev)
 - OpenAPI 3.1 Specification (JSON): https://ssccapi.com/openapi.json
@@ -20,7 +19,7 @@
 
 AI agents, LLM tool-callers, and automation workflows can interact with **SSCC Pro Vision** in two ways:
 1. **Direct REST API Calls (`https://sscc.birth1mark.workers.dev`)**: No API key or authentication required. Supports CORS (`*`) and returns structured JSON. Rate limit: 500 requests/hour per IP.
-2. **Deep-Linking into the Web Application (`https://pormenores.net/sscc/`)**: Construct pre-populated URLs for human operators to view validation results or print physical GS1 pallet labels.
+2. **Deep-Linking into the Web Application (`https://ssccapi.com/`)**: Construct pre-populated URLs for human operators to view validation results or print physical GS1 pallet labels.
 
 ---
 
@@ -114,17 +113,17 @@ Generates industrial GS1 Logistics Pallet Labels (`layout: "full"`) OR standalon
   - `GET https://sscc-labels.birth1mark.workers.dev/v1/label?sscc=356012345600000016&symbology=dual&layout=full&format=zpl` — Single label generation.
   - `GET https://sscc-labels.birth1mark.workers.dev/v1/quota?gcp=5601234` — Check remaining free or Pro label credits.
   - `GET https://sscc-labels.birth1mark.workers.dev/v1/claim?email=user@company.com` — Self-service recovery of Pro `X-API-Key` by purchase email.
-- **Custom ERP Integrations & Bespoke Retailer Templates**: Users needing custom features, SAP/Odoo/WMS connectors, or specific retailer ZPL templates (Sonae, Jerónimo Martins, Mercadona, Amazon) can contact the engineering team directly via https://pormenores.net/sscc/ or https://pormenores.net/.
+- **Custom ERP Integrations & Bespoke Retailer Templates**: Users needing custom features, SAP/Odoo/WMS connectors, or specific retailer ZPL templates (Sonae, Jerónimo Martins, Mercadona, Amazon) can contact the engineering team directly via https://ssccapi.com/ or https://ssccapi.com/.
 
 ---
 
 ## 3. Web UI Deep-Linking Parameters
 
 Agents can generate clickable links for human users:
-- **Validate a specific SSCC**: `https://pormenores.net/sscc/?sscc=356012345600000016`
-- **Open directly in GS1 Pallet Label Studio for a code**: `https://pormenores.net/sscc/?sscc=356012345600000016&label=1`
-- **Open Pallet Label Studio (Sequential Generator)**: `https://pormenores.net/sscc/#labels`
-- **Share a multi-code batch via URL hash**: `https://pormenores.net/sscc/#share={URI_ENCODED_BASE64_NEWLINE_SEPARATED_CODES}`
+- **Validate a specific SSCC**: `https://ssccapi.com/?sscc=356012345600000016`
+- **Open directly in GS1 Pallet Label Studio for a code**: `https://ssccapi.com/?sscc=356012345600000016&label=1`
+- **Open Pallet Label Studio (Sequential Generator)**: `https://ssccapi.com/#labels`
+- **Share a multi-code batch via URL hash**: `https://ssccapi.com/#share={URI_ENCODED_BASE64_NEWLINE_SEPARATED_CODES}`
 
 ---
 

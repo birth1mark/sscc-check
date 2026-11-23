@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pormenores.net/sscc/sitemap.xml
+Sitemap: https://ssccapi.com/sitemap.xml
 # AI Agent & LLM Context Documentation
-# https://pormenores.net/sscc/llms.txt
-# https://pormenores.net/sscc/llm.txt
+# https://ssccapi.com/llms.txt
+# https://ssccapi.com/llm.txt

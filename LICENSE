@@ -1,6 +1,6 @@
 Open-Core License (MIT + Commercial Label & Barcode Engine)
 
-Copyright (c) 2026 birth1mark (https://pormenores.net/)
+Copyright (c) 2026 birth1mark (https://ssccapi.com/)
 
 1. CORE VALIDATOR & EDI EXTRACTOR (MIT LICENSE)
 The SSCC-18 Modulo 10 validator, check digit calculator, EDIFACT/SAP IDoc/XML/CSV parser,
@@ -17,10 +17,10 @@ copies or substantial portions of the Software.
 
 2. COMMERCIAL GS1 PALLET LABEL, ZPL-II & 2D QR ENGINE (PROPRIETARY)
 The commercial GS1 Logistics Pallet Label Studio, Dual-Symbology (1D GS1-128 + 2D QR Digital Link)
-barcode engine, and Zebra ZPL-II compiler hosted at https://pormenores.net/sscc/ and
+barcode engine, and Zebra ZPL-II compiler hosted at https://ssccapi.com/ and
 https://sscc-labels.birth1mark.workers.dev are proprietary software. All rights reserved.
 Free evaluation quota (25 labels) and commercial API keys are governed by the terms at:
-https://pormenores.net/sscc/sscc-api-guide.html
+https://ssccapi.com/sscc-api-guide.html
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

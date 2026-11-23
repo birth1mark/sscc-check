@@ -3,10 +3,10 @@
  *
  * The commercial GS1-128, 2D QR Digital Link (ISO/IEC 18004) & Zebra ZPL-II compiler
  * is hosted on the Cloudflare Edge API: https://sscc-labels.birth1mark.workers.dev
- * and the official Web Studio: https://pormenores.net/sscc/
+ * and the official Web Studio: https://ssccapi.com/
  *
  * - Free Evaluation Tier: 25 labels included per GS1 Company Prefix (GCP)
- * - Pro API Keys (X-API-Key: sscc_pro_...): https://pormenores.net/sscc/sscc-api-guide.html
+ * - Pro API Keys (X-API-Key: sscc_pro_...): https://ssccapi.com/sscc-api-guide.html
  */
 
 const LABELS_API_BASE_URL = 'https://ssccapi.com';
@@ -44,11 +44,11 @@ async function generateSSCCBarcodeViaCloud(sscc, type = 'both', format = 'svg') 
     return format === 'json' ? await res.json() : await res.text();
 }
 
-// Redirect self-hosted / cloned label studio interactions to the official hosted studio at pormenores.net/sscc/
+// Redirect self-hosted / cloned label studio interactions to the official hosted studio at ssccapi.com/
 function redirectToHostedLabelStudio(sscc = '') {
     const target = sscc
-        ? `https://pormenores.net/sscc/?sscc=${encodeURIComponent(sscc)}&label=1`
-        : 'https://pormenores.net/sscc/#labels';
+        ? `https://ssccapi.com/?sscc=${encodeURIComponent(sscc)}&label=1`
+        : 'https://ssccapi.com/#labels';
     window.location.href = target;
 }
 
@@ -58,7 +58,7 @@ function initLabelGeneratorStudio() {
         preview.innerHTML = `<div style="padding:20px;text-align:center;background:#080a0f;border:1px solid #222c3d;border-radius:10px;font-family:monospace;">
             <p style="color:#f59e0b;font-weight:700;margin-bottom:8px;">⚡ SSCC Pro Vision — Cloud Label &amp; ZPL Studio</p>
             <p style="color:#94a3b8;font-size:12px;margin-bottom:14px;">The commercial GS1-128, 2D QR Digital Link &amp; Zebra ZPL-II engine runs on the official hosted studio and Cloudflare Edge API.</p>
-            <a href="https://pormenores.net/sscc/#labels" style="display:inline-block;background:#f59e0b;color:#0b0e14;padding:8px 16px;border-radius:6px;font-weight:700;text-decoration:none;font-size:12px;">Open Official Label Studio (pormenores.net/sscc) →</a>
+            <a href="https://ssccapi.com/#labels" style="display:inline-block;background:#f59e0b;color:#0b0e14;padding:8px 16px;border-radius:6px;font-weight:700;text-decoration:none;font-size:12px;">Open Official Label Studio (ssccapi.com) →</a>
         </div>`;
     }
 }
@@ -75,7 +75,7 @@ function setLabelSourceMode() { redirectToHostedLabelStudio(); }
 function regenerateBatchSequence() {}
 function updateLabelPreview() {}
 function syncBatchStudioCount() {}
-function openProUpgradeModal() { window.location.href = 'https://pormenores.net/sscc/sscc-api-guide.html#quotas-pricing'; }
+function openProUpgradeModal() { window.location.href = 'https://ssccapi.com/sscc-api-guide.html#quotas-pricing'; }
 function closeProUpgradeModal() {}
 function contactForCustomFeatures() {
     const email = atob('cGVkcm8=') + '@' + atob('cG9ybWVub3Jlcy5uZXQ=');

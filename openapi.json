@@ -6,7 +6,7 @@
     "description": "Free, high-performance REST API for Serial Shipping Container Code (SSCC-18) validation,\ncheck digit calculation (GS1 Modulo 10), range expansion, country/company prefix lookup,\nand multi-format file extraction (UN/EDIFACT, SAP IDoc, XML, CSV, TXT).\nPowered by Cloudflare Workers. Zero authentication required.\n",
     "contact": {
       "name": "birth1mark",
-      "url": "https://pormenores.net/sscc/"
+      "url": "https://ssccapi.com/"
     },
     "license": {
       "name": "MIT",

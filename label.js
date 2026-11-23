@@ -801,7 +801,7 @@ function closeProUpgradeModal() {
     }
 }
 
-function saveProApiKeyFromModal() {
+async function saveProApiKeyFromModal() {
     const input = document.getElementById('pro-api-key-input');
     const val = (input ? input.value : '').trim();
     if (!val) {
@@ -811,8 +811,37 @@ function saveProApiKeyFromModal() {
         if (typeof showToast === 'function') showToast('Pro API Key removed. Using Free Tier quota.');
         return;
     }
+
+    // Allow user to enter their Stripe purchase email directly to claim their key!
+    if (val.includes('@') && !val.startsWith('sscc_pro_')) {
+        try {
+            if (typeof showToast === 'function') showToast('Looking up Pro Key for ' + val + '…');
+            const res = await fetch(`${LABELS_API_BASE_URL}/v1/claim?email=${encodeURIComponent(val.toLowerCase())}`);
+            const data = await res.json();
+            if (!res.ok || !data.apiKey) {
+                alert(data.error || 'No Pro Key found for this email address.');
+                return;
+            }
+            if (input) input.value = data.apiKey;
+            setStoredProApiKey(data.apiKey);
+            const q = getLocalQuotaStore();
+            q.proRemaining = data.creditsRemaining;
+            q.proLimit = data.creditsLimit;
+            saveLocalQuotaStore(q);
+            updateQuotaUI({ tier: data.plan || 'pro', limit: data.creditsLimit, remaining: data.creditsRemaining });
+            closeProUpgradeModal();
+            if (typeof showToast === 'function') {
+                showToast(`🎉 Pro Key activated (${data.creditsRemaining.toLocaleString()} credits)!`, 'success');
+            }
+            return;
+        } catch (err) {
+            alert('Could not reach Labels API to verify email. Please enter your sscc_pro_... key directly.');
+            return;
+        }
+    }
+
     if (!val.startsWith('sscc_pro_') || val.length < 16) {
-        alert('Invalid Pro Key format. Keys start with "sscc_pro_".');
+        alert('Enter your Stripe purchase email (e.g. name@company.com) or your Pro API Key (starts with "sscc_pro_").');
         return;
     }
     setStoredProApiKey(val);

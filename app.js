@@ -1,4 +1,4 @@
-// SSCC Pro Vision — Core Application Logic (v5.7.0)
+// SSCC Pro Vision — Core Application Logic (v5.8.0)
 
 // State
 let store = [];
@@ -144,12 +144,13 @@ function copyCode(plain, btn) {
 function exportCSV() {
     if (!store.length) return;
     const rows = [
-        ['SSCC', 'Status', 'Country', 'Check_Digit'].join(','),
+        ['SSCC', 'Status', 'Duplicate', 'Country', 'Check_Digit'].join(','),
         ...store
             .filter(i => i.plain)
             .map(i => [
                 `"${i.plain}"`,
                 `"${i.status.toUpperCase()}"`,
+                `"${i.isDuplicate ? 'DUPLICATE_x' + i.duplicateCount : 'UNIQUE'}"`,
                 `"${i.flag || ''}"`,
                 `"${i.plain.slice(-1)}"`
             ].join(','))
@@ -213,7 +214,7 @@ function handleLiveInput() {
 }
 
 /**
- * Loads sample SSCC codes to demonstrate validation, check digit calc, and ranges.
+ * Loads sample SSCC codes to demonstrate validation, check digit calc, ranges, and error fixing.
  */
 function loadSampleCodes(presetType = 'mixed') {
     const input = document.getElementById('input');
@@ -244,6 +245,107 @@ function dismissFileBanner() {
     if (banner) banner.style.display = 'none';
 }
 
+/**
+ * Computes duplicate frequency across store items.
+ */
+function annotateDuplicates(items) {
+    const freq = {};
+    items.forEach(item => {
+        const key = item.submittedPlain || item.plain;
+        if (key) {
+            freq[key] = (freq[key] || 0) + (item.fileOccurrences || 1);
+        }
+    });
+    items.forEach(item => {
+        const key = item.submittedPlain || item.plain;
+        if (key && freq[key] > 1) {
+            item.isDuplicate = true;
+            item.duplicateCount = freq[key];
+        } else {
+            item.isDuplicate = false;
+            item.duplicateCount = 1;
+        }
+    });
+}
+
+/**
+ * Fixes a single invalid SSCC check digit with 1 click.
+ */
+function fixSingleCheckDigit(storeIdx) {
+    const item = store[storeIdx];
+    if (!item || !item.body17 || item.expectedCD === undefined) return;
+
+    const fixedSSCC = item.body17 + item.expectedCD;
+    const inputEl = document.getElementById('input');
+    if (inputEl) {
+        const lines = inputEl.value.split(/\r?\n/);
+        if (item.lineIdx !== undefined && lines[item.lineIdx] !== undefined) {
+            lines[item.lineIdx] = fixedSSCC;
+        } else {
+            const idx = lines.findIndex(l => l.replace(/\D/g, '').endsWith(item.body17 + item.providedCD));
+            if (idx !== -1) lines[idx] = fixedSSCC;
+        }
+        inputEl.value = lines.join('\n');
+    }
+
+    process(true);
+    showToast(`✓ Fixed check digit → (00) ${fixedSSCC}`, 'success');
+}
+
+/**
+ * Fixes all invalid SSCC check digits in the current batch.
+ */
+function fixAllCheckDigits() {
+    const fixables = store.filter(i => i.status === 'invalid' && i.body17 && i.expectedCD !== undefined);
+    if (!fixables.length) return;
+
+    const inputEl = document.getElementById('input');
+    if (inputEl) {
+        const lines = inputEl.value.split(/\r?\n/);
+        fixables.forEach(item => {
+            const fixedSSCC = item.body17 + item.expectedCD;
+            if (item.lineIdx !== undefined && lines[item.lineIdx] !== undefined) {
+                lines[item.lineIdx] = fixedSSCC;
+            }
+        });
+        inputEl.value = lines.join('\n');
+    }
+
+    process(true);
+    showToast(`✓ Fixed ${fixables.length} invalid check digit(s).`, 'success');
+}
+
+/**
+ * Removes duplicate SSCC codes from the current batch while preserving order.
+ */
+function deduplicateBatch() {
+    const seen = new Set();
+    const uniqueLines = [];
+    let removed = 0;
+
+    store.forEach(item => {
+        const key = item.submittedPlain || item.plain;
+        if (!key) return;
+        if (seen.has(key)) {
+            removed++;
+        } else {
+            seen.add(key);
+            uniqueLines.push(item.status === 'invalid' && item.submittedPlain ? item.submittedPlain : item.plain);
+            if (item.fileOccurrences && item.fileOccurrences > 1) {
+                removed += (item.fileOccurrences - 1);
+            }
+        }
+    });
+
+    const inputEl = document.getElementById('input');
+    if (inputEl && uniqueLines.length) {
+        inputEl.value = uniqueLines.join('\n');
+    }
+
+    process(true);
+    showToast(`✓ Deduplicated batch (${removed} duplicate${removed !== 1 ? 's' : ''} removed).`, 'success');
+}
+
 function process(saveImmediate = true) {
     const inputEl = document.getElementById('input');
     const raw = inputEl ? inputEl.value : '';
@@ -256,7 +358,7 @@ function process(saveImmediate = true) {
         clearBtn.style.display = raw.trim().length > 0 ? 'inline-flex' : 'none';
     }
 
-    lines.forEach(line => {
+    lines.forEach((line, lineIdx) => {
         const trimmed = line.trim();
         if (!trimmed) return;
 
@@ -265,18 +367,20 @@ function process(saveImmediate = true) {
             const [bodyA, bodyB] = range;
             const expanded = expandRange(bodyA, bodyB);
             if (expanded.error) {
-                store.push({ code: expanded.error, label: 'ERR', status: 'invalid', flag: '', plain: null });
+                store.push({ code: expanded.error, label: 'ERR', status: 'invalid', flag: '', plain: null, lineIdx });
                 return;
             }
             expanded.forEach(body => {
                 const cd   = getCD(body);
                 const full = body + cd;
                 store.push({
-                    code:   formatSSCC(body, cd, null),
-                    label:  'GEN',
-                    status: 'gen',
-                    flag:   getFlag(full),
-                    plain:  plainSSCC(body, cd),
+                    code:           formatSSCC(body, cd, null),
+                    label:          'GEN',
+                    status:         'gen',
+                    flag:           getFlag(full),
+                    plain:          plainSSCC(body, cd),
+                    submittedPlain: plainSSCC(body, cd),
+                    lineIdx
                 });
             });
             return;
@@ -291,22 +395,29 @@ function process(saveImmediate = true) {
             const ok       = provided === cd;
             const flag     = getFlag(body + cd);
             store.push({
-                code:   formatSSCC(body, cd, provided),
-                label:  ok ? 'VALID' : `FAIL · exp ${cd}`,
-                status: ok ? 'valid' : 'invalid',
+                code:           formatSSCC(body, cd, provided),
+                label:          ok ? 'VALID' : `FAIL · exp ${cd}`,
+                status:         ok ? 'valid' : 'invalid',
                 flag,
-                plain:  plainSSCC(body, cd),
+                plain:          plainSSCC(body, cd),
+                submittedPlain: body + provided,
+                body17:         body,
+                expectedCD:     cd,
+                providedCD:     provided,
+                lineIdx
             });
 
         } else if (val.length === 17) {
             const cd   = getCD(val);
             const flag = getFlag(val + cd);
             store.push({
-                code:   formatSSCC(val, cd, null),
-                label:  'GEN · +' + cd,
-                status: 'gen',
+                code:           formatSSCC(val, cd, null),
+                label:          'GEN · +' + cd,
+                status:         'gen',
                 flag,
-                plain:  plainSSCC(val, cd),
+                plain:          plainSSCC(val, cd),
+                submittedPlain: plainSSCC(val, cd),
+                lineIdx
             });
         } else if (val.length > 0) {
             store.push({
@@ -315,10 +426,12 @@ function process(saveImmediate = true) {
                 status: 'invalid',
                 flag:   '',
                 plain:  null,
+                lineIdx
             });
         }
     });
 
+    annotateDuplicates(store);
     render();
 
     if (saveImmediate && store.some(i => i.plain)) {
@@ -375,12 +488,30 @@ function render() {
     const gen        = store.filter(i => i.status === 'gen').length;
     const total      = store.filter(i => i.plain).length;
     const validOrGen = store.filter(i => (i.status === 'valid' || i.status === 'gen') && i.plain);
+    const fixables   = store.filter(i => i.status === 'invalid' && i.body17 && i.expectedCD !== undefined);
+    const dupItems   = store.filter(i => i.isDuplicate);
+    const uniqueDups = new Set(dupItems.map(i => i.submittedPlain || i.plain)).size;
 
     let summary = `<div class="results-summary"><div class="summary-badges">`;
-    if (valid)   summary += `<span class="badge badge-pass">${valid} VALID</span>`;
-    if (gen)     summary += `<span class="badge badge-gen">${gen} GENERATED</span>`;
-    if (invalid) summary += `<span class="badge badge-fail">${invalid} INVALID</span>`;
+    if (valid)      summary += `<span class="badge badge-pass">${valid} VALID</span>`;
+    if (gen)        summary += `<span class="badge badge-gen">${gen} GENERATED</span>`;
+    if (invalid)    summary += `<span class="badge badge-fail">${invalid} INVALID</span>`;
+    if (uniqueDups) summary += `<span class="badge badge-dup" title="Duplicate SSCC codes detected in batch">⚠️ ${uniqueDups} DUPLICATE${uniqueDups > 1 ? 'S' : ''}</span>`;
     summary += `</div><div class="summary-actions">`;
+
+    if (fixables.length > 0) {
+        summary += `<button type="button" class="btn-export btn-fix-all" onclick="fixAllCheckDigits()" title="Automatically fix all ${fixables.length} invalid Modulo 10 check digits">
+            <i data-lucide="wrench" style="width:12px;height:12px;"></i>
+            <span>Fix All (${fixables.length})</span>
+        </button>`;
+    }
+
+    if (uniqueDups > 0) {
+        summary += `<button type="button" class="btn-export" onclick="deduplicateBatch()" title="Remove duplicate SSCC lines">
+            <i data-lucide="filter" style="width:12px;height:12px;"></i>
+            <span>Deduplicate</span>
+        </button>`;
+    }
 
     if (validOrGen.length > 0) {
         summary += `<button type="button" class="btn-export btn-batch-labels" onclick="openBatchLabelsModal()" title="Open Pallet Label Studio with these ${validOrGen.length} codes">
@@ -412,12 +543,18 @@ function render() {
         <span>${store.length} item${store.length !== 1 ? 's' : ''}</span>
     </div>`;
 
-    const rows = store.map(item => {
+    const rows = store.map((item, idx) => {
         const badgeClass = item.status === 'valid'   ? 'badge-pass'
                          : item.status === 'invalid' ? 'badge-fail'
                          :                             'badge-gen';
+        const dupBadge = item.isDuplicate
+            ? `<span class="badge badge-dup" title="This SSCC appears ${item.duplicateCount} times in the current batch">DUP ×${item.duplicateCount}</span>`
+            : '';
+        const fixBtn = (item.status === 'invalid' && item.body17 && item.expectedCD !== undefined)
+            ? `<button type="button" class="btn-fix-cd" onclick="fixSingleCheckDigit(${idx})" title="Replace invalid check digit (${item.providedCD}) with valid Modulo 10 digit (${item.expectedCD})">🔧 Fix → ${item.expectedCD}</button>`
+            : '';
         const copyBtn = item.plain
-            ? `<button type="button" class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy 18-digit SSCC"><i data-lucide="copy" style="width:13px;height:13px;"></i></button>`
+            ? `<button type="button" class="btn-copy" onclick="copyCode('${item.plain}', this)" title="Copy valid 18-digit SSCC"><i data-lucide="copy" style="width:13px;height:13px;"></i></button>`
             : '';
         const labelBtn = (item.status === 'valid' || item.status === 'gen') && item.plain
             ? `<button type="button" class="btn-copy" onclick="openLabelModal('${item.plain}')" title="Open GS1 Pallet Label for this SSCC"><i data-lucide="tag" style="width:13px;height:13px;"></i></button>`
@@ -432,7 +569,9 @@ function render() {
             </div>
             <span class="result-meta">
                 <span class="flag">${item.flag || ''}</span>
+                ${dupBadge}
                 <span class="badge ${badgeClass}">${item.label}</span>
+                ${fixBtn}
                 ${copyBtn}
                 ${labelBtn}
             </span>

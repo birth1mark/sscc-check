@@ -23,6 +23,7 @@
     <meta name="author" content="birth1mark">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://pormenores.net/sscc/">
+    <link rel="alternate" type="text/plain" href="https://pormenores.net/sscc/llms.txt" title="LLMs.txt AI Agent Documentation">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="SSCC Validator, Barcode Scanner &amp; GS1 Pallet Label Generator | SSCC Pro Vision">
@@ -447,6 +448,11 @@
             position: relative;
             display: none;
             box-shadow: 0 0 24px rgba(245, 158, 11, 0.18);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        #viewport-wrap.scan-flash-success {
+            border-color: var(--success);
+            box-shadow: 0 0 28px rgba(16, 185, 129, 0.55);
         }
         #video {
             width: 100%;
@@ -806,6 +812,36 @@
         .badge-pass { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
         .badge-fail { background: rgba(239,68,68,0.15);  color: #f87171;        border: 1px solid rgba(239,68,68,0.35); }
         .badge-gen  { background: rgba(245,158,11,0.15); color: var(--primary); border: 1px solid rgba(245,158,11,0.3); }
+        .badge-dup  { background: rgba(245,158,11,0.18); color: #fbbf24;        border: 1px solid rgba(245,158,11,0.45); }
+
+        .btn-fix-cd {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .btn-fix-cd:hover {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+        .btn-fix-all {
+            background: rgba(245, 158, 11, 0.14);
+            border-color: rgba(245, 158, 11, 0.45);
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .btn-fix-all:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #0b0e14;
+        }
 
         /* ─── Tab 2: GS1 Pallet Label & Generator Studio ─── */
         .studio-source-bar {
@@ -1532,7 +1568,7 @@
 <div class="container">
     <main class="card">
         <div class="card-header">
-            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.7.0</span></h1>
+            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.8.0</span></h1>
             <p class="tagline">GS1-128 validator, EDI extractor &amp; logistics pallet label studio</p>
         </div>
 
@@ -1738,23 +1774,36 @@
                         </div>
                     </div>
 
-                    <div class="lbl-input-group">
-                        <label for="lbl-contents">Contents / Cargo Description</label>
-                        <input type="text" id="lbl-contents" value="EURO PALLET (MIXED CARGO)" oninput="updateLabelPreview()">
-                    </div>
-
-                    <div class="lbl-input-row-3">
+                    <div class="lbl-input-row-2">
+                        <div class="lbl-input-group">
+                            <label for="lbl-contents">Contents / Cargo Description</label>
+                            <input type="text" id="lbl-contents" value="EURO PALLET (MIXED CARGO)" oninput="updateLabelPreview()">
+                        </div>
                         <div class="lbl-input-group">
                             <label for="lbl-weight">Gross Weight</label>
                             <input type="text" id="lbl-weight" value="450 KG" oninput="updateLabelPreview()">
                         </div>
+                    </div>
+
+                    <div class="lbl-input-row-2">
                         <div class="lbl-input-group">
-                            <label for="lbl-batch">Batch / Lot (AI 10)</label>
+                            <label for="lbl-gtin">Content GTIN-14 / EAN-13 (AI 02 — Optional)</label>
+                            <input type="text" id="lbl-gtin" placeholder="e.g. 05601234567892" maxlength="14" oninput="updateLabelPreview()">
+                        </div>
+                        <div class="lbl-input-group">
+                            <label for="lbl-count">Trade Items Count (AI 37 — Optional)</label>
+                            <input type="number" id="lbl-count" placeholder="e.g. 48" min="1" oninput="updateLabelPreview()">
+                        </div>
+                    </div>
+
+                    <div class="lbl-input-row-2">
+                        <div class="lbl-input-group">
+                            <label for="lbl-batch">Batch / Lot Number (AI 10 — Optional)</label>
                             <input type="text" id="lbl-batch" placeholder="e.g. L-9480" oninput="updateLabelPreview()">
                         </div>
                         <div class="lbl-input-group">
-                            <label for="lbl-expiry">Best Before (AI 15)</label>
-                            <input type="text" id="lbl-expiry" placeholder="e.g. 2026-12-31" oninput="updateLabelPreview()">
+                            <label for="lbl-expiry">Best Before Date (AI 15 — Optional)</label>
+                            <input type="text" id="lbl-expiry" placeholder="e.g. 2026-12-31 or 261231" oninput="updateLabelPreview()">
                         </div>
                     </div>
                 </div>
@@ -1805,6 +1854,7 @@
         <details class="info-accordion">
             <summary>Changelog</summary>
             <div class="changelog" style="margin-top:10px;">
+                <p><span class="version">v5.8.0</span> Logistics Intelligence. Duplicate SSCC detection across batches &amp; EDI files, 1-click invalid check digit auto-fixer, continuous batch camera scanner, secondary GS1-128 barcode for GTIN/Batch/Expiry (AI 02/10/15/37), and <code>llms.txt</code> for AI agents.</p>
                 <p><span class="version">v5.7.0</span> UX Overhaul. Unified 2-tab workspace (Validate &amp; Extract vs. Pallet Labels &amp; ZPL Studio), real-time zero-click validation, interactive sample chips, and streamlined EDI file feedback.</p>
                 <p><span class="version">v5.6.0</span> Major Release. Batch GS1 Pallet Label printing &amp; multi-label ZPL export, Universal Check Digit Calculator, Offline Session History, Laser Scanner listener &amp; Serverless URL sharing.</p>
                 <p><span class="version">v5.5.3</span> REST API Release. Public API endpoints available for remote validation and extraction.</p>
@@ -1823,6 +1873,8 @@
         </a>
         <span>•</span>
         <a href="https://github.com/birth1mark/sscc-check" target="_blank" rel="noopener noreferrer" style="color:var(--text-muted); text-decoration:none;">GitHub</a>
+        <span>•</span>
+        <a href="llms.txt" style="color:var(--text-muted); text-decoration:none;" title="AI Agent &amp; LLM Documentation">llms.txt</a>
     </footer>
 </div>
 

@@ -1,9 +1,12 @@
 /**
- * SSCC Pro Vision — GS1 Logistics Pallet Label & Barcode Engine (v5.7.0)
+ * SSCC Pro Vision — GS1 Logistics Pallet Label & Multi-AI Barcode Engine (v5.8.0)
  *
- * Integrated directly into the Tab 2 Studio ("Pallet Labels & ZPL") with two clear modes:
- * - 'sequential': Generates sequential SSCC pallet batches from the company's GS1 Prefix (GCP).
- * - 'audited': Prints/exports labels for the exact SSCC codes validated or extracted in Tab 1.
+ * Implements:
+ * 1. Pure vector GS1-128 (Code 128 Subset C + Subset B with FNC1) SVG generator.
+ * 2. Primary lower barcode: AI (00) SSCC-18 with dynamic GS1 Company Prefix (GCP) HRI spacing.
+ * 3. Optional secondary upper barcode: AI (02) Content GTIN-14 + AI (15) Best Before YYMMDD + AI (37) Count + AI (10) Batch/Lot.
+ * 4. GS1 Logistics Pallet Label layouts (A5 standard, A6 compact, 4x6" Zebra thermal).
+ * 5. Single and Batch ZPL-II (Zebra Programming Language) export for industrial printers.
  */
 
 // Code 128 Patterns (Codes 0 to 106)
@@ -34,6 +37,8 @@ function getLabelDefaults() {
         contents: 'EURO PALLET (MIXED CARGO)',
         weight: '450 KG',
         orderNo: 'PO-2026-994',
+        gtin: '',
+        unitCount: '',
         batchNo: '',
         expiryDate: '',
         format: 'a5'
@@ -47,30 +52,16 @@ function saveLabelDefaults(data) {
 }
 
 /**
- * Generates an optimized, standard GS1-128 SVG barcode for an SSCC.
- * Encodes AI (00) followed by 18 SSCC digits using Code 128 Subset C + FNC1.
+ * Renders an array of Code 128 symbol values (excluding start/checksum/stop) into an SVG barcode.
  */
-function generateGS1BarcodeSVG(sscc18, height = 75) {
-    const clean = sscc18.replace(/\D/g, '');
-    let s18 = clean;
-    if (clean.length === 20 && clean.startsWith('00')) s18 = clean.substring(2);
-    s18 = s18.padStart(18, '0');
-
-    const fullDigits = '00' + s18;
-    const values = [102]; // FNC1 designates GS1 standard
-
-    for (let i = 0; i < 20; i += 2) {
-        values.push(parseInt(fullDigits.substring(i, i + 2), 10));
-    }
-
-    let checksum = 105;
+function renderCode128ValuesToSVG(startCode, values, height = 70) {
+    let checksum = startCode;
     for (let idx = 0; idx < values.length; idx++) {
         checksum += values[idx] * (idx + 1);
     }
     checksum = checksum % 103;
 
-    const allCodes = [105, ...values, checksum, 106];
-
+    const allCodes = [startCode, ...values, checksum, 106];
     const quietZone = 12;
     let x = quietZone;
     const rects = [];
@@ -93,12 +84,166 @@ function generateGS1BarcodeSVG(sscc18, height = 75) {
 }
 
 /**
+ * Generates an optimized, standard GS1-128 SVG barcode for an SSCC.
+ * Encodes AI (00) followed by 18 SSCC digits using Code 128 Subset C + FNC1.
+ */
+function generateGS1BarcodeSVG(sscc18, height = 75) {
+    const clean = sscc18.replace(/\D/g, '');
+    let s18 = clean;
+    if (clean.length === 20 && clean.startsWith('00')) s18 = clean.substring(2);
+    s18 = s18.padStart(18, '0');
+
+    const fullDigits = '00' + s18;
+    const values = [102]; // FNC1 designates GS1 standard
+
+    for (let i = 0; i < 20; i += 2) {
+        values.push(parseInt(fullDigits.substring(i, i + 2), 10));
+    }
+
+    return renderCode128ValuesToSVG(105, values, height);
+}
+
+/**
+ * Normalizes an expiry date string (e.g. '2026-12-31' or '261231') into 6-digit YYMMDD for GS1 AI (15).
+ */
+function normalizeExpiryToYYMMDD(rawExpiry) {
+    const clean = String(rawExpiry || '').trim();
+    if (!clean) return '';
+    // YYYY-MM-DD
+    const iso = clean.match(/^(\d{4})[-/](\d{2})[-/](\d{2})$/);
+    if (iso) return iso[1].slice(2) + iso[2] + iso[3];
+    const digits = clean.replace(/\D/g, '');
+    if (digits.length === 8) return digits.slice(2); // YYYYMMDD -> YYMMDD
+    if (digits.length === 6) return digits;          // YYMMDD
+    return '';
+}
+
+/**
+ * Normalizes a GTIN (8, 12, 13, or 14 digits) into a 14-digit GTIN-14 for GS1 AI (02).
+ */
+function normalizeToGTIN14(rawGtin) {
+    const digits = String(rawGtin || '').replace(/\D/g, '');
+    if (!digits) return '';
+    if (digits.length === 14) return digits;
+    if (digits.length === 13 || digits.length === 12 || digits.length === 8) {
+        return digits.padStart(14, '0');
+    }
+    return '';
+}
+
+/**
+ * Builds the optional Secondary Upper GS1-128 Barcode for homogeneous pallet trade items:
+ * Supports fixed-length AIs: (02) GTIN-14, (15) Best Before YYMMDD
+ * And variable-length AIs: (37) Unit Count, (10) Batch / Lot Number
+ */
+function buildSecondaryGS1Barcode(meta, height = 54) {
+    const gtin14    = normalizeToGTIN14(meta.gtin);
+    const yymmdd    = normalizeExpiryToYYMMDD(meta.expiryDate);
+    const countStr  = String(meta.unitCount || '').replace(/\D/g, '').slice(0, 8);
+    const batchClean = String(meta.batchNo || '').trim().toUpperCase().replace(/[^\x21-\x5F]/g, '').slice(0, 20);
+
+    if (!gtin14 && !yymmdd && !countStr && !batchClean) {
+        return null;
+    }
+
+    const hriParts = [];
+    let fixedNumericPrefix = '';
+
+    // 1. Fixed-length numeric AIs first (no FNC1 separator required after fixed-length AIs 02 and 15)
+    if (gtin14) {
+        fixedNumericPrefix += '02' + gtin14;
+        hriParts.push(`(02) ${gtin14}`);
+    }
+    if (yymmdd) {
+        fixedNumericPrefix += '15' + yymmdd;
+        hriParts.push(`(15) ${yymmdd}`);
+    }
+
+    // 2. Variable-length AIs: (37) Count, then (10) Batch/Lot
+    // If only numeric data and even length, use Subset C; otherwise switch cleanly to Subset B
+    const values = [102]; // Leading FNC1
+    let currentSubset = 'C';
+
+    // Encode fixedNumericPrefix in Subset C (guaranteed even length: 16 and/or 8 digits)
+    for (let i = 0; i < fixedNumericPrefix.length; i += 2) {
+        values.push(parseInt(fixedNumericPrefix.substring(i, i + 2), 10));
+    }
+
+    let zplData = '>8' + fixedNumericPrefix;
+
+    if (countStr) {
+        hriParts.push(`(37) ${countStr}`);
+        const ai37Full = '37' + countStr;
+        if (ai37Full.length % 2 === 0 && currentSubset === 'C') {
+            for (let i = 0; i < ai37Full.length; i += 2) {
+                values.push(parseInt(ai37Full.substring(i, i + 2), 10));
+            }
+        } else {
+            if (currentSubset === 'C') {
+                values.push(100); // Switch C -> B
+                currentSubset = 'B';
+            }
+            for (const ch of ai37Full) {
+                values.push(ch.charCodeAt(0) - 32);
+            }
+        }
+        zplData += ai37Full;
+        // If batch follows variable-length AI (37), insert FNC1 group separator
+        if (batchClean) {
+            values.push(102); // FNC1
+            zplData += '>8';
+        }
+    }
+
+    if (batchClean) {
+        hriParts.push(`(10) ${batchClean}`);
+        const ai10Full = '10' + batchClean;
+        if (/^\d+$/.test(ai10Full) && ai10Full.length % 2 === 0 && currentSubset === 'C') {
+            for (let i = 0; i < ai10Full.length; i += 2) {
+                values.push(parseInt(ai10Full.substring(i, i + 2), 10));
+            }
+        } else {
+            if (currentSubset === 'C') {
+                values.push(100); // Switch C -> B
+                currentSubset = 'B';
+            }
+            for (const ch of ai10Full) {
+                values.push(ch.charCodeAt(0) - 32);
+            }
+        }
+        zplData += (currentSubset === 'B' ? '>6' : '') + ai10Full;
+    }
+
+    return {
+        hri: hriParts.join('  '),
+        svg: renderCode128ValuesToSVG(105, values, height),
+        zplData
+    };
+}
+
+/**
+ * Formats the 18-digit SSCC HRI using the active GS1 Company Prefix length (6 to 11 digits).
+ */
+function formatDynamicSSCCHRI(s18) {
+    const gcpEl = document.getElementById('batch-gcp');
+    const s = typeof getGCPSettings === 'function' ? getGCPSettings() : null;
+    const rawGcp = (gcpEl && gcpEl.value ? gcpEl.value : (s && s.prefix ? s.prefix : '5601234')).replace(/\D/g, '');
+    const gcpLen = (rawGcp.length >= 6 && rawGcp.length <= 11) ? rawGcp.length : 7;
+
+    const ext    = s18[0];
+    const prefix = s18.substring(1, 1 + gcpLen);
+    const serial = s18.substring(1 + gcpLen, 17);
+    const cd     = s18[17];
+    return `(00) ${ext} ${prefix} ${serial} ${cd}`;
+}
+
+/**
  * Generates industrial Zebra ZPL-II code for a single 4x6" thermal pallet label.
  */
 function generateGS1ZPL(sscc18, meta, indexInfo = '') {
     const clean = sscc18.replace(/\D/g, '');
     const s18 = (clean.length === 20 && clean.startsWith('00') ? clean.substring(2) : clean).padStart(18, '0');
-    const hri = `(00) ${s18[0]} ${s18.substring(1, 8)} ${s18.substring(8, 17)} ${s18[17]}`;
+    const hri = formatDynamicSSCCHRI(s18);
 
     const sender = (meta.sender || 'LOGISTICS DISPATCH SERVICES LTD').toUpperCase().replace(/[\^~]/g, '');
     const recipient = (meta.recipient || 'CENTRAL DISTRIBUTION HUB').toUpperCase().replace(/[\^~]/g, '');
@@ -115,6 +260,32 @@ function generateGS1ZPL(sscc18, meta, indexInfo = '') {
     if (weight) extraInfo += `WEIGHT: ${weight}`;
 
     const palletTagZPL = indexInfo ? `^FO520,65^A0N,24,24^FD${indexInfo.toUpperCase()}^FS` : '';
+    const secondary = buildSecondaryGS1Barcode(meta, 50);
+
+    if (secondary) {
+        return `^XA
+^PW812
+^LL1218
+^FO40,40^GB732,1138,4^FS
+^FO60,62^A0N,22,22^FDCONSIGNOR / FROM:^FS
+${palletTagZPL}
+^FO60,90^A0N,26,26^FD${sender}^FS
+^FO40,155^GB732,0,2^FS
+^FO60,172^A0N,22,22^FDCONSIGNEE / TO:^FS
+^FO60,200^A0N,26,26^FD${recipient}^FS
+^FO40,265^GB732,0,2^FS
+^FO60,282^A0N,22,22^FDCONTENTS: ${contents}^FS
+^FO60,312^A0N,20,20^FD${extraInfo || `DOC REF: ${orderNo}`}^FS
+^FO60,342^A0N,19,19^FDDATE: ${today}   |   DOC: ${orderNo}^FS
+^FO40,375^GB732,0,2^FS
+^FO60,395^A0N,22,22^FD${secondary.hri}^FS
+^FO65,428^BY2,3,130^BCN,130,N,N,N,A^FD${secondary.zplData}^FS
+^FO40,585^GB732,0,4^FS
+^FO60,610^A0N,28,28^FDSSCC (SERIAL SHIPPING CONTAINER CODE):^FS
+^FO60,650^A0N,36,36^FD${hri}^FS
+^FO65,705^BY3,3,200^BCN,200,N,N,N,D^FD>8>500${s18}^FS
+^XZ`;
+    }
 
     return `^XA
 ^PW812
@@ -152,9 +323,6 @@ function normalizeTo18Digits(rawSSCC) {
     return null;
 }
 
-/**
- * Ensures the embedded Tab 2 Studio is initialized with stored defaults.
- */
 function initLabelStudioIfNeeded() {
     if (labelStudioInitialized && currentBatchSSCCs.length > 0) {
         updateWorkspaceBadges();
@@ -181,9 +349,6 @@ function initLabelStudioIfNeeded() {
     setLabelSourceMode('sequential');
 }
 
-/**
- * Switches the Label Studio between 'sequential' (GCP generator) and 'audited' (validated list from Tab 1).
- */
 function setLabelSourceMode(mode, customAuditedCodes = null) {
     const btnSeq = document.getElementById('src-btn-seq');
     const btnAud = document.getElementById('src-btn-audited');
@@ -223,7 +388,6 @@ function setLabelSourceMode(mode, customAuditedCodes = null) {
         }
     }
 
-    // Sequential Mode
     labelSourceMode = 'sequential';
     if (btnSeq) btnSeq.classList.add('active');
     if (btnAud) btnAud.classList.remove('active');
@@ -233,9 +397,6 @@ function setLabelSourceMode(mode, customAuditedCodes = null) {
     regenerateBatchSequence();
 }
 
-/**
- * Opens the Label Studio in sequential generator mode (backward compatible helper).
- */
 function openCurrentOrSampleLabel() {
     initLabelStudioIfNeeded();
     setLabelSourceMode('sequential');
@@ -244,9 +405,6 @@ function openCurrentOrSampleLabel() {
     }
 }
 
-/**
- * Opens the Label Studio for a single validated SSCC from Tab 1.
- */
 function openLabelModal(rawSSCC) {
     const s18 = normalizeTo18Digits(rawSSCC);
     if (!s18) {
@@ -261,9 +419,6 @@ function openLabelModal(rawSSCC) {
     setLabelSourceMode('audited', [s18]);
 }
 
-/**
- * Opens the Label Studio for all valid/generated SSCCs in Tab 1.
- */
 function openBatchLabelsModal() {
     const valids = (window.store || [])
         .filter(item => (item.status === 'valid' || item.status === 'gen') && item.plain)
@@ -284,9 +439,6 @@ function openBatchLabelsModal() {
     setLabelSourceMode('audited', valids);
 }
 
-/**
- * Sends the currently generated sequential batch back to Tab 1 (Validator) for CSV export or sharing.
- */
 function sendGeneratedBatchToValidator() {
     if (!currentBatchSSCCs.length) return;
     const input = document.getElementById('input');
@@ -300,9 +452,6 @@ function sendGeneratedBatchToValidator() {
     }
 }
 
-/**
- * Regenerates the batch sequence from GS1 Prefix, Extension, Start Serial, and Quantity.
- */
 function regenerateBatchSequence() {
     const gcpInput = document.getElementById('batch-gcp');
     const extSelect = document.getElementById('batch-ext');
@@ -329,7 +478,6 @@ function regenerateBatchSequence() {
         return;
     }
 
-    // Persist prefix configuration automatically
     if (typeof saveGCPSettings === 'function') {
         saveGCPSettings({
             prefix: gcp,
@@ -455,6 +603,8 @@ function loadStoredFormDefaults() {
     if (document.getElementById('lbl-contents')) document.getElementById('lbl-contents').value = d.contents || '';
     if (document.getElementById('lbl-weight')) document.getElementById('lbl-weight').value = d.weight || '';
     if (document.getElementById('lbl-order')) document.getElementById('lbl-order').value = d.orderNo || '';
+    if (document.getElementById('lbl-gtin')) document.getElementById('lbl-gtin').value = d.gtin || '';
+    if (document.getElementById('lbl-count')) document.getElementById('lbl-count').value = d.unitCount || '';
     if (document.getElementById('lbl-batch')) document.getElementById('lbl-batch').value = d.batchNo || '';
     if (document.getElementById('lbl-expiry')) document.getElementById('lbl-expiry').value = d.expiryDate || '';
     if (document.getElementById('lbl-format')) document.getElementById('lbl-format').value = d.format || 'a5';
@@ -467,6 +617,8 @@ function persistCurrentFormValues() {
         contents: document.getElementById('lbl-contents')?.value || '',
         weight: document.getElementById('lbl-weight')?.value || '',
         orderNo: document.getElementById('lbl-order')?.value || '',
+        gtin: document.getElementById('lbl-gtin')?.value || '',
+        unitCount: document.getElementById('lbl-count')?.value || '',
         batchNo: document.getElementById('lbl-batch')?.value || '',
         expiryDate: document.getElementById('lbl-expiry')?.value || '',
         format: document.getElementById('lbl-format')?.value || 'a5'
@@ -486,15 +638,21 @@ function buildLabelSheetHTML(s18, meta, indexInfo = '') {
     const orderNo = meta.orderNo || 'PO-2026-994';
     const batchNo = meta.batchNo || '';
     const expiry = meta.expiryDate || '';
+    const unitCount = meta.unitCount || '';
     const today = new Date().toISOString().slice(0, 10);
 
-    const ext = s18[0];
-    const prefix = s18.substring(1, 8);
-    const serial = s18.substring(8, 17);
-    const cd = s18[17];
-    const hriFormatted = `(00) ${ext} ${prefix} ${serial} ${cd}`;
-
+    const hriFormatted = formatDynamicSSCCHRI(s18);
     const barcodeSvg = generateGS1BarcodeSVG(s18, 70);
+    const secondary = buildSecondaryGS1Barcode(meta, 52);
+
+    const secondarySectionHtml = secondary ? `
+        <div class="lbl-row lbl-sscc-section" style="border-bottom:2px solid #000000;padding:8px 0 6px;">
+            <span class="lbl-field-tag" style="text-align:left;margin-bottom:2px;">GS1-128 TRADE ITEM &amp; BATCH IDENTIFIERS</span>
+            <div class="lbl-sscc-hri" style="font-size:12px;margin-bottom:5px;">${escapeHtml(secondary.hri)}</div>
+            <div class="lbl-barcode-wrap">
+                ${secondary.svg}
+            </div>
+        </div>` : '';
 
     return `
     <div class="gs1-label-sheet format-${meta.format || 'a5'}">
@@ -523,7 +681,7 @@ function buildLabelSheetHTML(s18, meta, indexInfo = '') {
         <div class="lbl-row lbl-cargo-row">
             <div class="lbl-col" style="width:55%;">
                 <span class="lbl-field-tag">CARGO / CONTENTS</span>
-                <div class="lbl-meta-value">${escapeHtml(contents)}</div>
+                <div class="lbl-meta-value">${escapeHtml(contents)}${unitCount ? ` (${escapeHtml(unitCount)} units)` : ''}</div>
             </div>
             <div class="lbl-col" style="width:45%; text-align:right;">
                 <span class="lbl-field-tag">GROSS WEIGHT / BATCH</span>
@@ -531,6 +689,8 @@ function buildLabelSheetHTML(s18, meta, indexInfo = '') {
                 ${expiry ? `<div class="lbl-subtext" style="font-weight:700;color:#000;">Best Before: ${escapeHtml(expiry)}</div>` : ''}
             </div>
         </div>
+
+        ${secondarySectionHtml}
 
         <div class="lbl-row lbl-sscc-section">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
@@ -586,9 +746,6 @@ function updateLabelPreview() {
     }
 }
 
-/**
- * Prepares print area with all batch sheets and triggers window.print().
- */
 function printGS1Label() {
     const meta = persistCurrentFormValues();
     const isBatch = currentBatchSSCCs.length > 1;
@@ -613,9 +770,6 @@ function printGS1Label() {
     window.print();
 }
 
-/**
- * Downloads a single or batch ZPL file.
- */
 function downloadGS1ZPL() {
     if (!currentBatchSSCCs.length) return;
     const meta = persistCurrentFormValues();

@@ -10,6 +10,7 @@
     <meta name="author" content="SSCC Pro Vision">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://pormenores.net/sscc/guide.html">
+    <link rel="alternate" type="text/plain" href="https://pormenores.net/sscc/llms.txt" title="LLMs.txt AI Agent Documentation">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
@@ -178,12 +179,19 @@
             z-index: -1;
         }
 
-        nav {
+        .site-header {
             border-bottom: 1px solid var(--border);
-            padding: 0.85rem 1.5rem;
-            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.85rem 1.25rem;
             position: sticky; top: 0; background: rgba(11, 14, 20, 0.94);
             backdrop-filter: blur(12px); z-index: 100;
+        }
+        .header-inner {
+            max-width: 760px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
         }
         .nav-brand {
             font-family: var(--font-mono);
@@ -198,19 +206,25 @@
         }
         .brand-sep { color: var(--text-dim); }
         .brand-sub { color: var(--primary); font-weight: 600; }
-        .nav-links { display: flex; align-items: center; gap: 1rem; }
-        .nav-link {
-            font-family: var(--font-mono); font-size: 0.8rem;
-            color: var(--muted); text-decoration: none; transition: color 0.15s;
-        }
-        .nav-link:hover { color: var(--text); }
-        .nav-cta {
-            background: var(--primary); color: #0b0e14;
-            padding: 6px 14px; border-radius: 6px; font-size: 12px;
-            font-family: var(--font-mono); font-weight: 700; text-decoration: none;
+        .nav-links { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-pill {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 500;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--muted);
+            text-decoration: none;
             transition: all 0.2s ease;
         }
-        .nav-cta:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .nav-pill:hover, .nav-pill.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.06);
+            text-decoration: none;
+        }
 
         .wrapper {
             max-width: 760px;
@@ -393,21 +407,22 @@
 </head>
 <body>
 
-<nav>
-    <a class="nav-brand" href="https://pormenores.net/" title="Voltar a pormenores.net">
-        <span class="brand-dot"></span>
-        <span>pormenores.net</span>
-        <span class="brand-sep">/</span>
-        <span class="brand-sub">sscc-guide</span>
-    </a>
-    <div class="nav-links">
-        <a class="nav-link" href="./">App</a>
-        <a class="nav-link" href="calculator.html">Calculator</a>
-        <a class="nav-link" href="sscc-api-guide.html">API</a>
-        <a class="nav-link" href="openapi.yaml" download>OpenAPI</a>
-        <a class="nav-cta" href="./">Open Validator</a>
+<header class="site-header">
+    <div class="header-inner">
+        <a class="nav-brand" href="index.html" title="Back to SSCC Pro Vision">
+            <span class="brand-dot"></span>
+            <span>pormenores.net</span>
+            <span class="brand-sep">/</span>
+            <span class="brand-sub">guide</span>
+        </a>
+        <nav class="nav-links">
+            <a class="nav-pill" href="index.html">Vision Tool</a>
+            <a class="nav-pill" href="calculator.html">Calculator</a>
+            <a class="nav-pill active" href="guide.html">Guide</a>
+            <a class="nav-pill" href="sscc-api-guide.html">API</a>
+        </nav>
     </div>
-</nav>
+</header>
 
 <div class="wrapper">
 

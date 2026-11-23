@@ -1,0 +1,137 @@
+# SSCC Pro Vision — GS1-128 Logistics Validator, EDI Extractor & Pallet Label Engine
+
+> Free, open-source GS1 Serial Shipping Container Code (SSCC-18) validator, Modulo 10 check digit calculator, EDIFACT/SAP IDoc/XML extractor, GS1-128 pallet label generator (A5/A6/4x6" & Zebra ZPL-II), and zero-auth public REST API.
+
+- Canonical Web App: https://pormenores.net/sscc/
+- Public REST API Base URL: https://sscc.birth1mark.workers.dev
+- OpenAPI 3.0 Specification (JSON): https://pormenores.net/sscc/openapi.json
+- OpenAPI 3.0 Specification (YAML): https://pormenores.net/sscc/openapi.yaml
+- Universal GS1 Check Digit Calculator: https://pormenores.net/sscc/calculator.html
+- Technical Guide & GS1-128 Spec: https://pormenores.net/sscc/guide.html
+- API Documentation & Playground: https://pormenores.net/sscc/sscc-api-guide.html
+- Source Repository: https://github.com/birth1mark/sscc-check
+- License: MIT
+
+---
+
+## 1. Instructions for AI Agents & Autonomous Tools
+
+AI agents, LLM tool-callers, and automation workflows can interact with **SSCC Pro Vision** in two ways:
+1. **Direct REST API Calls (`https://sscc.birth1mark.workers.dev`)**: No API key or authentication required. Supports CORS (`*`) and returns structured JSON. Rate limit: 500 requests/hour per IP.
+2. **Deep-Linking into the Web Application (`https://pormenores.net/sscc/`)**: Construct pre-populated URLs for human operators to view validation results or print physical GS1 pallet labels.
+
+---
+
+## 2. Public REST API Endpoints (No Auth Required)
+
+### 2.1 Validate an 18-Digit (or 20-Digit AI `00`) SSCC
+- **Endpoint**: `GET https://sscc.birth1mark.workers.dev/validate?sscc={code}`
+- **Example**:
+  ```bash
+  curl -s "https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016"
+  ```
+- **JSON Response (`200 OK`)**:
+  ```json
+  {
+    "input": "356012345600000016",
+    "sscc": "356012345600000016",
+    "formatted": "(00)356012345600000016",
+    "valid": true,
+    "checkDigit": {
+      "provided": 6,
+      "expected": 6
+    },
+    "gs1": {
+      "extensionDigit": 3,
+      "prefix": 560,
+      "country": "Portugal",
+      "countryCode": "PT",
+      "flag": "🇵🇹"
+    }
+  }
+  ```
+
+### 2.2 Generate Check Digit for a 17-Digit SSCC Body
+- **Endpoint**: `GET https://sscc.birth1mark.workers.dev/generate?body={17_digits}`
+- **Example**:
+  ```bash
+  curl -s "https://sscc.birth1mark.workers.dev/generate?body=35601234560000001"
+  ```
+- **JSON Response (`200 OK`)**:
+  ```json
+  {
+    "body": "35601234560000001",
+    "checkDigit": 6,
+    "sscc": "356012345600000016",
+    "formatted": "(00)356012345600000016",
+    "gs1": {
+      "extensionDigit": 3,
+      "prefix": 560,
+      "country": "Portugal",
+      "countryCode": "PT",
+      "flag": "🇵🇹"
+    }
+  }
+  ```
+
+### 2.3 Expand a Sequential SSCC Range (Up to 500 Codes)
+- **Endpoint**: `GET https://sscc.birth1mark.workers.dev/range?from={start}&to={end}`
+- **Example**:
+  ```bash
+  curl -s "https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005"
+  ```
+
+### 2.4 Lookup GS1 Country Prefix
+- **Endpoint**: `GET https://sscc.birth1mark.workers.dev/prefix?sscc={code}`
+
+### 2.5 Extract & Validate SSCCs from EDIFACT, SAP IDoc, XML, or CSV Payload
+- **Endpoint**: `POST https://sscc.birth1mark.workers.dev/extract`
+- **Headers**: `Content-Type: text/plain` (or `application/json` with `{"content": "..."}`)
+- **Max Payload**: 1 MB
+- **Example**:
+  ```bash
+  curl -s -X POST "https://sscc.birth1mark.workers.dev/extract" \
+    -H "Content-Type: text/plain" \
+    -d "UNA:+.? 'UNB+UNOC:3+SENDER+RECEIVER+261123:0800+1'GIN+BJ+356012345600000016'"
+  ```
+
+---
+
+## 3. Web UI Deep-Linking Parameters
+
+Agents can generate clickable links for human users:
+- **Validate a specific SSCC**: `https://pormenores.net/sscc/?sscc=356012345600000016`
+- **Open directly in GS1 Pallet Label Studio for a code**: `https://pormenores.net/sscc/?sscc=356012345600000016&label=1`
+- **Open Pallet Label Studio (Sequential Generator)**: `https://pormenores.net/sscc/#labels`
+- **Share a multi-code batch via URL hash**: `https://pormenores.net/sscc/#share={URI_ENCODED_BASE64_NEWLINE_SEPARATED_CODES}`
+
+---
+
+## 4. GS1 SSCC-18 Technical Reference
+
+### Structure of an SSCC (18 Digits + Optional 2-Digit AI `00`)
+- **Application Identifier (AI)**: `00` (indicates a fixed-length 18-digit SSCC in GS1-128 barcodes, preceded by FNC1).
+- **Digit 1 — Extension Digit (`0`–`9`)**: Used to increase capacity of the Serial Reference (e.g., `0` = Standard Pallet, `1` = Carton/Case, `3` = Mixed Pallet).
+- **Digits 2 to N — GS1 Company Prefix (GCP)**: 6 to 11 digits assigned by a local GS1 Member Organization (first 3 digits indicate the GS1 Country Prefix, e.g., `560` = Portugal, `400`–`440` = Germany, `840`–`849` = Spain, `001`–`139` = USA).
+- **Remaining Digits up to Digit 17 — Serial Reference**: Zero-padded sequential number uniquely identifying the logistics unit.
+- **Digit 18 — Check Digit**: Calculated via the official **GS1 Modulo 10** algorithm.
+
+### GS1 Modulo 10 Check Digit Algorithm (Reference Implementation)
+```javascript
+function calculateGS1CheckDigit(payload17) {
+  const digits = String(payload17).replace(/\D/g, '').split('').reverse();
+  let sum = 0;
+  for (let i = 0; i < digits.length; i++) {
+    sum += parseInt(digits[i], 10) * (i % 2 === 0 ? 3 : 1);
+  }
+  return (10 - (sum % 10)) % 10;
+}
+```
+
+### Standard EDI Locations for SSCC
+- **UN/EDIFACT (`DESADV` / `IFTMIN`)**:
+  - `GIN+BJ+<SSCC>` (Goods Identity Number, qualifier `BJ` = Serial Shipping Container Code)
+  - `RFF+SI:<SSCC>` or `RFF+AAK:<SSCC>`
+  - `PAC` package segment
+- **SAP IDoc (`DELVRY03` / `DELVRY07` / `DESADV01`)**:
+  - Segment `E1EDL37` / `E1EDL44` → Field `<EXIDV>` or `<EXIDV2>` (External Handling Unit ID)

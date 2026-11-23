@@ -1,9 +1,12 @@
-// ─── Scanner State ────────────────────────────────────────────────────────────
-let isScanning = false;
-let codeReader = null;
-let lastScan   = 0;
+// ─── Continuous Batch Camera Scanner (v5.8.0) ────────────────────────────────
+let isScanning       = false;
+let codeReader       = null;
+let lastScan         = 0;
+let lastScannedCode  = '';
+let sessionScanCount = 0;
 
-const DEBOUNCE_MS = 2000;
+const SAME_CODE_DEBOUNCE_MS = 3500;
+const NEXT_CODE_COOLDOWN_MS = 750;
 
 // ─── Beep (Web Audio API) ─────────────────────────────────────────────────────
 
@@ -20,15 +23,13 @@ function beep() {
         gainNode.connect(audioCtx.destination);
 
         oscillator.type            = 'sine';
-        oscillator.frequency.value = 1480; // high-pitched, scanner-like
+        oscillator.frequency.value = 1480;
         gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
 
         oscillator.start(audioCtx.currentTime);
         oscillator.stop(audioCtx.currentTime + 0.15);
-    } catch (_) {
-        // Audio not available — silent fail
-    }
+    } catch (_) {}
 }
 
 // ─── SSCC Extraction ──────────────────────────────────────────────────────────
@@ -60,9 +61,15 @@ function setScannerUI(active) {
 }
 
 function setStatus(msg) {
-    // Correção de segurança: verifica se o elemento existe antes de tentar escrever nele
     const el = document.getElementById('scan-status');
     if (el) el.textContent = msg;
+}
+
+function triggerScanVisualFlash() {
+    const wrap = document.getElementById('viewport-wrap');
+    if (!wrap) return;
+    wrap.classList.add('scan-flash-success');
+    setTimeout(() => wrap.classList.remove('scan-flash-success'), 450);
 }
 
 // ─── Scanner Control ──────────────────────────────────────────────────────────
@@ -73,9 +80,11 @@ function toggleScanner() {
 
 async function startScanner() {
     setScannerUI(true);
-    isScanning = true;
-    lastScan   = 0;
-    setStatus('Starting camera…');
+    isScanning       = true;
+    lastScan         = 0;
+    lastScannedCode  = '';
+    sessionScanCount = 0;
+    setStatus('Starting camera (continuous batch mode)…');
 
     try {
         codeReader = new ZXing.BrowserMultiFormatReader();
@@ -96,39 +105,44 @@ async function startScanner() {
             deviceId = null;
         }
 
-        setStatus('Reading barcode…');
+        setStatus('Point camera at GS1-128 barcodes (continuous scan)…');
 
         await codeReader.decodeFromVideoDevice(
             deviceId,
             document.getElementById('video'),
-            (result, err) => {
+            (result) => {
                 if (!result) return;
 
                 const now = Date.now();
-                if (now - lastScan < DEBOUNCE_MS) return;
-
                 const sscc = extractSSCC(result.getText());
                 if (!sscc) {
-                    setStatus(`Unrecognized format (${result.getText().replace(/\D/g, '').length} digits)`);
+                    setStatus(`Unrecognized barcode (${result.getText().replace(/\D/g, '').length} digits)`);
                     return;
                 }
 
-                lastScan = now;
+                // Prevent camera frame bounce on the exact same label within 3.5s
+                if (sscc === lastScannedCode && (now - lastScan < SAME_CODE_DEBOUNCE_MS)) return;
+                // Short cooldown between distinct pallets
+                if (now - lastScan < NEXT_CODE_COOLDOWN_MS) return;
+
+                lastScan        = now;
+                lastScannedCode = sscc;
+                sessionScanCount++;
 
                 const input    = document.getElementById('input');
                 const existing = input.value.trim();
-                if (existing.split('\n').pop() === sscc) return;
+                input.value    = existing ? `${existing}\n${sscc}` : sscc;
 
-                input.value = existing ? `${existing}\n${sscc}` : sscc;
-
-                // Feedback: vibration + beep
-                if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+                if (navigator.vibrate) navigator.vibrate([70, 40, 70]);
                 beep();
+                triggerScanVisualFlash();
 
-                stopScanner();
-                
-                // Executa o processamento do app.js se a função estiver disponível
-                if (typeof process === 'function') process();
+                setStatus(`✓ Scanned #${sessionScanCount}: (00) …${sscc.slice(-8)} — Point at next pallet`);
+
+                if (typeof process === 'function') process(true);
+                if (typeof showToast === 'function') {
+                    showToast(`📷 Scanned #${sessionScanCount}: (00) ${sscc}`, 'success');
+                }
             }
         );
 

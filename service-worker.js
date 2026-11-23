@@ -1,14 +1,19 @@
-const CACHE = 'sscc-v26';
+const CACHE = 'sscc-v27';
 const ASSETS = [
   './',
   './index.html',
   './calculator.html',
   './guide.html',
+  './sscc-api-guide.html',
   './app.js',
   './label.js',
   './scanner.js',
   './parser.js',
   './init.js',
+  './llms.txt',
+  './llm.txt',
+  './openapi.json',
+  './openapi.yaml',
   'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap',
   'https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js',
   'https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js'

@@ -1,5 +1,5 @@
-// ─── File Parser (v5.7.0) ─────────────────────────────────────────────────────
-// Extracts and validates SSCCs from uploaded files.
+// ─── File Parser (v5.8.0) ─────────────────────────────────────────────────────
+// Extracts and validates SSCCs from uploaded files with duplicate detection.
 // Supports: EDIFACT, IDoc SAP, XML, CSV, TXT (generic fallback)
 // Everything runs client-side — no data leaves the browser.
 
@@ -107,8 +107,11 @@ function parseXML(text) {
         }
     });
 
-    const allContent = text.replace(/<[^>]+>/g, ' ');
-    extractGeneric(allContent, 'XML content', found);
+    // If structured tags were found, avoid double-counting from raw text fallback
+    if (found.length === 0) {
+        const allContent = text.replace(/<[^>]+>/g, ' ');
+        extractGeneric(allContent, 'XML content', found);
+    }
 
     return found;
 }
@@ -120,21 +123,12 @@ function parseGeneric(text) {
 }
 
 function extractGeneric(text, source, found) {
+    // Unified non-overlapping regex for (00)18-digits, 00+18-digits, or standalone 18-digits
+    const reUnified = /(?:\(00\)(\d{18}))|(?<!\d)(?:(00\d{18})|(\d{18})(?!\d))/g;
     let m;
-
-    const reAI = /\(00\)(\d{18})/g;
-    while ((m = reAI.exec(text)) !== null) {
-        tryAddSSCC(m[1], source, found);
-    }
-
-    const re20 = /(?<!\d)(00\d{18})/g;
-    while ((m = re20.exec(text)) !== null) {
-        tryAddSSCC(m[1], source, found);
-    }
-
-    const re18 = /(?<!\d)(\d{18})(?!\d)/g;
-    while ((m = re18.exec(text)) !== null) {
-        tryAddSSCC(m[1], source, found);
+    while ((m = reUnified.exec(text)) !== null) {
+        const token = m[1] || m[2] || m[3];
+        if (token) tryAddSSCC(token, source, found);
     }
 }
 
@@ -196,16 +190,26 @@ function tryAddSSCC(raw, source, found) {
         const cd = getCD(digits);
         const full = digits + cd;
         if (!isValidGS1Prefix(full)) return;
-        if (!found.some(f => f.plain === full)) {
-            found.push({
-                code:   formatSSCC(digits, cd, null),
-                label:  'GEN · +' + cd,
-                status: 'gen',
-                flag:   getFlag(full),
-                plain:  full,
-                source,
-            });
+        const existing = found.find(f => f.submittedPlain === full);
+        if (existing) {
+            existing.fileOccurrences = (existing.fileOccurrences || 1) + 1;
+            existing.isDuplicate = true;
+            existing.duplicateCount = existing.fileOccurrences;
+            return;
         }
+        found.push({
+            code:            formatSSCC(digits, cd, null),
+            label:           'GEN · +' + cd,
+            status:          'gen',
+            flag:            getFlag(full),
+            plain:           full,
+            submittedPlain:  full,
+            source,
+            fileOccurrences: 1,
+            isDuplicate:     false,
+            duplicateCount:  1,
+            lineIdx:         found.length
+        });
         return;
     } else {
         return;
@@ -219,16 +223,35 @@ function tryAddSSCC(raw, source, found) {
     const expected = getCD(body);
     const ok       = provided === expected;
 
-    const plain = body18;
-    if (found.some(f => f.plain === plain)) return;
+    const plain = body + expected;
+    const submittedPlain = body18;
+
+    const existing = found.find(f => f.submittedPlain === submittedPlain);
+    if (existing) {
+        existing.fileOccurrences = (existing.fileOccurrences || 1) + 1;
+        existing.isDuplicate = true;
+        existing.duplicateCount = existing.fileOccurrences;
+        if (source && existing.source && !existing.source.includes(source)) {
+            existing.source += `, ${source}`;
+        }
+        return;
+    }
 
     found.push({
-        code:   formatSSCC(body, expected, provided),
-        label:  ok ? 'VALID' : `FAIL · exp ${expected}`,
-        status: ok ? 'valid' : 'invalid',
-        flag:   getFlag(body18),
+        code:            formatSSCC(body, expected, provided),
+        label:           ok ? 'VALID' : `FAIL · exp ${expected}`,
+        status:          ok ? 'valid' : 'invalid',
+        flag:            getFlag(body18),
         plain,
+        submittedPlain,
+        body17:          body,
+        expectedCD:      expected,
+        providedCD:      provided,
         source,
+        fileOccurrences: 1,
+        isDuplicate:     false,
+        duplicateCount:  1,
+        lineIdx:         found.length
     });
 }
 
@@ -319,7 +342,15 @@ function handleFile(file) {
 
         const inputEl = document.getElementById('input');
         if (inputEl) {
-            inputEl.value = results.filter(r => r.plain).map(r => r.plain).join('\n');
+            const expandedLines = [];
+            results.forEach(r => {
+                const count = r.fileOccurrences || 1;
+                const codeStr = r.submittedPlain || r.plain;
+                if (codeStr) {
+                    for (let k = 0; k < count; k++) expandedLines.push(codeStr);
+                }
+            });
+            inputEl.value = expandedLines.join('\n');
         }
         const clearBtn = document.getElementById('btn-clear-input');
         if (clearBtn) clearBtn.style.display = 'inline-flex';
@@ -349,11 +380,13 @@ function showFileResult(filename, format, results) {
         const valid   = results.filter(r => r.status === 'valid').length;
         const invalid = results.filter(r => r.status === 'invalid').length;
         const gen     = results.filter(r => r.status === 'gen').length;
+        const dups    = results.filter(r => r.isDuplicate).length;
         content.innerHTML = `<span class="file-banner-name">📄 ${escapeHTML(filename)}</span>
-            <span class="file-banner-info">${escapeHTML(fmtLabel)} · <strong>${count}</strong> SSCC${count !== 1 ? 's' : ''} extracted
+            <span class="file-banner-info">${escapeHTML(fmtLabel)} · <strong>${count}</strong> unique SSCC${count !== 1 ? 's' : ''}
                 ${valid   ? `· <span style="color:var(--success)">${valid} valid</span>`   : ''}
                 ${invalid ? `· <span style="color:var(--danger)">${invalid} invalid</span>` : ''}
                 ${gen     ? `· <span style="color:var(--primary)">${gen} generated</span>`  : ''}
+                ${dups    ? `· <span style="color:var(--primary);font-weight:700;">⚠️ ${dups} duplicated</span>` : ''}
             </span>`;
     }
 

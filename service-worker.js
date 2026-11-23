@@ -1,14 +1,14 @@
-const CACHE = 'sscc-v43';
+const CACHE = 'sscc-v44';
 const ASSETS = [
   '/',
   '/calculator',
   '/guide',
   '/docs',
-  '/app.js',
-  '/label.js',
-  '/scanner.js',
-  '/parser.js',
-  '/init.js',
+  '/app.js?v=5.11.1',
+  '/label.js?v=5.11.1',
+  '/scanner.js?v=5.11.1',
+  '/parser.js?v=5.11.1',
+  '/init.js?v=5.11.1',
   '/llms.txt',
   '/llm.txt',
   '/openapi.json',

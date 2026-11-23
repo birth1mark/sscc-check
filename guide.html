@@ -443,6 +443,7 @@
             <li><a href="#python">Python Implementation</a></li>
             <li><a href="#edifact">Extracting SSCCs from EDIFACT</a></li>
             <li><a href="#sap-idoc">SSCC in SAP IDocs (E1EDL44 / EXIDV)</a></li>
+            <li><a href="#sunrise-2027">GS1 Sunrise 2027: Dual 1D GS1-128 &amp; 2D QR Digital Link + Zebra ZPL-II</a></li>
             <li><a href="#faq">Frequently Asked Questions</a></li>
             <li><a href="#tool">Free Online Validator</a></li>
         </ol>
@@ -752,6 +753,41 @@
 <span class="kw">&lt;/E1EDL37&gt;</span></code></pre>
 
     <p>Both <strong>SSCC Pro Vision</strong> and its REST API natively parse these XML IDoc tags as well as flat text IDoc streams up to 1 MB without requiring intermediate transformations.</p>
+
+    <h2 id="sunrise-2027">GS1 Sunrise 2027: Dual 1D GS1-128 &amp; 2D QR Digital Link + Zebra ZPL-II</h2>
+    <p>Under the global <strong>GS1 Sunrise 2027</strong> initiative and the <strong>GS1 Digital Link</strong> standard, logistics pallet labels are transitioning from single 1D linear barcodes to <strong>Dual-Symbology (1D + 2D QR Code)</strong> and standalone <strong>2D QR Digital Link</strong> barcodes.</p>
+
+    <table class="segment-table">
+        <tr>
+            <th>Symbology Mode</th>
+            <th>Standard / Carrier</th>
+            <th>Encoded Payload &amp; Industrial Use Case</th>
+        </tr>
+        <tr>
+            <td>1D GS1-128</td>
+            <td>Code 128 Subset C + FNC1</td>
+            <td><code>]C100356012345600000016</code> — Universal compatibility with legacy laser gates and conveyor scanners.</td>
+        </tr>
+        <tr>
+            <td>2D QR Digital Link</td>
+            <td>ISO/IEC 18004 QR Code (ECC M)</td>
+            <td><code>https://pormenores.net/sscc/?sscc=356012345600000016&amp;10=LOT99&amp;15=261231</code> — Scannable by both industrial 2D imagers and standard smartphones.</td>
+        </tr>
+        <tr>
+            <td>Dual (1D + 2D)</td>
+            <td>Hybrid Logistics Label</td>
+            <td>Combines the lower 1D GS1-128 barcode (and optional middle AI 02/15/37/10 barcode) with an upper-right 2D QR Digital Link for 100% transition compliance.</td>
+        </tr>
+    </table>
+
+    <h3>Zebra ZPL-II Command Anatomy (1D ^BCN + 2D ^BQN)</h3>
+    <p>When printing on 4×6" (100×150mm, 203 dpi) industrial Zebra thermal printers, <strong>SSCC Pro Vision</strong> and the <a href="sscc-api-guide.html">Labels REST API (<code>POST /v1/labels</code>)</a> compile native ZPL-II streams combining <code>^BCN</code> (Code 128 Subset C with FNC1 escape <code>&gt;8</code>) and <code>^BQN</code> (QR Code Model 2):</p>
+
+<pre><code><span class="comment">; 2D GS1 Digital Link QR Code (Model 2, Magnification 4, Error Correction Q/M)</span>
+<span class="kw">^FO</span>575,168<span class="kw">^BQN</span>,2,4<span class="kw">^FD</span>QA,https://pormenores.net/sscc/?sscc=356012345600000016&amp;10=LOT99<span class="kw">^FS</span>
+
+<span class="comment">; 1D GS1-128 Linear Barcode (Subset C &gt;5, FNC1 &gt;8, AI 00 + 18-digit SSCC)</span>
+<span class="kw">^FO</span>65,565<span class="kw">^BY</span>3,3,210<span class="kw">^BCN</span>,210,N,N,N,D<span class="kw">^FD</span>&gt;8&gt;500356012345600000016<span class="kw">^FS</span></code></pre>
 
     <h2 id="faq">Frequently Asked Questions</h2>
     <div class="faq-container">

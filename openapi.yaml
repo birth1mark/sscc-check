@@ -1,12 +1,12 @@
 openapi: 3.1.0
 info:
-  title: SSCC Pro Vision REST API
-  version: 1.2.2
+  title: SSCC Pro Vision — Validation, EDI & GS1 Pallet Label API
+  version: 5.9.0
   description: |
-    Free, high-performance REST API for Serial Shipping Container Code (SSCC-18) validation,
-    check digit calculation (GS1 Modulo 10), range expansion, country/company prefix lookup,
-    and multi-format file extraction (UN/EDIFACT, SAP IDoc, XML, CSV, TXT).
-    Powered by Cloudflare Workers. Zero authentication required.
+    Enterprise-grade Cloudflare Edge APIs for Serial Shipping Container Code (SSCC-18) validation,
+    GS1 Modulo 10 check digit calculation, range expansion, UN/EDIFACT & SAP IDoc extraction,
+    and Dual-Symbology GS1 Logistics Pallet Labels (1D GS1-128 + 2D QR Code GS1 Digital Link in
+    native Zebra ZPL-II, Vector SVG, and Printable A5/4x6" HTML).
   contact:
     name: birth1mark
     url: https://pormenores.net/sscc/
@@ -15,7 +15,9 @@ info:
     url: https://github.com/birth1mark/sscc-check/blob/main/LICENSE
 servers:
   - url: https://sscc.birth1mark.workers.dev
-    description: Production Serverless Edge API (Cloudflare Workers)
+    description: Server 1 — Free Validation & EDI Extraction API
+  - url: https://sscc-labels.birth1mark.workers.dev
+    description: Server 2 — Commercial GS1 Pallet Labels, ZPL & 2D QR Digital Link API (25 Free / Pro X-API-Key)
 
 paths:
   /validate:
@@ -165,21 +167,129 @@ paths:
       responses:
         '200':
           description: Service status
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
+
+  /v1/labels:
+    post:
+      summary: Generate Batch GS1 Pallet Labels (1D GS1-128 + 2D QR Digital Link / ZPL / HTML / SVG)
+      description: |
+        Generates 1 to 500 GS1 Logistics Pallet Labels with Dual Symbology (1D GS1-128 + 2D QR Digital Link),
+        1D Only, or 2D QR Only. Supports Zebra ZPL-II, Printable HTML (A5/A6/4x6"), Vector SVG, and JSON.
+        Includes 25 free labels per GS1 Company Prefix (GCP); pass X-API-Key for Pro credits.
+      parameters:
+        - name: X-API-Key
+          in: header
+          required: false
+          description: Optional Pro API Key (sscc_pro_...) to bypass the 25 free label limit
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ssccs:
+                  type: array
+                  items:
                     type: string
-                    example: "ok"
-                  version:
-                    type: string
-                    example: "1.2.2"
-                  endpoints:
-                    type: array
-                    items:
-                      type: string
+                  description: Optional explicit list of 17/18/20-digit SSCCs
+                gcp:
+                  type: string
+                  example: "5601234"
+                extension:
+                  type: string
+                  example: "0"
+                startSerial:
+                  type: integer
+                  example: 1001
+                quantity:
+                  type: integer
+                  example: 5
+                symbology:
+                  type: string
+                  enum: [dual, gs1-128, qr]
+                  default: dual
+                format:
+                  type: string
+                  enum: [json, zpl, html, svg]
+                  default: json
+                paperSize:
+                  type: string
+                  enum: [a5, a6, thermal]
+                  default: a5
+                sender:
+                  type: string
+                  example: "ACME LOGISTICS PORTUGAL LDA"
+                recipient:
+                  type: string
+                  example: "CENTRAL DISTRIBUTION HUB"
+                contents:
+                  type: string
+                  example: "EURO PALLET (MIXED CARGO)"
+                weight:
+                  type: string
+                  example: "450 KG"
+                orderNo:
+                  type: string
+                  example: "PO-2026-994"
+                gtin:
+                  type: string
+                  example: "05601234567892"
+                unitCount:
+                  type: string
+                  example: "48"
+                batchNo:
+                  type: string
+                  example: "LOT-26A"
+                expiryDate:
+                  type: string
+                  example: "2026-12-31"
+      responses:
+        '200':
+          description: Generated GS1 labels (JSON, ZPL-II, HTML, or SVG)
+        '402':
+          description: Free quota (25 labels) exceeded or Pro credits exhausted
+
+  /v1/qr:
+    get:
+      summary: Generate Standalone 2D GS1 Digital Link QR Code (SVG)
+      description: Returns an ISO/IEC 18004 vector SVG QR Code encoding the GS1 Digital Link URI for an SSCC.
+      parameters:
+        - name: sscc
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "356012345600000016"
+        - name: batch
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "LOT-99A"
+      responses:
+        '200':
+          description: Vector SVG QR Code (image/svg+xml)
+
+  /v1/quota:
+    get:
+      summary: Check Remaining Free or Pro Label Credits
+      parameters:
+        - name: gcp
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "5601234"
+        - name: X-API-Key
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Current quota balance and available credit plans
 
 components:
   schemas:

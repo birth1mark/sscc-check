@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSCC API — Free REST API for SSCC Validation | SSCC Pro Vision</title>
-    <meta name="description" content="Free REST API for SSCC validation, check digit generation, range expansion and file extraction. Built on Cloudflare Workers. No auth required.">
-    <meta name="keywords" content="SSCC API, SSCC REST API, GS1 API, check digit API, SSCC validation API, EDIFACT SSCC extract">
+    <title>SSCC Pro Vision API &amp; Interactive Swagger Sandbox — GS1-128, 2D QR Digital Link &amp; Zebra ZPL</title>
+    <meta name="description" content="Interactive API documentation, Swagger live sandbox, technical architecture diagrams and ERP integration manuals for SSCC validation, GS1 pallet labels, 2D QR Digital Link and Zebra ZPL-II.">
+    <meta name="keywords" content="SSCC API, GS1 pallet label API, Zebra ZPL API, GS1 Digital Link QR API, SSCC validation API, EDIFACT SSCC extract, Swagger sandbox">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://pormenores.net/sscc/sscc-api-guide.html">
     <link rel="alternate" type="text/plain" href="https://pormenores.net/sscc/llms.txt" title="LLMs.txt AI Agent Documentation">
@@ -14,11 +14,17 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pormenores.net/sscc/sscc-api-guide.html">
-    <meta property="og:title" content="SSCC API — Free REST API for SSCC Validation">
-    <meta property="og:description" content="Free REST API for SSCC validation, check digit generation, range expansion and file extraction. No auth required.">
+    <meta property="og:title" content="SSCC Pro Vision — Developer Portal &amp; Interactive API Sandbox">
+    <meta property="og:description" content="Live Swagger-style API sandbox, architecture diagrams and ERP manuals for GS1-128, 2D QR Digital Link and Zebra ZPL pallet labels.">
     <meta property="og:image" content="https://pormenores.net/sscc/og-image.png">
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"TechArticle","headline":"SSCC API — Free REST API for SSCC Validation","url":"https://pormenores.net/sscc/sscc-api-guide.html"}
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "SSCC Pro Vision — Developer Portal, Interactive API Sandbox & ERP Integration Manual",
+      "description": "Complete technical documentation and live sandbox for SSCC-18 validation, EDI extraction, GS1-128 & 2D QR Digital Link pallet labels, and Zebra ZPL-II generation.",
+      "url": "https://pormenores.net/sscc/sscc-api-guide.html"
+    }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,6 +33,7 @@
         :root {
             --bg:            #0b0e14;
             --surface:       #0f141f;
+            --surface-2:     #141b29;
             --surface-hover: #182030;
             --border:        #222c3d;
             --border-hover:  #f59e0b;
@@ -35,131 +42,618 @@
             --accent-cyan:   #38bdf8;
             --success:       #10b981;
             --danger:        #ef4444;
+            --purple:        #a855f7;
             --text:          #f8fafc;
             --muted:         #94a3b8;
             --text-dim:      #64748b;
-            --code-bg:       #080a0f;
+            --code-bg:       #07090e;
             --font-mono:     'JetBrains Mono', monospace;
             --font-sans:     'Plus Jakarta Sans', -apple-system, sans-serif;
         }
-        *{box-sizing:border-box;margin:0;padding:0;}
-        body{
-            font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.75;font-size:16px;
-            -webkit-font-smoothing:antialiased;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            font-size: 14.5px;
+            -webkit-font-smoothing: antialiased;
         }
-
-        /* Grelha sutil de fundo retro-terminal (em sintonia com pormenores.net) */
         body::before {
             content: "";
             position: fixed;
             inset: 0;
-            background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
             background-size: 36px 36px;
             pointer-events: none;
             z-index: -1;
         }
 
-        .site-header{
-            border-bottom:1px solid var(--border);padding:0.85rem 1.25rem;
-            position:sticky;top:0;background:rgba(11,14,20,0.94);backdrop-filter:blur(12px);z-index:100;
+        /* ─── Unified Header ─── */
+        .site-header {
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            position: sticky;
+            top: 0;
+            background: rgba(11, 14, 20, 0.94);
+            backdrop-filter: blur(12px);
+            z-index: 100;
         }
-        .header-inner{
-            max-width:800px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;
+        .header-inner {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
         }
-        .nav-brand{
-            font-family:var(--font-mono);font-size:0.95rem;font-weight:700;color:var(--text);text-decoration:none;
-            display:inline-flex;align-items:center;gap:0.5rem;transition:opacity 0.15s ease;
+        .nav-brand {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .nav-brand:hover{opacity:0.85;text-decoration:none;}
-        .brand-dot{width:8px;height:8px;background:var(--success);border-radius:50%;display:inline-block;box-shadow:0 0 10px var(--success);}
-        .brand-sep{color:var(--text-dim);}
-        .brand-sub{color:var(--primary);font-weight:600;}
-        .nav-links{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;}
-        .nav-pill{
-            font-family:var(--font-mono);font-size:0.76rem;font-weight:500;padding:0.3rem 0.65rem;border-radius:6px;
-            border:1px solid var(--border);background:rgba(255,255,255,0.02);color:var(--muted);text-decoration:none;transition:all 0.2s ease;
+        .brand-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--success); }
+        .brand-sep { color: var(--text-dim); }
+        .brand-sub { color: var(--primary); font-weight: 600; }
+        .nav-links { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        .nav-pill {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 500;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
         }
-        .nav-pill:hover,.nav-pill.active{
-            border-color:var(--primary);color:var(--primary);background:rgba(245,158,11,0.06);text-decoration:none;
+        .nav-pill:hover, .nav-pill.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.06);
         }
 
-        .wrapper{max-width:800px;margin:0 auto;padding:48px 24px 80px;}
-        .article-header{margin-bottom:28px;border-bottom:1px solid var(--border);padding-bottom:24px;}
-        .article-tag{
-            display:inline-block;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
-            color:var(--primary);background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);
-            padding:3px 10px;border-radius:20px;margin-bottom:14px;font-family:var(--font-mono);
+        /* ─── Two-Column Developer Portal Layout ─── */
+        .portal-layout {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 270px 1fr;
+            gap: 32px;
+            padding: 28px 20px 80px;
+            align-items: start;
         }
-        h1{font-family:var(--font-mono);font-size:clamp(22px,4vw,30px);font-weight:700;line-height:1.25;margin-bottom:10px;letter-spacing:-0.02em;}
-        h1 em{color:var(--primary);font-style:normal;}
-        .base-url{font-family:var(--font-mono);font-size:14px;color:var(--success);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);padding:7px 14px;border-radius:8px;display:inline-block;margin-top:6px;}
-        .notes-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:20px 0 36px;}
-        .note-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;transition:border-color 0.2s;}
-        .note-card:hover{border-color:rgba(245,158,11,0.35);}
-        .note-label{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:3px;font-family:var(--font-mono);}
-        .note-value{font-size:13px;font-weight:600;color:var(--text);font-family:var(--font-mono);}
-        h2{font-family:var(--font-mono);font-size:18px;font-weight:700;margin:40px 0 4px;padding-top:40px;border-top:1px solid var(--border);scroll-margin-top:80px;display:flex;align-items:center;gap:10px;}
-        h2:first-of-type{border-top:none;padding-top:0;margin-top:0;}
-        .method{font-family:var(--font-mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;flex-shrink:0;}
-        .method-get{background:rgba(16,185,129,0.15);color:var(--success);border:1px solid rgba(16,185,129,0.25);}
-        .method-post{background:rgba(245,158,11,0.15);color:var(--primary);border:1px solid rgba(245,158,11,0.25);}
-        .endpoint-path{font-family:var(--font-mono);font-size:15px;}
-        p{margin-bottom:12px;color:var(--muted);font-size:14px;}
-        p strong{color:var(--text);}
-        a{color:var(--primary);text-decoration:none;}
-        a:hover{text-decoration:underline;}
-        code{font-family:var(--font-mono);font-size:13px;}
-        p code,li code{background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:4px;color:var(--primary);font-size:12px;font-family:var(--font-mono);}
+        @media (max-width: 960px) {
+            .portal-layout { grid-template-columns: 1fr; }
+            .portal-sidebar { position: static !important; max-height: none !important; }
+        }
 
-        /* Code tabs */
-        .code-tabs{margin:14px 0 0;}
-        .tab-buttons{display:flex;gap:2px;flex-wrap:wrap;}
-        .tab-btn{background:var(--surface);border:1px solid var(--border);border-bottom:none;padding:5px 13px;font-size:12px;font-family:var(--font-mono);color:var(--muted);cursor:pointer;border-radius:6px 6px 0 0;transition:all 0.15s;}
-        .tab-btn:hover{color:var(--text);border-color:rgba(245,158,11,0.35);}
-        .tab-btn.active{color:var(--primary);background:var(--code-bg);border-color:var(--border);font-weight:600;}
-        .tab-btn.try-btn{color:var(--primary);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.06);}
-        .tab-btn.try-btn.active{background:var(--primary);color:#0b0e14;font-weight:700;}
-        .tab-content{display:none;}
-        .tab-content.active{display:block;}
-        pre{background:var(--code-bg);border:1px solid var(--border);border-radius:0 10px 10px 10px;padding:16px;overflow-x:auto;font-size:13px;line-height:1.6;margin:0;font-family:var(--font-mono);}
+        /* ─── Sticky Sidebar ─── */
+        .portal-sidebar {
+            position: sticky;
+            top: 70px;
+            max-height: calc(100vh - 90px);
+            overflow-y: auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .sidebar-auth-box {
+            background: var(--code-bg);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 16px;
+        }
+        .sidebar-auth-title {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar-auth-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 6px 8px;
+            border-radius: 5px;
+            margin-bottom: 6px;
+        }
+        .sidebar-auth-input:focus { outline: none; border-color: var(--primary); }
+        .sidebar-quota-status {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--success);
+        }
+        .nav-section-title {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+            margin: 14px 0 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(34, 44, 61, 0.6);
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            color: var(--muted);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            transition: all 0.15s;
+        }
+        .sidebar-link:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .m-badge {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 4px;
+            min-width: 34px;
+            text-align: center;
+        }
+        .m-get { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .m-post { background: rgba(245, 158, 11, 0.15); color: var(--primary); border: 1px solid rgba(245, 158, 11, 0.3); }
 
-        /* Try it panel */
-        .try-panel{background:var(--code-bg);border:1px solid var(--border);border-radius:0 10px 10px 10px;padding:16px;display:flex;flex-direction:column;gap:10px;}
-        .try-field{display:flex;flex-direction:column;gap:4px;}
-        .try-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-family:var(--font-mono);}
-        .try-input{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-family:var(--font-mono);font-size:13px;width:100%;transition:border-color 0.15s;}
-        .try-input:focus{outline:none;border-color:var(--primary);}
-        .try-textarea{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text);font-family:var(--font-mono);font-size:12px;width:100%;min-height:80px;resize:vertical;transition:border-color 0.15s;}
-        .try-textarea:focus{outline:none;border-color:var(--primary);}
-        .try-actions{display:flex;align-items:center;gap:10px;}
-        .try-run{background:var(--primary);color:#0b0e14;border:none;border-radius:7px;padding:7px 18px;font-size:13px;font-family:var(--font-mono);font-weight:700;cursor:pointer;transition:all 0.2s ease;}
-        .try-run:hover{background:var(--primary-light);transform:translateY(-1px);}
-        .try-run:disabled{opacity:0.5;cursor:not-allowed;}
-        .try-status{font-size:12px;font-family:var(--font-mono);padding:3px 10px;border-radius:5px;display:none;}
-        .try-status.ok{background:rgba(16,185,129,0.15);color:var(--success);display:inline-block;}
-        .try-status.err{background:rgba(239,68,68,0.15);color:var(--danger);display:inline-block;}
-        .try-status.warn{background:rgba(251,146,60,0.15);color:#fb923c;display:inline-block;}
-        .try-result{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px;font-family:var(--font-mono);font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre;display:none;margin-top:4px;}
-        .try-result.visible{display:block;}
-        .json-key{color:#38bdf8;}.json-str{color:#86efac;}.json-num{color:#fb923c;}.json-bool{color:#c084fc;}.json-null{color:#94a3b8;}
-        .comment{color:#64748b;}.kw{color:#c084fc;}.str{color:#86efac;}.num{color:#fb923c;}
+        /* ─── Main Content Area ─── */
+        .portal-main { min-width: 0; }
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(15, 20, 31, 0.95) 0%, rgba(20, 27, 41, 0.9) 100%);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 26px;
+            margin-bottom: 28px;
+        }
+        .hero-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-family: var(--font-mono);
+            font-size: clamp(22px, 3vw, 28px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        h1 em { color: var(--primary); font-style: normal; }
+        .spec-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .spec-btn {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent-cyan);
+            transition: all 0.15s;
+        }
+        .spec-btn:hover { background: rgba(56, 189, 248, 0.2); }
+        .spec-btn.amber {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.35);
+            color: var(--primary);
+        }
 
-        /* Errors */
-        .error-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
-        .error-table th{background:var(--surface);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;padding:7px 12px;border:1px solid var(--border);font-weight:500;text-align:left;font-family:var(--font-mono);}
-        .error-table td{padding:8px 12px;border:1px solid var(--border);color:var(--muted);font-family:var(--font-mono);font-size:12px;}
+        .servers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        @media (max-width: 680px) { .servers-grid { grid-template-columns: 1fr; } }
+        .server-card {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+        .server-card.commercial { border-color: rgba(245, 158, 11, 0.4); }
+        .server-label { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+        .server-url { font-family: var(--font-mono); font-size: 13px; color: var(--success); font-weight: 700; margin: 4px 0; word-break: break-all; }
+        .server-card.commercial .server-url { color: var(--primary); }
+        .server-desc { font-size: 12px; color: var(--muted); }
 
-        .cta-box{background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(56,189,248,0.06));border:1px solid rgba(245,158,11,0.25);border-radius:14px;padding:24px;text-align:center;margin-top:48px;}
-        .cta-box h3{font-family:var(--font-mono);font-size:17px;margin-bottom:8px;color:var(--text);}
-        .cta-box p{margin-bottom:16px;color:var(--muted);}
-        .cta-btn{display:inline-block;background:var(--primary);color:#0b0e14;padding:10px 22px;border-radius:6px;font-family:var(--font-mono);font-weight:700;font-size:13px;text-decoration:none;transition:all 0.2s ease;}
-        .cta-btn:hover{background:var(--primary-light);transform:translateY(-1px);text-decoration:none;}
+        /* ─── Section Cards & Diagrams ─── */
+        .doc-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+            scroll-margin-top: 80px;
+        }
+        .doc-section h2 {
+            font-family: var(--font-mono);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .doc-section h3 {
+            font-family: var(--font-mono);
+            font-size: 13.5px;
+            color: var(--primary);
+            margin: 18px 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .doc-section p { color: var(--muted); margin-bottom: 12px; }
 
-        @media(max-width:600px){.wrapper{padding:28px 16px 60px;}.nav-links{gap:12px;}}
+        /* Architecture Visual Flowchart */
+        .arch-diagram {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 14px 0;
+            overflow-x: auto;
+        }
+        .arch-grid {
+            display: grid;
+            grid-template-columns: 1fr 40px 1.3fr 40px 1fr;
+            align-items: center;
+            gap: 8px;
+            min-width: 660px;
+        }
+        .arch-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .arch-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+        }
+        .arch-box.highlight {
+            border-color: var(--primary);
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--surface) 100%);
+        }
+        .arch-box.cyan { border-color: rgba(56, 189, 248, 0.45); }
+        .arch-box.green { border-color: rgba(16, 185, 129, 0.45); }
+        .arch-box-title { font-weight: 700; color: var(--text); margin-bottom: 3px; font-size: 12px; }
+        .arch-box-sub { font-size: 10.5px; color: var(--muted); line-height: 1.4; }
+        .arch-arrow {
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 18px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* ─── Swagger-Style Interactive Endpoint Card ─── */
+        .swagger-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 22px;
+            overflow: hidden;
+            scroll-margin-top: 80px;
+        }
+        .swagger-card.pro-endpoint {
+            border-color: rgba(245, 158, 11, 0.38);
+        }
+        .swagger-header {
+            padding: 14px 18px;
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .swagger-title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .swagger-method {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .swagger-path {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .swagger-server-pill {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+        .swagger-server-pill.pro {
+            background: rgba(245, 158, 11, 0.14);
+            color: var(--primary);
+            border-color: rgba(245, 158, 11, 0.35);
+            font-weight: 700;
+        }
+        .swagger-body {
+            padding: 18px;
+        }
+        .swagger-desc {
+            color: var(--muted);
+            font-size: 13.5px;
+            margin-bottom: 14px;
+        }
+
+        /* Parameter Schema Table */
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            font-size: 12px;
+        }
+        .param-table th {
+            text-align: left;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            background: rgba(0, 0, 0, 0.25);
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+        }
+        .param-table td {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .param-name { font-family: var(--font-mono); font-weight: 700; color: var(--text); }
+        .param-req { font-family: var(--font-mono); font-size: 9.5px; color: var(--danger); font-weight: 700; margin-left: 4px; }
+        .param-opt { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-dim); margin-left: 4px; }
+        .param-type { font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); }
+        .param-input, .param-select {
+            width: 100%;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 6px 9px;
+            border-radius: 6px;
+        }
+        .param-input:focus, .param-select:focus { outline: none; border-color: var(--primary); }
+
+        /* Sandbox Execution Bar & Output */
+        .sandbox-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .btn-execute {
+            background: var(--primary);
+            color: #0b0e14;
+            border: none;
+            border-radius: 7px;
+            padding: 8px 18px;
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .btn-execute:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .btn-execute:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .code-tabs { margin-top: 10px; }
+        .tab-buttons { display: flex; gap: 3px; flex-wrap: wrap; }
+        .tab-btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            padding: 6px 13px;
+            font-size: 11.5px;
+            font-family: var(--font-mono);
+            color: var(--muted);
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            background: var(--code-bg);
+            font-weight: 700;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 0 8px 8px 8px;
+            padding: 14px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.6;
+            font-family: var(--font-mono);
+            color: #e2e8f0;
+        }
+
+        .response-console {
+            display: none;
+            margin-top: 14px;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .response-console.visible { display: block; }
+        .response-meta-bar {
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+        }
+        .status-pill {
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: 700;
+        }
+        .status-pill.ok { background: rgba(16, 185, 129, 0.16); color: var(--success); }
+        .status-pill.err { background: rgba(239, 68, 68, 0.16); color: #f87171; }
+        .status-pill.pay { background: rgba(245, 158, 11, 0.18); color: var(--primary); }
+        .response-body-pre {
+            padding: 14px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.55;
+            overflow-x: auto;
+            max-height: 420px;
+            white-space: pre;
+        }
+        .response-visual-preview {
+            padding: 16px;
+            background: #121722;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+        .response-visual-preview.visible { display: block; }
+
+        /* Pricing Table inside Docs */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 14px 0;
+        }
+        @media (max-width: 780px) { .pricing-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } }
+        .price-box {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .price-box.featured {
+            border-color: var(--primary);
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--code-bg) 100%);
+        }
+        .price-tier { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text); }
+        .price-val { font-family: var(--font-mono); font-size: 20px; font-weight: 800; color: var(--primary); margin: 6px 0 2px; }
+        .price-credits { font-family: var(--font-mono); font-size: 11.5px; color: var(--success); font-weight: 700; }
+        .price-desc { font-size: 11px; color: var(--muted); margin: 8px 0 12px; }
+        .price-cta {
+            display: block;
+            text-align: center;
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+        .price-box.featured .price-cta, .price-cta:hover {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+
+        .json-key { color: #38bdf8; }
+        .json-str { color: #86efac; }
+        .json-num { color: #fb923c; }
+        .json-bool { color: #c084fc; }
+        .json-null { color: #94a3b8; }
+
+        /* Embedded GS1 Label Sheet CSS for Live Visual Preview in Sandbox */
+        .gs1-label-sheet {
+            background: #ffffff;
+            color: #000000;
+            border: 2.5px solid #000000;
+            border-radius: 4px;
+            padding: 14px;
+            font-family: Arial, Helvetica, sans-serif;
+            max-width: 460px;
+            margin: 0 auto;
+        }
+        .lbl-row { border-bottom: 2px solid #000; padding: 7px 0; display: flex; justify-content: space-between; gap: 10px; }
+        .lbl-field-tag { display: block; font-size: 8px; font-weight: 800; color: #333; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+        .lbl-company { font-size: 12.5px; font-weight: 800; color: #000; text-transform: uppercase; }
+        .lbl-subtext { font-size: 10px; color: #555; margin-top: 2px; }
+        .lbl-meta-value { font-size: 11.5px; font-weight: 700; color: #000; }
+        .lbl-sscc-section { border-bottom: none; padding: 9px 0 2px; text-align: center; display: block; }
+        .lbl-sscc-title { display: block; font-size: 9px; font-weight: 800; letter-spacing: 0.06em; margin-bottom: 3px; color: #000; }
+        .lbl-sscc-hri { font-family: 'JetBrains Mono', monospace; font-size: 13.5px; font-weight: 800; letter-spacing: 0.04em; color: #000; margin-bottom: 6px; }
+        .lbl-barcode-wrap { width: 100%; display: flex; justify-content: center; background: #fff; padding: 3px 0; }
+        .lbl-pallet-tag { font-size: 9px; font-weight: 800; color: #000; background: #e2e8f0; padding: 1px 5px; border-radius: 3px; font-family: monospace; }
     </style>
-    <!-- Auto-Redirect GitHub Pages to pormenores.net/sscc/ -->
     <script>
     if (window.location.hostname.includes('github.io')) {
         var path = window.location.pathname.replace(/^\/sscc-check\//, '');
@@ -168,194 +662,579 @@
     </script>
 </head>
 <body>
+
 <header class="site-header">
     <div class="header-inner">
         <a class="nav-brand" href="index.html" title="Back to SSCC Pro Vision">
             <span class="brand-dot"></span>
             <span>pormenores.net</span>
             <span class="brand-sep">/</span>
-            <span class="brand-sub">api</span>
+            <span class="brand-sub">api-portal</span>
         </a>
         <nav class="nav-links">
             <a class="nav-pill" href="index.html">Vision Tool</a>
             <a class="nav-pill" href="calculator.html">Calculator</a>
-            <a class="nav-pill" href="guide.html">Guide</a>
-            <a class="nav-pill active" href="sscc-api-guide.html">API</a>
+            <a class="nav-pill" href="guide.html">Technical Guide</a>
+            <a class="nav-pill active" href="sscc-api-guide.html">API &amp; Sandbox</a>
         </nav>
     </div>
 </header>
 
-<div class="wrapper">
-    <header class="article-header">
-        <span class="article-tag">REST API</span>
-        <h1>SSCC <em>API</em></h1>
-        <p>Free, open REST API — no authentication required. Built on Cloudflare Workers.</p>
-        <div class="base-url">https://sscc.birth1mark.workers.dev</div>
-    </header>
-
-    <div style="margin: 16px 0 24px; padding: 12px 18px; background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.25); border-radius: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-        <div style="font-size: 13px; color: var(--text);">
-            <strong>OpenAPI 3.1 Specification:</strong> Ready for Swagger, Postman, and automated SDK generation.
-        </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <a href="openapi.yaml" download style="color: var(--primary); font-size: 12px; font-weight: 600; text-decoration: none; padding: 4px 10px; border-radius: 6px; background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);">⬇ openapi.yaml</a>
-            <a href="openapi.json" download style="color: var(--primary); font-size: 12px; font-weight: 600; text-decoration: none; padding: 4px 10px; border-radius: 6px; background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);">⬇ openapi.json</a>
-            <a href="llms.txt" style="color: var(--primary); font-size: 12px; font-weight: 600; text-decoration: none; padding: 4px 10px; border-radius: 6px; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.35);">🤖 llms.txt</a>
-        </div>
-    </div>
-
-    <div class="notes-grid">
-        <div class="note-card"><div class="note-label">Auth</div><div class="note-value">None</div></div>
-        <div class="note-card"><div class="note-label">Rate limit</div><div class="note-value">500 req/hour</div></div>
-        <div class="note-card"><div class="note-label">CORS</div><div class="note-value">* (open)</div></div>
-        <div class="note-card"><div class="note-label">Format</div><div class="note-value">JSON</div></div>
-        <div class="note-card"><div class="note-label">Max range</div><div class="note-value">500 codes</div></div>
-        <div class="note-card"><div class="note-label">Runtime</div><div class="note-value">CF edge</div></div>
-    </div>
-
-    <!-- /validate -->
-    <h2 id="validate"><span class="method method-get">GET</span><span class="endpoint-path">/validate</span></h2>
-    <p>Validates an 18-digit SSCC. Accepts bare 18-digit strings or 20-digit with AI <code>(00)</code> prefix.</p>
-    <div class="code-tabs">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab(this,'v-curl')">curl</button>
-            <button class="tab-btn" onclick="switchTab(this,'v-js')">JavaScript</button>
-            <button class="tab-btn" onclick="switchTab(this,'v-py')">Python</button>
-            <button class="tab-btn try-btn" onclick="switchTab(this,'v-try')">▶ Try it</button>
-        </div>
-        <div id="v-curl" class="tab-content active"><pre><code id="v-curl-code">curl "https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016"</code></pre></div>
-        <div id="v-js" class="tab-content"><pre><code id="v-js-code"><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();</code></pre></div>
-        <div id="v-py" class="tab-content"><pre><code id="v-py-code">r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/validate'</span>, params={<span class="str">'sscc'</span>: <span class="str">'356012345600000016'</span>})</code></pre></div>
-        <div id="v-try" class="tab-content">
-            <div class="try-panel">
-                <div class="try-field"><span class="try-label">sscc</span><input class="try-input" id="t-v-sscc" value="356012345600000016" oninput="updateCode('validate')"></div>
-                <div class="try-actions"><button class="try-run" onclick="tryCall('validate')">▶ Run</button><span class="try-status" id="t-v-status"></span></div>
-                <div class="try-result" id="t-v-result"></div>
+<div class="portal-layout">
+    <!-- ==================== LEFT STICKY SIDEBAR ==================== -->
+    <aside class="portal-sidebar">
+        <div class="sidebar-auth-box">
+            <div class="sidebar-auth-title">
+                <span>🔑 Sandbox Auth Key</span>
+                <button onclick="checkSandboxQuota()" style="background:none;border:none;color:var(--primary);font-family:var(--font-mono);font-size:10px;cursor:pointer;text-decoration:underline;">Check</button>
             </div>
+            <input type="text" id="global-api-key" class="sidebar-auth-input" placeholder="X-API-Key (sscc_pro_...)" oninput="syncGlobalApiKey()">
+            <div id="sidebar-quota-text" class="sidebar-quota-status">🟢 Free Tier: 25 labels included</div>
         </div>
-    </div>
 
-    <!-- /generate -->
-    <h2 id="generate"><span class="method method-get">GET</span><span class="endpoint-path">/generate</span></h2>
-    <p>Calculates the check digit for a 17-digit SSCC body and returns the complete 18-digit SSCC.</p>
-    <div class="code-tabs">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab(this,'g-curl')">curl</button>
-            <button class="tab-btn" onclick="switchTab(this,'g-js')">JavaScript</button>
-            <button class="tab-btn" onclick="switchTab(this,'g-py')">Python</button>
-            <button class="tab-btn try-btn" onclick="switchTab(this,'g-try')">▶ Try it</button>
-        </div>
-        <div id="g-curl" class="tab-content active"><pre><code id="g-curl-code">curl "https://sscc.birth1mark.workers.dev/generate?body=35601234560000001"</code></pre></div>
-        <div id="g-js" class="tab-content"><pre><code id="g-js-code"><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/generate?body=35601234560000001'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();</code></pre></div>
-        <div id="g-py" class="tab-content"><pre><code id="g-py-code">r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/generate'</span>, params={<span class="str">'body'</span>: <span class="str">'35601234560000001'</span>})</code></pre></div>
-        <div id="g-try" class="tab-content">
-            <div class="try-panel">
-                <div class="try-field"><span class="try-label">body — 17 digits</span><input class="try-input" id="t-g-body" value="35601234560000001" oninput="updateCode('generate')"></div>
-                <div class="try-actions"><button class="try-run" onclick="tryCall('generate')">▶ Run</button><span class="try-status" id="t-g-status"></span></div>
-                <div class="try-result" id="t-g-result"></div>
-            </div>
-        </div>
-    </div>
+        <div class="nav-section-title">Architecture &amp; Manuals</div>
+        <a href="#architecture" class="sidebar-link">01. Architecture Diagram</a>
+        <a href="#quotas-pricing" class="sidebar-link">02. Quotas &amp; Credit Plans</a>
+        <a href="#erp-manuals" class="sidebar-link">03. Zebra TCP &amp; ERP Manuals</a>
 
-    <!-- /range -->
-    <h2 id="range"><span class="method method-get">GET</span><span class="endpoint-path">/range</span></h2>
-    <p>Generates every SSCC between two codes with check digits. Accepts 17, 18 or 20-digit inputs. Max 500 codes.</p>
-    <div class="code-tabs">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab(this,'r-curl')">curl</button>
-            <button class="tab-btn" onclick="switchTab(this,'r-js')">JavaScript</button>
-            <button class="tab-btn" onclick="switchTab(this,'r-py')">Python</button>
-            <button class="tab-btn try-btn" onclick="switchTab(this,'r-try')">▶ Try it</button>
-        </div>
-        <div id="r-curl" class="tab-content active"><pre><code id="r-curl-code">curl "https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005"</code></pre></div>
-        <div id="r-js" class="tab-content"><pre><code id="r-js-code"><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/range?from=35601234560000001&to=35601234560000005'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();</code></pre></div>
-        <div id="r-py" class="tab-content"><pre><code id="r-py-code">r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/range'</span>, params={<span class="str">'from'</span>: <span class="str">'35601234560000001'</span>, <span class="str">'to'</span>: <span class="str">'35601234560000005'</span>})</code></pre></div>
-        <div id="r-try" class="tab-content">
-            <div class="try-panel">
-                <div class="try-field"><span class="try-label">from</span><input class="try-input" id="t-r-from" value="35601234560000001" oninput="updateCode('range')"></div>
-                <div class="try-field"><span class="try-label">to</span><input class="try-input" id="t-r-to" value="35601234560000005" oninput="updateCode('range')"></div>
-                <div class="try-actions"><button class="try-run" onclick="tryCall('range')">▶ Run</button><span class="try-status" id="t-r-status"></span></div>
-                <div class="try-result" id="t-r-result"></div>
-            </div>
-        </div>
-    </div>
+        <div class="nav-section-title">Labels &amp; 2D QR API (v1)</div>
+        <a href="#ep-labels-batch" class="sidebar-link"><span class="m-badge m-post">POST</span><span>/v1/labels</span></a>
+        <a href="#ep-qr-svg" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/v1/qr</span></a>
+        <a href="#ep-quota" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/v1/quota</span></a>
 
-    <!-- /prefix -->
-    <h2 id="prefix"><span class="method method-get">GET</span><span class="endpoint-path">/prefix</span></h2>
-    <p>Returns the GS1 member country for an SSCC based on its company prefix.</p>
-    <div class="code-tabs">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab(this,'p-curl')">curl</button>
-            <button class="tab-btn" onclick="switchTab(this,'p-js')">JavaScript</button>
-            <button class="tab-btn" onclick="switchTab(this,'p-py')">Python</button>
-            <button class="tab-btn try-btn" onclick="switchTab(this,'p-try')">▶ Try it</button>
-        </div>
-        <div id="p-curl" class="tab-content active"><pre><code id="p-curl-code">curl "https://sscc.birth1mark.workers.dev/prefix?sscc=356012345600000016"</code></pre></div>
-        <div id="p-js" class="tab-content"><pre><code id="p-js-code"><span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/prefix?sscc=356012345600000016'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();</code></pre></div>
-        <div id="p-py" class="tab-content"><pre><code id="p-py-code">r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/prefix'</span>, params={<span class="str">'sscc'</span>: <span class="str">'356012345600000016'</span>})</code></pre></div>
-        <div id="p-try" class="tab-content">
-            <div class="try-panel">
-                <div class="try-field"><span class="try-label">sscc</span><input class="try-input" id="t-p-sscc" value="356012345600000016" oninput="updateCode('prefix')"></div>
-                <div class="try-actions"><button class="try-run" onclick="tryCall('prefix')">▶ Run</button><span class="try-status" id="t-p-status"></span></div>
-                <div class="try-result" id="t-p-result"></div>
-            </div>
-        </div>
-    </div>
+        <div class="nav-section-title">Core Validation API</div>
+        <a href="#ep-validate" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/validate</span></a>
+        <a href="#ep-generate" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/generate</span></a>
+        <a href="#ep-range" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/range</span></a>
+        <a href="#ep-prefix" class="sidebar-link"><span class="m-badge m-get">GET</span><span>/prefix</span></a>
+        <a href="#ep-extract" class="sidebar-link"><span class="m-badge m-post">POST</span><span>/extract</span></a>
+    </aside>
 
-    <!-- /extract -->
-    <h2 id="extract"><span class="method method-post">POST</span><span class="endpoint-path">/extract</span></h2>
-    <p>Send raw file content as the request body — EDIFACT, IDoc SAP, XML, CSV or TXT. Format detected automatically.</p>
-    <div class="code-tabs">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab(this,'e-curl')">curl</button>
-            <button class="tab-btn" onclick="switchTab(this,'e-js')">JavaScript</button>
-            <button class="tab-btn" onclick="switchTab(this,'e-py')">Python</button>
-            <button class="tab-btn try-btn" onclick="switchTab(this,'e-try')">▶ Try it</button>
-        </div>
-        <div id="e-curl" class="tab-content active"><pre><code id="e-curl-code">curl -X POST "https://sscc.birth1mark.workers.dev/extract" \
-  -H "Content-Type: text/plain" \
-  --data-binary @desadv.edi</code></pre></div>
-        <div id="e-js" class="tab-content"><pre><code id="e-js-code"><span class="kw">const</span> content = <span class="kw">await</span> file.text();
-<span class="kw">const</span> res     = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/extract'</span>, { method: <span class="str">'POST'</span>, body: content });
-<span class="kw">const</span> data    = <span class="kw">await</span> res.json();</code></pre></div>
-        <div id="e-py" class="tab-content"><pre><code id="e-py-code"><span class="kw">with</span> open(<span class="str">'desadv.edi'</span>) <span class="kw">as</span> f: content = f.read()
-r = requests.post(<span class="str">'https://sscc.birth1mark.workers.dev/extract'</span>, data=content)</code></pre></div>
-        <div id="e-try" class="tab-content">
-            <div class="try-panel">
-                <div class="try-field">
-                    <span class="try-label">File content</span>
-                    <textarea class="try-textarea" id="t-e-body">GIN+BJ:356012345600000016'
-GIN+BJ:356012345600000023'
-GIN+BJ:356012345600000030'</textarea>
+    <!-- ==================== MAIN DEVELOPER PORTAL & SWAGGER SANDBOX ==================== -->
+    <main class="portal-main">
+        <div class="hero-banner">
+            <span class="hero-tag">Developer Portal &amp; OpenAPI 3.1 Sandbox</span>
+            <h1>SSCC Pro Vision <em>REST API &amp; Label Engine</em></h1>
+            <p style="color:var(--muted);max-width:740px;">
+                Enterprise-grade Cloudflare Edge APIs for <strong>SSCC-18 Modulo 10 validation</strong>, <strong>EDIFACT / SAP IDoc extraction</strong>, and <strong>Dual-Symbology GS1 Logistics Pallet Labels</strong> (Classic 1D <code>GS1-128</code> + Sunrise 2027 2D <code>QR Code GS1 Digital Link</code> in native <strong>Zebra ZPL-II</strong>, Vector <strong>SVG</strong> and Printable <strong>A5/4×6" HTML</strong>).
+            </p>
+
+            <div class="servers-grid">
+                <div class="server-card">
+                    <div class="server-label">Server 1 · Validation &amp; EDI Extraction (Free)</div>
+                    <div class="server-url">https://sscc.birth1mark.workers.dev</div>
+                    <div class="server-desc">Open access · 500 req/hr · Validate, calculate check digits, expand ranges &amp; parse EDIFACT/XML.</div>
                 </div>
-                <div class="try-actions"><button class="try-run" onclick="tryCall('extract')">▶ Run</button><span class="try-status" id="t-e-status"></span></div>
-                <div class="try-result" id="t-e-result"></div>
+                <div class="server-card commercial">
+                    <div class="server-label">Server 2 · GS1 Pallet Labels, ZPL &amp; 2D QR Engine</div>
+                    <div class="server-url">https://sscc-labels.birth1mark.workers.dev</div>
+                    <div class="server-desc">25 free labels included · Pro <code>X-API-Key</code> unlocks high-volume ZPL, Dual 1D+2D QR &amp; A5 labels.</div>
+                </div>
+            </div>
+
+            <div class="spec-bar">
+                <a href="openapi.yaml" download class="spec-btn">⬇ OpenAPI 3.1 (YAML)</a>
+                <a href="openapi.json" download class="spec-btn">⬇ OpenAPI 3.1 (JSON)</a>
+                <a href="llms.txt" class="spec-btn amber">🤖 llms.txt (AI Agents &amp; MCP Spec)</a>
             </div>
         </div>
-    </div>
 
-    <!-- Errors -->
-    <h2 id="errors">Errors</h2>
-    <table class="error-table">
-        <tr><th>Status</th><th>Meaning</th></tr>
-        <tr><td>400</td><td>Missing or invalid parameter</td></tr>
-        <tr><td>405</td><td>Method not allowed</td></tr>
-        <tr><td>429</td><td>Rate limit exceeded — max 500 req/hour per IP</td></tr>
-    </table>
+        <!-- ==================== 01. TECHNICAL ARCHITECTURE DIAGRAM ==================== -->
+        <section id="architecture" class="doc-section">
+            <h2>01. System Architecture &amp; Data Flow Diagram</h2>
+            <p>Both APIs execute at the Cloudflare Edge in <strong>&lt; 5 ms</strong> with zero external runtime dependencies. Vector barcode geometry (Code 128 Subset C/B + FNC1 and ISO/IEC 18004 Reed-Solomon QR matrices) and Zebra ZPL-II command streams are compiled deterministically in memory.</p>
 
-    <div class="cta-box">
-        <h3>Prefer a visual interface?</h3>
-        <p>SSCC Pro Vision runs entirely in the browser — scan barcodes, validate codes, upload EDIFACT files and export results as CSV.</p>
-        <a class="cta-btn" href="./">Open SSCC Pro Vision →</a>
-    </div>
+            <div class="arch-diagram">
+                <div class="arch-grid">
+                    <!-- Column 1: Inputs -->
+                    <div class="arch-col">
+                        <div class="arch-box cyan">
+                            <div class="arch-box-title">🏢 ERP / WMS Systems</div>
+                            <div class="arch-box-sub">SAP S/4HANA (IDoc EXIDV), Odoo, Microsoft Dynamics, Custom WMS</div>
+                        </div>
+                        <div class="arch-box cyan">
+                            <div class="arch-box-title">📄 EDI Messages</div>
+                            <div class="arch-box-sub">UN/EDIFACT DESADV (GIN+BJ, RFF+SI), XML, CSV Batches</div>
+                        </div>
+                        <div class="arch-box cyan">
+                            <div class="arch-box-title">📱 Web Studio &amp; Scanners</div>
+                            <div class="arch-box-sub">pormenores.net/sscc/ PWA, Camera &amp; USB Laser Wedge</div>
+                        </div>
+                    </div>
+
+                    <div class="arch-arrow">➔</div>
+
+                    <!-- Column 2: Cloudflare Edge Engine -->
+                    <div class="arch-col">
+                        <div class="arch-box highlight">
+                            <div class="arch-box-title">⚡ Cloudflare Edge Worker 1: Validator</div>
+                            <div class="arch-box-sub">
+                                • GS1 Modulo 10 Check Digit Engine<br>
+                                • 2025 GS1 Country Prefix Registry<br>
+                                • Non-overlapping Regex &amp; Segment Parser
+                            </div>
+                        </div>
+                        <div class="arch-box highlight">
+                            <div class="arch-box-title">🏷️ Cloudflare Edge Worker 2: Label Engine</div>
+                            <div class="arch-box-sub">
+                                • <strong>1D GS1-128</strong>: Subset C/B + FNC1 (AI 00, 02, 10, 15, 37)<br>
+                                • <strong>2D QR Code</strong>: ISO/IEC 18004 GS1 Digital Link URI<br>
+                                • <strong>Quota Ledger (LABELS_KV)</strong>: 4-Layer Free Tier &amp; Pro Keys
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arch-arrow">➔</div>
+
+                    <!-- Column 3: Outputs -->
+                    <div class="arch-col">
+                        <div class="arch-box green">
+                            <div class="arch-box-title">🖨️ Industrial Zebra Thermal</div>
+                            <div class="arch-box-sub">Native ZPL-II (<code>^BCN</code> + <code>^BQN</code>) over Raw TCP Port 9100 (4×6")</div>
+                        </div>
+                        <div class="arch-box green">
+                            <div class="arch-box-title">📄 A5 / A6 Pallet Sheets</div>
+                            <div class="arch-box-sub">Pure Vector SVG &amp; Multi-Page Print HTML/PDF</div>
+                        </div>
+                        <div class="arch-box green">
+                            <div class="arch-box-title">📲 2D Smartphone &amp; Gate Scan</div>
+                            <div class="arch-box-sub">GS1 Sunrise 2027 Digital Link Resolver &amp; JSON Audit</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 02. QUOTAS, AUTH & PRICING ==================== -->
+        <section id="quotas-pricing" class="doc-section">
+            <h2>02. Authentication, Quotas &amp; Credit Plans</h2>
+            <p>The Validation API (<code>sscc.birth1mark.workers.dev</code>) is 100% free. The Commercial Pallet Label &amp; ZPL API (<code>sscc-labels.birth1mark.workers.dev</code>) includes <strong>25 free pallet labels</strong> per company prefix (<code>GCP</code>) for evaluation. High-volume production requires an <code>X-API-Key</code> header (`sscc_pro_...`).</p>
+
+            <div class="pricing-grid">
+                <div class="price-box">
+                    <div>
+                        <div class="price-tier">Free Evaluation</div>
+                        <div class="price-val">0 €</div>
+                        <div class="price-credits">25 Pallet Labels</div>
+                        <div class="price-desc">No API key required. Enforced by GS1 Company Prefix (GCP) &amp; IP.</div>
+                    </div>
+                    <a href="#ep-labels-batch" class="price-cta">Test in Sandbox ↓</a>
+                </div>
+
+                <div class="price-box">
+                    <div>
+                        <div class="price-tier">Emergency Pack</div>
+                        <div class="price-val">5 €</div>
+                        <div class="price-credits">250 Label Credits</div>
+                        <div class="price-desc">One-time payment. Credits never expire (~7 full truckloads).</div>
+                    </div>
+                    <a href="https://buy.stripe.com/cNieVd4cm1UU7bAgcre3e01" target="_blank" rel="noopener" class="price-cta">Buy 250 Credits</a>
+                </div>
+
+                <div class="price-box">
+                    <div>
+                        <div class="price-tier">Business Pack</div>
+                        <div class="price-val">15 €</div>
+                        <div class="price-credits">1,000 Label Credits</div>
+                        <div class="price-desc">One-time payment. Credits never expire (~30 full truckloads).</div>
+                    </div>
+                    <a href="https://buy.stripe.com/bJe9AT9wGarq67wf8ne3e02" target="_blank" rel="noopener" class="price-cta">Buy 1,000 Credits</a>
+                </div>
+
+                <div class="price-box featured">
+                    <div>
+                        <div class="price-tier">⭐ Pro Unlimited</div>
+                        <div class="price-val">29 € <span style="font-size:11px;font-weight:400;color:var(--muted);">/yr</span></div>
+                        <div class="price-credits">100,000 Labels / Year</div>
+                        <div class="price-desc">&lt; 2.50 €/month. Full ERP REST API, Batch ZPL-II &amp; Dual 1D+2D QR.</div>
+                    </div>
+                    <a href="https://buy.stripe.com/28EeVdeR0eHG53s3pFe3e03" target="_blank" rel="noopener" class="price-cta">Unlock Unlimited</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SWAGGER ENDPOINT 1: POST /v1/labels ==================== -->
+        <div id="ep-labels-batch" class="swagger-card pro-endpoint">
+            <div class="swagger-header">
+                <div class="swagger-title-left">
+                    <span class="swagger-method m-post">POST</span>
+                    <span class="swagger-path">/v1/labels</span>
+                    <span class="swagger-server-pill pro">sscc-labels.birth1mark.workers.dev</span>
+                </div>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--primary);">1D GS1-128 + 2D QR Digital Link · ZPL / HTML / SVG / JSON</span>
+            </div>
+            <div class="swagger-body">
+                <p class="swagger-desc">Generates single or batch GS1 Logistics Pallet Labels (1 to 500 units). Supports explicit SSCC arrays or sequential generation from a GS1 Company Prefix (<code>gcp</code>), optional Multi-AI trade item barcodes (<code>AI 02</code> GTIN, <code>AI 15</code> Best Before, <code>AI 37</code> Count, <code>AI 10</code> Batch/Lot), and 3 symbology modes (<code>dual</code>, <code>gs1-128</code>, <code>qr</code>).</p>
+
+                <table class="param-table">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Value (Live Sandbox Input)</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="param-name">gcp</span><span class="param-opt">body</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><input type="text" id="sb-lbl-gcp" class="param-input" value="5601234" oninput="updateLabelsCode()"></td>
+                            <td>GS1 Company Prefix (6 to 11 digits)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">startSerial</span><span class="param-opt">body</span></td>
+                            <td><span class="param-type">integer</span></td>
+                            <td><input type="number" id="sb-lbl-start" class="param-input" value="1001" oninput="updateLabelsCode()"></td>
+                            <td>Starting serial reference number</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">quantity</span><span class="param-opt">body</span></td>
+                            <td><span class="param-type">integer</span></td>
+                            <td><input type="number" id="sb-lbl-qty" class="param-input" value="1" min="1" max="500" oninput="updateLabelsCode()"></td>
+                            <td>Number of sequential pallet labels (1–500)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">symbology</span><span class="param-opt">enum</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>
+                                <select id="sb-lbl-sym" class="param-select" onchange="updateLabelsCode()">
+                                    <option value="dual" selected>dual (1D GS1-128 + 2D QR Digital Link)</option>
+                                    <option value="gs1-128">gs1-128 (Classic 1D Only)</option>
+                                    <option value="qr">qr (2D QR Digital Link Only — Sunrise 2027)</option>
+                                </select>
+                            </td>
+                            <td>Barcode symbology mode on label</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">format</span><span class="param-opt">enum</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>
+                                <select id="sb-lbl-fmt" class="param-select" onchange="updateLabelsCode()">
+                                    <option value="json" selected>json (Full payload + Live Visual Preview)</option>
+                                    <option value="zpl">zpl (Raw Zebra ZPL-II thermal code)</option>
+                                    <option value="html">html (Printable A5/4x6" document)</option>
+                                </select>
+                            </td>
+                            <td>Response output format</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">sender</span><span class="param-opt">body</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><input type="text" id="sb-lbl-sender" class="param-input" value="ACME LOGISTICS PORTUGAL LDA" oninput="updateLabelsCode()"></td>
+                            <td>Consignor / Sender company name (FROM)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">recipient</span><span class="param-opt">body</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><input type="text" id="sb-lbl-rec" class="param-input" value="SONAE DISTRIBUTION HUB AZAMBUJA" oninput="updateLabelsCode()"></td>
+                            <td>Consignee / Destination hub (TO)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">gtin / batchNo / expiryDate</span><span class="param-opt">multi-AI</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:4px;">
+                                <input type="text" id="sb-lbl-gtin" class="param-input" placeholder="GTIN (AI 02)" value="05601234567892" oninput="updateLabelsCode()">
+                                <input type="text" id="sb-lbl-batch" class="param-input" placeholder="Lot (AI 10)" value="LOT-26A" oninput="updateLabelsCode()">
+                                <input type="text" id="sb-lbl-exp" class="param-input" placeholder="Exp (AI 15)" value="2026-12-31" oninput="updateLabelsCode()">
+                            </td>
+                            <td>Generates secondary upper GS1-128 barcode &amp; enriches 2D QR Digital Link</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="sandbox-toolbar">
+                    <button class="btn-execute" id="btn-exec-labels" onclick="executeLabelsSandbox()">▶ Execute Request (Live Sandbox)</button>
+                    <span style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">Consumes <code>quantity</code> credit(s) from Free Quota or <code>X-API-Key</code></span>
+                </div>
+
+                <div class="code-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchTab(this,'lbl-curl')">cURL</button>
+                        <button class="tab-btn" onclick="switchTab(this,'lbl-py')">Python (ERP / Zebra TCP)</button>
+                        <button class="tab-btn" onclick="switchTab(this,'lbl-js')">JavaScript</button>
+                    </div>
+                    <div id="lbl-curl" class="tab-content active"><pre><code id="lbl-curl-code"></code></pre></div>
+                    <div id="lbl-py" class="tab-content"><pre><code id="lbl-py-code"></code></pre></div>
+                    <div id="lbl-js" class="tab-content"><pre><code id="lbl-js-code"></code></pre></div>
+                </div>
+
+                <div id="res-box-labels" class="response-console">
+                    <div class="response-meta-bar">
+                        <span id="res-status-labels" class="status-pill ok">200 OK</span>
+                        <span id="res-headers-labels" style="color:var(--muted);"></span>
+                    </div>
+                    <div id="res-preview-labels" class="response-visual-preview"></div>
+                    <div id="res-body-labels" class="response-body-pre"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SWAGGER ENDPOINT 2: GET /v1/qr ==================== -->
+        <div id="ep-qr-svg" class="swagger-card pro-endpoint">
+            <div class="swagger-header">
+                <div class="swagger-title-left">
+                    <span class="swagger-method m-get">GET</span>
+                    <span class="swagger-path">/v1/qr</span>
+                    <span class="swagger-server-pill pro">sscc-labels.birth1mark.workers.dev</span>
+                </div>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--success);">Free Unlimited · Returns image/svg+xml</span>
+            </div>
+            <div class="swagger-body">
+                <p class="swagger-desc">Generates a standalone, pure vector <strong>ISO/IEC 18004 2D QR Code (`image/svg+xml`)</strong> encoding the official <strong>GS1 Digital Link URI</strong> for an 18-digit SSCC and optional batch/expiry attributes. Does not consume label quota credits.</p>
+
+                <table class="param-table">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Value</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="param-name">sscc</span><span class="param-req">required</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><input type="text" id="sb-qr-sscc" class="param-input" value="356012345600000016"></td>
+                            <td>17, 18, or 20-digit SSCC code</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">batch</span><span class="param-opt">optional</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><input type="text" id="sb-qr-batch" class="param-input" value="LOT-99A"></td>
+                            <td>Batch / Lot number (AI 10)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="sandbox-toolbar">
+                    <button class="btn-execute" onclick="executeQrSandbox()">▶ Execute &amp; Render 2D QR SVG</button>
+                </div>
+
+                <div id="res-box-qr" class="response-console">
+                    <div class="response-meta-bar">
+                        <span id="res-status-qr" class="status-pill ok">200 OK · image/svg+xml</span>
+                    </div>
+                    <div id="res-preview-qr" class="response-visual-preview visible" style="text-align:center;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SWAGGER ENDPOINT 3: GET /v1/quota ==================== -->
+        <div id="ep-quota" class="swagger-card pro-endpoint">
+            <div class="swagger-header">
+                <div class="swagger-title-left">
+                    <span class="swagger-method m-get">GET</span>
+                    <span class="swagger-path">/v1/quota</span>
+                    <span class="swagger-server-pill pro">sscc-labels.birth1mark.workers.dev</span>
+                </div>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">Zero-Cost Quota &amp; Key Balance Check</span>
+            </div>
+            <div class="swagger-body">
+                <p class="swagger-desc">Returns the remaining free label allowance (out of 25) for a GS1 Company Prefix / IP, or the remaining credit balance of the active <code>X-API-Key</code> passed in the header.</p>
+                <div class="sandbox-toolbar">
+                    <button class="btn-execute" onclick="checkSandboxQuota(true)">▶ Execute Quota Check</button>
+                </div>
+                <div id="res-box-quota" class="response-console">
+                    <div class="response-meta-bar"><span id="res-status-quota" class="status-pill ok">200 OK</span></div>
+                    <div id="res-body-quota" class="response-body-pre"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CORE VALIDATION ENDPOINTS ==================== -->
+        <div id="ep-validate" class="swagger-card">
+            <div class="swagger-header">
+                <div class="swagger-title-left">
+                    <span class="swagger-method m-get">GET</span>
+                    <span class="swagger-path">/validate</span>
+                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                </div>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--success);">Free Public Endpoint</span>
+            </div>
+            <div class="swagger-body">
+                <p class="swagger-desc">Validates an 18-digit SSCC (or 20-digit with AI <code>00</code>), verifies the GS1 Modulo 10 check digit, and returns the GS1 member country and flag.</p>
+                <div class="try-panel" style="border-radius:8px;">
+                    <div class="try-field"><span class="try-label">sscc (query parameter)</span><input class="param-input" id="t-v-sscc" value="356012345600000016" oninput="updateCode('validate')"></div>
+                    <div class="sandbox-toolbar" style="margin:6px 0 0;">
+                        <button class="btn-execute" onclick="tryCall('validate')">▶ Execute /validate</button>
+                        <span class="try-status" id="t-v-status"></span>
+                    </div>
+                    <div class="try-result" id="t-v-result" style="background:var(--surface);padding:12px;border-radius:6px;font-family:var(--font-mono);font-size:12px;display:none;white-space:pre;overflow-x:auto;"></div>
+                </div>
+                <div class="code-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchTab(this,'v-curl')">cURL</button>
+                        <button class="tab-btn" onclick="switchTab(this,'v-js')">JavaScript</button>
+                        <button class="tab-btn" onclick="switchTab(this,'v-py')">Python</button>
+                    </div>
+                    <div id="v-curl" class="tab-content active"><pre><code id="v-curl-code">curl "https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016"</code></pre></div>
+                    <div id="v-js" class="tab-content"><pre><code id="v-js-code">const res = await fetch('https://sscc.birth1mark.workers.dev/validate?sscc=356012345600000016');
+const data = await res.json();</code></pre></div>
+                    <div id="v-py" class="tab-content"><pre><code id="v-py-code">r = requests.get('https://sscc.birth1mark.workers.dev/validate', params={'sscc': '356012345600000016'})</code></pre></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ep-generate" class="swagger-card">
+            <div class="swagger-header">
+                <div class="swagger-title-left">
+                    <span class="swagger-method m-get">GET</span>
+                    <span class="swagger-path">/generate</span>
+                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                </div>
+            </div>
+            <div class="swagger-body">
+                <p class="swagger-desc">Computes the 18th GS1 Modulo 10 check digit for a 17-digit SSCC payload.</p>
+                <div class="try-panel" style="border-radius:8px;">
+                    <div class="try-field"><span class="try-label">body (17 digits)</span><input class="param-input" id="t-g-body" value="35601234560000001" oninput="updateCode('generate')"></div>
+                    <div class="sandbox-toolbar" style="margin:6px 0 0;">
+                        <button class="btn-execute" onclick="tryCall('generate')">▶ Execute /generate</button>
+                        <span class="try-status" id="t-g-status"></span>
+                    </div>
+                    <div class="try-result" id="t-g-result" style="background:var(--surface);padding:12px;border-radius:6px;font-family:var(--font-mono);font-size:12px;display:none;white-space:pre;overflow-x:auto;"></div>
+                </div>
+                <div class="code-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchTab(this,'g-curl')">cURL</button>
+                        <button class="tab-btn" onclick="switchTab(this,'g-js')">JavaScript</button>
+                        <button class="tab-btn" onclick="switchTab(this,'g-py')">Python</button>
+                    </div>
+                    <div id="g-curl" class="tab-content active"><pre><code id="g-curl-code">curl "https://sscc.birth1mark.workers.dev/generate?body=35601234560000001"</code></pre></div>
+                    <div id="g-js" class="tab-content"><pre><code id="g-js-code">const res = await fetch('https://sscc.birth1mark.workers.dev/generate?body=35601234560000001');</code></pre></div>
+                    <div id="g-py" class="tab-content"><pre><code id="g-py-code">r = requests.get('https://sscc.birth1mark.workers.dev/generate', params={'body': '35601234560000001'})</code></pre></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ep-range" class="swagger-card">
+            <div class="swagger-header">
+                <div class="swagger-title-left">
+                    <span class="swagger-method m-get">GET</span>
+                    <span class="swagger-path">/range</span>
+                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                </div>
+            </div>
+            <div class="swagger-body">
+                <p class="swagger-desc">Expands a range of SSCC codes (up to 500 units) and computes check digits for every code.</p>
+                <div class="try-panel" style="border-radius:8px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                        <div class="try-field"><span class="try-label">from</span><input class="param-input" id="t-r-from" value="35601234560000001"></div>
+                        <div class="try-field"><span class="try-label">to</span><input class="param-input" id="t-r-to" value="35601234560000005"></div>
+                    </div>
+                    <div class="sandbox-toolbar" style="margin:6px 0 0;">
+                        <button class="btn-execute" onclick="tryCall('range')">▶ Execute /range</button>
+                        <span class="try-status" id="t-r-status"></span>
+                    </div>
+                    <div class="try-result" id="t-r-result" style="background:var(--surface);padding:12px;border-radius:6px;font-family:var(--font-mono);font-size:12px;display:none;white-space:pre;overflow-x:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ep-prefix" class="swagger-card">
+            <div class="swagger-header">
+                <div class="swagger-title-left">
+                    <span class="swagger-method m-get">GET</span>
+                    <span class="swagger-path">/prefix</span>
+                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                </div>
+            </div>
+            <div class="swagger-body">
+                <p class="swagger-desc">Identifies the GS1 Member Organization country and ISO code for an SSCC prefix.</p>
+                <div class="try-panel" style="border-radius:8px;">
+                    <div class="try-field"><span class="try-label">sscc</span><input class="param-input" id="t-p-sscc" value="356012345600000016"></div>
+                    <div class="sandbox-toolbar" style="margin:6px 0 0;">
+                        <button class="btn-execute" onclick="tryCall('prefix')">▶ Execute /prefix</button>
+                        <span class="try-status" id="t-p-status"></span>
+                    </div>
+                    <div class="try-result" id="t-p-result" style="background:var(--surface);padding:12px;border-radius:6px;font-family:var(--font-mono);font-size:12px;display:none;white-space:pre;overflow-x:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="ep-extract" class="swagger-card">
+            <div class="swagger-header">
+                <div class="swagger-title-left">
+                    <span class="swagger-method m-post">POST</span>
+                    <span class="swagger-path">/extract</span>
+                    <span class="swagger-server-pill">sscc.birth1mark.workers.dev</span>
+                </div>
+            </div>
+            <div class="swagger-body">
+                <p class="swagger-desc">Extracts and validates all SSCCs from raw EDIFACT (<code>GIN+BJ</code>, <code>RFF+SI</code>), SAP IDoc (<code>EXIDV</code>), XML, or CSV payloads (max 1 MB).</p>
+                <div class="try-panel" style="border-radius:8px;">
+                    <textarea class="param-input" id="t-e-body" style="min-height:74px;">UNA:+.? 'UNB+UNOC:3+SENDER+RECEIVER+261123:0800+1'GIN+BJ+356012345600000016'GIN+BJ+356012345600000023'</textarea>
+                    <div class="sandbox-toolbar" style="margin:6px 0 0;">
+                        <button class="btn-execute" onclick="tryCall('extract')">▶ Execute /extract</button>
+                        <span class="try-status" id="t-e-status"></span>
+                    </div>
+                    <div class="try-result" id="t-e-result" style="background:var(--surface);padding:12px;border-radius:6px;font-family:var(--font-mono);font-size:12px;display:none;white-space:pre;overflow-x:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 03. ERP & ZEBRA THERMAL PRINTER INTEGRATION MANUALS ==================== -->
+        <section id="erp-manuals" class="doc-section">
+            <h2>03. Industrial Integration Manuals (Zebra TCP/IP &amp; ERP)</h2>
+            <p>Industrial Zebra thermal printers (ZT411, ZT231, GK420d, ZD421) listen on <strong>Raw TCP Port 9100</strong> (JetDirect protocol). You can pipe the ZPL-II response from <code>POST /v1/labels</code> directly to your warehouse printer over the local network without drivers.</p>
+
+            <h3>A. Direct Linux / Bash Dispatch to Zebra Printer (Port 9100)</h3>
+            <pre><code># Generate Dual (1D GS1-128 + 2D QR Digital Link) ZPL and pipe directly to Zebra printer IP 192.168.1.200:9100
+curl -s -X POST "https://sscc-labels.birth1mark.workers.dev/v1/labels" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: sscc_pro_YOUR_KEY" \
+  -d '{"gcp":"5601234","startSerial":1001,"quantity":5,"symbology":"dual","format":"zpl"}' \
+  | nc -w 2 192.168.1.200 9100</code></pre>
+
+            <h3>B. Python / Odoo / Warehouse WMS Socket Integration</h3>
+            <pre><code>import socket, requests
+
+def print_gs1_pallet_batch(api_key, zebra_ip, gcp, start_serial, qty, lot_no):
+    res = requests.post(
+        "https://sscc-labels.birth1mark.workers.dev/v1/labels",
+        headers={"X-API-Key": api_key, "Content-Type": "application/json"},
+        json={
+            "gcp": gcp,
+            "startSerial": start_serial,
+            "quantity": qty,
+            "symbology": "dual",
+            "batchNo": lot_no,
+            "format": "zpl"
+        },
+        timeout=5
+    )
+    res.raise_for_status()
+    with socket.create_connection((zebra_ip, 9100), timeout=3) as printer:
+        printer.sendall(res.text.encode("utf-8"))
+    print(f"Dispatched {qty} GS1 labels to Zebra {zebra_ip}:9100")</code></pre>
+
+            <h3>C. HTTP Status &amp; Error Reference</h3>
+            <table class="param-table" style="margin-top:8px;">
+                <thead><tr><th>HTTP Code</th><th>Error Code</th><th>Description &amp; Resolution</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="status-pill ok">200 OK</span></td><td><code>OK</code></td><td>Labels or validation results generated. Check <code>X-Credits-Remaining</code> header.</td></tr>
+                    <tr><td><span class="status-pill err">400 Bad Request</span></td><td><code>INVALID_INPUT</code></td><td>Malformed SSCC check digit, invalid GCP length (must be 6–11 digits), or batch &gt; 500.</td></tr>
+                    <tr><td><span class="status-pill err">401 Unauthorized</span></td><td><code>INVALID_API_KEY</code></td><td>The provided <code>X-API-Key</code> does not exist. Verify your key or claim by purchase email.</td></tr>
+                    <tr><td><span class="status-pill pay">402 Payment Required</span></td><td><code>FREE_QUOTA_EXCEEDED</code></td><td>25 free labels reached for this GS1 Company Prefix / IP, or Pro key credits exhausted.</td></tr>
+                    <tr><td><span class="status-pill err">429 Too Many Requests</span></td><td><code>RATE_LIMITED</code></td><td>Validation API rate limit (500 req/hr per IP) exceeded.</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
 </div>
 
 <script>
-const API = 'https://sscc.birth1mark.workers.dev';
+const VAL_API    = 'https://sscc.birth1mark.workers.dev';
+const LABELS_API = 'https://sscc-labels.birth1mark.workers.dev';
+
+// Load saved Pro Key from main app localStorage if available
+window.addEventListener('DOMContentLoaded', () => {
+    try {
+        const savedKey = localStorage.getItem('sscc_pro_api_key_v1') || '';
+        if (savedKey) document.getElementById('global-api-key').value = savedKey;
+    } catch (_) {}
+    updateLabelsCode();
+    checkSandboxQuota(false);
+});
+
+function getSandboxApiKey() {
+    return (document.getElementById('global-api-key')?.value || '').trim();
+}
+
+function syncGlobalApiKey() {
+    const k = getSandboxApiKey();
+    try {
+        if (k) localStorage.setItem('sscc_pro_api_key_v1', k);
+    } catch (_) {}
+    updateLabelsCode();
+}
 
 function switchTab(btn, id) {
     const parent = btn.closest('.code-tabs');
@@ -365,45 +1244,7 @@ function switchTab(btn, id) {
     document.getElementById(id).classList.add('active');
 }
 
-function escHTML(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function updateCode(ep) {
-    const codes = {
-        validate: () => {
-            const s = document.getElementById('t-v-sscc').value.trim();
-            const se = escHTML(s);
-            document.getElementById('v-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/validate?sscc=${s}"`;
-            document.getElementById('v-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/validate?sscc=${se}'</span>);
-<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
-            document.getElementById('v-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/validate'</span>, params={<span class="str">'sscc'</span>: <span class="str">'${se}'</span>})`;
-        },
-        generate: () => {
-            const b = document.getElementById('t-g-body').value.trim();
-            document.getElementById('g-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/generate?body=${b}"`;
-            document.getElementById('g-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/generate?body=${b}'</span>);\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
-            document.getElementById('g-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/generate'</span>, params={<span class="str">'body'</span>: <span class="str">'${b}'</span>})`;
-        },
-        range: () => {
-            const f = document.getElementById('t-r-from').value.trim();
-            const t = document.getElementById('t-r-to').value.trim();
-            document.getElementById('r-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/range?from=${f}&to=${t}"`;
-            document.getElementById('r-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/range?from=${f}&to=${t}'</span>);\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
-            document.getElementById('r-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/range'</span>, params={<span class="str">'from'</span>: <span class="str">'${f}'</span>, <span class="str">'to'</span>: <span class="str">'${t}'</span>})`;
-        },
-        prefix: () => {
-            const s = document.getElementById('t-p-sscc').value.trim();
-            document.getElementById('p-curl-code').textContent = `curl "https://sscc.birth1mark.workers.dev/prefix?sscc=${s}"`;
-            document.getElementById('p-js-code').innerHTML = `<span class="kw">const</span> res  = <span class="kw">await</span> fetch(<span class="str">'https://sscc.birth1mark.workers.dev/prefix?sscc=${s}'</span>);\n<span class="kw">const</span> data = <span class="kw">await</span> res.json();`;
-            document.getElementById('p-py-code').innerHTML = `r = requests.get(<span class="str">'https://sscc.birth1mark.workers.dev/prefix'</span>, params={<span class="str">'sscc'</span>: <span class="str">'${s}'</span>})`;
-        },
-    };
-    if (codes[ep]) codes[ep]();
-}
-
 function syntaxHighlight(json) {
-    // Escape first, then apply syntax highlighting spans
     return JSON.stringify(json, null, 2)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
@@ -414,37 +1255,200 @@ function syntaxHighlight(json) {
         });
 }
 
+function getLabelsPayloadFromForm() {
+    return {
+        gcp:        document.getElementById('sb-lbl-gcp').value.trim() || '5601234',
+        startSerial: parseInt(document.getElementById('sb-lbl-start').value, 10) || 1001,
+        quantity:   parseInt(document.getElementById('sb-lbl-qty').value, 10) || 1,
+        symbology:  document.getElementById('sb-lbl-sym').value,
+        format:     document.getElementById('sb-lbl-fmt').value,
+        sender:     document.getElementById('sb-lbl-sender').value.trim(),
+        recipient:  document.getElementById('sb-lbl-rec').value.trim(),
+        gtin:       document.getElementById('sb-lbl-gtin').value.trim(),
+        batchNo:    document.getElementById('sb-lbl-batch').value.trim(),
+        expiryDate: document.getElementById('sb-lbl-exp').value.trim()
+    };
+}
+
+function updateLabelsCode() {
+    const p = getLabelsPayloadFromForm();
+    const key = getSandboxApiKey() || 'sscc_pro_YOUR_API_KEY';
+    const jsonStr = JSON.stringify(p, null, 2);
+
+    document.getElementById('lbl-curl-code').textContent =
+`curl -X POST "${LABELS_API}/v1/labels" \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: ${key}" \\
+  -d '${JSON.stringify(p)}'`;
+
+    document.getElementById('lbl-py-code').textContent =
+`import requests
+
+res = requests.post(
+    "${LABELS_API}/v1/labels",
+    headers={"X-API-Key": "${key}", "Content-Type": "application/json"},
+    json=${jsonStr}
+)
+print(res.status_code, res.headers.get("X-Credits-Remaining"))`;
+
+    document.getElementById('lbl-js-code').textContent =
+`const res = await fetch("${LABELS_API}/v1/labels", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-API-Key": "${key}"
+  },
+  body: JSON.stringify(${jsonStr})
+});
+const data = await res.${p.format === 'json' ? 'json()' : 'text()'};`;
+}
+
+async function executeLabelsSandbox() {
+    const btn = document.getElementById('btn-exec-labels');
+    const box = document.getElementById('res-box-labels');
+    const statusEl = document.getElementById('res-status-labels');
+    const headersEl = document.getElementById('res-headers-labels');
+    const previewEl = document.getElementById('res-preview-labels');
+    const bodyEl = document.getElementById('res-body-labels');
+
+    const payload = getLabelsPayloadFromForm();
+    const apiKey = getSandboxApiKey();
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Executing on Cloudflare Edge…';
+    const t0 = performance.now();
+
+    try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (apiKey) headers['X-API-Key'] = apiKey;
+
+        const res = await fetch(`${LABELS_API}/v1/labels`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload)
+        });
+        const ms = Math.round(performance.now() - t0);
+        const rem = res.headers.get('X-Credits-Remaining');
+        const tier = res.headers.get('X-Quota-Tier');
+
+        box.classList.add('visible');
+        statusEl.textContent = `${res.status} ${res.ok ? 'OK' : (res.status === 402 ? 'PAYMENT REQUIRED' : 'ERROR')} · ${ms} ms`;
+        statusEl.className = 'status-pill ' + (res.ok ? 'ok' : (res.status === 402 ? 'pay' : 'err'));
+        headersEl.textContent = rem !== null ? `Tier: ${tier} | Credits Remaining: ${rem}` : '';
+
+        if (payload.format === 'zpl' && res.ok) {
+            const zplText = await res.text();
+            previewEl.classList.remove('visible');
+            bodyEl.textContent = zplText;
+        } else if (payload.format === 'html' && res.ok) {
+            const htmlText = await res.text();
+            previewEl.classList.remove('visible');
+            bodyEl.textContent = htmlText;
+        } else {
+            const data = await res.json();
+            if (res.ok && data.printHtml) {
+                previewEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--primary);margin-bottom:10px;text-align:center;">✨ LIVE SANDBOX RENDERED LABEL PREVIEW (${data.symbology.toUpperCase()})</div>` + data.labels[0].sheetHtml;
+                previewEl.classList.add('visible');
+            } else {
+                previewEl.classList.remove('visible');
+            }
+            // Truncate bulky HTML string inside JSON display for readability
+            const displayJson = { ...data };
+            if (displayJson.printHtml) displayJson.printHtml = `[HTML Document — ${displayJson.printHtml.length} bytes rendered above]`;
+            bodyEl.innerHTML = syntaxHighlight(displayJson);
+        }
+        checkSandboxQuota(false);
+    } catch (err) {
+        box.classList.add('visible');
+        statusEl.textContent = 'Network Error';
+        statusEl.className = 'status-pill err';
+        bodyEl.textContent = err.message;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '▶ Execute Request (Live Sandbox)';
+    }
+}
+
+async function executeQrSandbox() {
+    const sscc = document.getElementById('sb-qr-sscc').value.trim();
+    const batch = document.getElementById('sb-qr-batch').value.trim();
+    const box = document.getElementById('res-box-qr');
+    const preview = document.getElementById('res-preview-qr');
+    const t0 = performance.now();
+
+    const res = await fetch(`${LABELS_API}/v1/qr?sscc=${encodeURIComponent(sscc)}&batch=${encodeURIComponent(batch)}`);
+    const ms = Math.round(performance.now() - t0);
+    const svgText = await res.text();
+
+    box.classList.add('visible');
+    document.getElementById('res-status-qr').textContent = `${res.status} OK · image/svg+xml · ${ms} ms`;
+    preview.innerHTML = `<div style="display:inline-block;padding:12px;background:#fff;border-radius:8px;">${svgText}</div>
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:8px;">GS1 Digital Link URI: <code style="color:var(--primary);">https://pormenores.net/sscc/?sscc=${sscc}${batch ? '&10='+batch : ''}</code></div>`;
+}
+
+async function checkSandboxQuota(showConsole = false) {
+    const key = getSandboxApiKey();
+    const gcp = document.getElementById('sb-lbl-gcp')?.value || '5601234';
+    const headers = {};
+    if (key) headers['X-API-Key'] = key;
+
+    try {
+        const res = await fetch(`${LABELS_API}/v1/quota?gcp=${encodeURIComponent(gcp)}`, { headers });
+        const data = await res.json();
+        const sidebarEl = document.getElementById('sidebar-quota-text');
+        if (sidebarEl && data.quota) {
+            if (data.quota.tier !== 'free') {
+                sidebarEl.style.color = 'var(--success)';
+                sidebarEl.textContent = `⚡ Pro Active: ${data.quota.remaining.toLocaleString()} / ${data.quota.limit.toLocaleString()} credits`;
+            } else {
+                sidebarEl.style.color = data.quota.remaining > 0 ? 'var(--success)' : 'var(--danger)';
+                sidebarEl.textContent = `🟢 Free Quota: ${data.quota.remaining} / ${data.quota.limit} labels left`;
+            }
+        }
+        if (showConsole) {
+            const box = document.getElementById('res-box-quota');
+            box.classList.add('visible');
+            document.getElementById('res-body-quota').innerHTML = syntaxHighlight(data);
+        }
+    } catch (_) {}
+}
+
+function updateCode(ep) {
+    if (ep === 'validate') {
+        const s = document.getElementById('t-v-sscc').value.trim();
+        document.getElementById('v-curl-code').textContent = `curl "${VAL_API}/validate?sscc=${s}"`;
+    } else if (ep === 'generate') {
+        const b = document.getElementById('t-g-body').value.trim();
+        document.getElementById('g-curl-code').textContent = `curl "${VAL_API}/generate?body=${b}"`;
+    }
+}
+
 async function tryCall(ep) {
     const prefix = {validate:'v',generate:'g',range:'r',prefix:'p',extract:'e'}[ep];
     const sEl = document.getElementById(`t-${prefix}-status`);
     const rEl = document.getElementById(`t-${prefix}-result`);
-    const btn = sEl.closest('.try-actions').querySelector('.try-run');
-
-    btn.disabled = true; btn.textContent = '...';
-    sEl.className = 'try-status'; rEl.classList.remove('visible');
 
     try {
         let url, opts = {};
-        if (ep === 'validate') url = `${API}/validate?sscc=${encodeURIComponent(document.getElementById('t-v-sscc').value.trim())}`;
-        else if (ep === 'generate') url = `${API}/generate?body=${encodeURIComponent(document.getElementById('t-g-body').value.trim())}`;
-        else if (ep === 'range') url = `${API}/range?from=${encodeURIComponent(document.getElementById('t-r-from').value.trim())}&to=${encodeURIComponent(document.getElementById('t-r-to').value.trim())}`;
-        else if (ep === 'prefix') url = `${API}/prefix?sscc=${encodeURIComponent(document.getElementById('t-p-sscc').value.trim())}`;
-        else if (ep === 'extract') { url = `${API}/extract`; opts = {method:'POST', body: document.getElementById('t-e-body').value}; }
+        if (ep === 'validate') url = `${VAL_API}/validate?sscc=${encodeURIComponent(document.getElementById('t-v-sscc').value.trim())}`;
+        else if (ep === 'generate') url = `${VAL_API}/generate?body=${encodeURIComponent(document.getElementById('t-g-body').value.trim())}`;
+        else if (ep === 'range') url = `${VAL_API}/range?from=${encodeURIComponent(document.getElementById('t-r-from').value.trim())}&to=${encodeURIComponent(document.getElementById('t-r-to').value.trim())}`;
+        else if (ep === 'prefix') url = `${VAL_API}/prefix?sscc=${encodeURIComponent(document.getElementById('t-p-sscc').value.trim())}`;
+        else if (ep === 'extract') { url = `${VAL_API}/extract`; opts = {method:'POST', body: document.getElementById('t-e-body').value}; }
 
-        const res  = await fetch(url, opts);
+        const t0 = performance.now();
+        const res = await fetch(url, opts);
+        const ms = Math.round(performance.now() - t0);
         const data = await res.json();
-        sEl.textContent = res.status + ' ' + (res.ok ? 'OK' : 'Error');
-        sEl.className = 'try-status ' + (res.status === 429 ? 'warn' : res.ok ? 'ok' : 'err');
+        sEl.textContent = `${res.status} OK (${ms} ms)`;
+        sEl.className = 'status-pill ok';
         rEl.innerHTML = syntaxHighlight(data);
-        rEl.classList.add('visible');
-
-        // Update code examples with values used
-        if (ep !== 'extract') updateCode(ep);
-    } catch(e) {
-        sEl.textContent = 'Network error'; sEl.className = 'try-status err';
-        rEl.innerHTML = e.message; rEl.classList.add('visible');
+        rEl.style.display = 'block';
+    } catch (e) {
+        sEl.textContent = 'Error';
+        rEl.textContent = e.message;
+        rEl.style.display = 'block';
     }
-    btn.disabled = false; btn.textContent = '▶ Run';
 }
 </script>
 </body>

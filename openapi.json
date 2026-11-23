@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "SSCC Pro Vision REST API",
-    "version": "1.2.2",
+    "title": "SSCC Pro Vision — Validation, EDI & GS1 Pallet Label API",
+    "version": "5.9.0",
     "description": "Free, high-performance REST API for Serial Shipping Container Code (SSCC-18) validation,\ncheck digit calculation (GS1 Modulo 10), range expansion, country/company prefix lookup,\nand multi-format file extraction (UN/EDIFACT, SAP IDoc, XML, CSV, TXT).\nPowered by Cloudflare Workers. Zero authentication required.\n",
     "contact": {
       "name": "birth1mark",
@@ -16,7 +16,11 @@
   "servers": [
     {
       "url": "https://sscc.birth1mark.workers.dev",
-      "description": "Production Serverless Edge API (Cloudflare Workers)"
+      "description": "Server 1 — Free Validation & EDI Extraction API"
+    },
+    {
+      "url": "https://sscc-labels.birth1mark.workers.dev",
+      "description": "Server 2 — Commercial GS1 Pallet Labels, ZPL & 2D QR Digital Link API (25 Free / Pro X-API-Key)"
     }
   ],
   "paths": {
@@ -262,6 +266,177 @@
           }
         }
       }
+    },
+    "/v1/labels": {
+      "post": {
+        "summary": "Generate Batch GS1 Pallet Labels (1D GS1-128 + 2D QR Digital Link / ZPL / HTML / SVG)",
+        "parameters": [
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ssccs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "gcp": {
+                    "type": "string",
+                    "example": "5601234"
+                  },
+                  "extension": {
+                    "type": "string",
+                    "example": "0"
+                  },
+                  "startSerial": {
+                    "type": "integer",
+                    "example": 1001
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "example": 5
+                  },
+                  "symbology": {
+                    "type": "string",
+                    "enum": [
+                      "dual",
+                      "gs1-128",
+                      "qr"
+                    ],
+                    "default": "dual"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "json",
+                      "zpl",
+                      "html",
+                      "svg"
+                    ],
+                    "default": "json"
+                  },
+                  "paperSize": {
+                    "type": "string",
+                    "enum": [
+                      "a5",
+                      "a6",
+                      "thermal"
+                    ],
+                    "default": "a5"
+                  },
+                  "sender": {
+                    "type": "string"
+                  },
+                  "recipient": {
+                    "type": "string"
+                  },
+                  "contents": {
+                    "type": "string"
+                  },
+                  "weight": {
+                    "type": "string"
+                  },
+                  "orderNo": {
+                    "type": "string"
+                  },
+                  "gtin": {
+                    "type": "string"
+                  },
+                  "unitCount": {
+                    "type": "string"
+                  },
+                  "batchNo": {
+                    "type": "string"
+                  },
+                  "expiryDate": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated GS1 labels (JSON, ZPL-II, HTML, or SVG)"
+          },
+          "402": {
+            "description": "Free quota (25 labels) exceeded or Pro credits exhausted"
+          }
+        }
+      }
+    },
+    "/v1/qr": {
+      "get": {
+        "summary": "Generate Standalone 2D GS1 Digital Link QR Code (SVG)",
+        "parameters": [
+          {
+            "name": "sscc",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "356012345600000016"
+            }
+          },
+          {
+            "name": "batch",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "LOT-99A"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vector SVG QR Code (image/svg+xml)"
+          }
+        }
+      }
+    },
+    "/v1/quota": {
+      "get": {
+        "summary": "Check Remaining Free or Pro Label Credits",
+        "parameters": [
+          {
+            "name": "gcp",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "5601234"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current quota balance and available credit plans"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -389,7 +564,7 @@
           },
           "flag": {
             "type": "string",
-            "example": "\ud83c\uddf5\ud83c\uddf9"
+            "example": "🇵🇹"
           }
         }
       },
@@ -441,7 +616,7 @@
           },
           "flag": {
             "type": "string",
-            "example": "\ud83c\uddf5\ud83c\uddf9"
+            "example": "🇵🇹"
           }
         }
       },

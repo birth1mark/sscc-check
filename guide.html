@@ -4,128 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SSCCAPI — How to Validate SSCC Codes, Check Digit Algorithm, EDIFACT &amp; ZPL Guide</title>
-    <meta name="description" content="Complete technical guide to SSCC validation: structure, GS1-128 format, check digit algorithm with worked example, JavaScript &amp; Python implementations, Retailer profiles, Zebra ZPL-II, and EDIFACT extraction.">
-    <meta name="keywords" content="SSCC validation, SSCC check digit, GS1 128 format, serial shipping container code, EDI DESADV SSCC, SSCC algorithm, check digit calculator, logistics barcode">
+    <title>SSCCAPI — SSCC &amp; GS1 Logistics Roadmap: Pallet Labels, Barcodes, EDIFACT &amp; ZPL Mini-Course</title>
+    <meta name="description" content="Interactive mini-course and technical roadmap to master SSCC-18 codes, GS1-128 vs 2D QR Digital Link barcodes, 3-zone GS1 pallet label anatomy, Modulo 10 check digit code (JS/Python), EDIFACT DESADV, SAP IDoc EXIDV, Zebra ZPL-II, and European retailer compliance.">
+    <meta name="keywords" content="SSCC roadmap, GS1 pallet label anatomy, SSCC check digit, GS1-128 vs QR Digital Link, Sunrise 2027, EDI DESADV GIN+BJ, SAP IDoc E1EDL44 EXIDV, Zebra ZPL-II FNC1, Sonae Mercadona Amazon pallet label">
     <meta name="author" content="SSCCAPI">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://ssccapi.com/guide">
     <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
-    <link rel="sitemap" type="application/xml" href="sitemap.xml">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 
     <!-- Open Graph -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://ssccapi.com/guide">
-    <meta property="og:title" content="SSCCAPI — How to Validate SSCC Codes, Check Digit Algorithm &amp; Format Guide">
-    <meta property="og:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
+    <meta property="og:title" content="SSCCAPI — SSCC &amp; GS1 Pallet Label Interactive Roadmap">
+    <meta property="og:description" content="Master SSCC-18, GS1 barcode types, 3-zone pallet label anatomy, Modulo 10 math, EDIFACT, SAP IDocs &amp; Zebra ZPL-II in 6 structured modules.">
     <meta property="og:image" content="https://ssccapi.com/og-image.png">
     <meta property="og:site_name" content="SSCCAPI">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="SSCCAPI — How to Validate SSCC Codes, Check Digit Algorithm &amp; Format Guide">
-    <meta name="twitter:description" content="Complete guide to SSCC validation: structure, check digit algorithm, JavaScript implementation, and EDIFACT extraction.">
+    <meta name="twitter:title" content="SSCCAPI — SSCC &amp; GS1 Pallet Label Interactive Roadmap">
+    <meta name="twitter:description" content="Interactive 6-module guide to SSCC-18 codes, GS1 pallet labels, Sunrise 2027 2D QR, EDIFACT, SAP IDocs &amp; Zebra ZPL-II.">
     <meta name="twitter:image" content="https://ssccapi.com/og-image.png">
 
-    <!-- Schema.org Technical Article -->
+    <!-- Schema.org Course & TechArticle -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "TechArticle",
-      "headline": "How to Validate SSCC Codes — Check Digit Algorithm, Format & Tools",
-      "description": "Complete guide to SSCC validation: structure, GS1 128 format, check digit algorithm with worked example, and JavaScript implementation.",
-      "url": "https://ssccapi.com/guide",
-      "author": { "@type": "Organization", "name": "SSCCAPI" },
-      "publisher": { "@type": "Organization", "name": "SSCCAPI" },
-      "mainEntityOfPage": "https://ssccapi.com/guide"
-    }
-    </script>
-
-    <!-- Schema.org Breadcrumbs -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
+      "@graph": [
         {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "SSCCAPI",
-          "item": "https://ssccapi.com/"
+          "@type": "TechArticle",
+          "headline": "SSCC & GS1 Logistics Roadmap — Barcode Types, Pallet Label Anatomy, Algorithm, EDIFACT & ZPL-II",
+          "description": "Structured 6-module guide and interactive roadmap covering SSCC-18, GTIN vs SSCC, GS1-128 and 2D QR Digital Link barcodes, 3-zone pallet labels, Modulo 10 check digit code, EDIFACT DESADV, SAP IDocs, and retailer compliance.",
+          "url": "https://ssccapi.com/guide",
+          "author": { "@type": "Organization", "name": "SSCCAPI" },
+          "publisher": { "@type": "Organization", "name": "SSCCAPI" },
+          "mainEntityOfPage": "https://ssccapi.com/guide"
         },
         {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "How to Validate SSCC Codes",
-          "item": "https://ssccapi.com/guide"
-        }
-      ]
-    }
-    </script>
-
-    <!-- Schema.org FAQ Page for SEO -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Why does my scanner read a 20 digit SSCC?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Most GS1 128 barcode scanners include the Application Identifier 00 at the beginning. An SSCC is strictly 18 digits long. Always remove the first two zeros before processing or validating the check digit."
-          }
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "SSCCAPI", "item": "https://ssccapi.com/" },
+            { "@type": "ListItem", "position": 2, "name": "SSCC & GS1 Logistics Roadmap", "item": "https://ssccapi.com/guide" }
+          ]
         },
         {
-          "@type": "Question",
-          "name": "Can the GS1 Company Prefix length vary?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Depending on the capacity assigned to the company by the local GS1 member organization, the company prefix can range from 7 to 10 digits. The Serial Reference length adjusts automatically so that the total code length remains exactly 18 digits."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is the SSCC check digit algorithm the same as the GTIN?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Both utilize the standard GS1 Modulo 10 algorithm. However, because the total length is different (18 digits for SSCC vs 13 or 14 for GTIN), the alternating multipliers of 3 and 1 will align differently starting from the rightmost digit."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the difference between an SSCC and a GTIN?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "A GTIN (Global Trade Item Number) identifies a specific class of trade item like a specific model of a laptop. An SSCC identifies a unique physical logistics unit like a specific pallet containing fifty of those laptops. Every SSCC is globally unique to that exact physical shipment."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I reuse an SSCC number?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "According to GS1 General Specifications, an SSCC must not be reallocated within one year of the shipment date. However, to ensure pristine global traceability and avoid conflicts in modern tracking systems, many companies choose to never reuse their serial references."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Where is the SSCC located in SAP IDocs?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "In SAP Outbound Deliveries (such as IDoc types DELVRY03, DELVRY07, or DESADV01), the 18-digit SSCC is stored under the Handling Unit Item segment E1EDL44 in the field EXIDV (External Handling Unit Identification), as well as in the Handling Unit Header segment E1EDL37."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How to calculate the GS1 SSCC check digit in Python?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "To calculate the GS1 Modulo 10 check digit in Python, reverse the 17-digit payload string, multiply odd-positioned digits (0-indexed even) by 3 and even-positioned digits by 1, sum the products, and compute (10 - (sum % 10)) % 10."
-          }
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Why does my scanner read a 20 digit SSCC?",
+              "acceptedAnswer": { "@type": "Answer", "text": "GS1-128 barcode scanners include the 2-digit Application Identifier (00) before the 18-digit SSCC. Always strip the leading 00 before validating the Modulo 10 check digit." }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between an SSCC and a GTIN?",
+              "acceptedAnswer": { "@type": "Answer", "text": "A GTIN identifies a trade item SKU (e.g. a product model), while an SSCC uniquely identifies a specific physical shipping unit such as an individual pallet or carton." }
+            },
+            {
+              "@type": "Question",
+              "name": "Where is the SSCC located in SAP IDocs?",
+              "acceptedAnswer": { "@type": "Answer", "text": "In SAP DELVRY03/07 and DESADV01 IDocs, the 18-digit SSCC is stored in field EXIDV inside segments E1EDL37 (Handling Unit Header) and E1EDL44 (Handling Unit Item)." }
+            }
+          ]
         }
       ]
     }
@@ -137,41 +80,42 @@
 
     <style>
         :root {
-            --bg:            #0b0e14;
-            --surface:       #0f141f;
-            --surface-hover: #182030;
-            --border:        #222c3d;
-            --border-hover:  #f59e0b;
-            --primary:       #f59e0b;
-            --primary-light: #fbbf24;
-            --accent-cyan:   #38bdf8;
-            --success:       #10b981;
-            --danger:        #ef4444;
-            --text:          #f8fafc;
-            --muted:         #94a3b8;
-            --text-dim:      #64748b;
-            --code-bg:       #080a0f;
-            --font-mono:     'JetBrains Mono', monospace;
-            --font-sans:     'Plus Jakarta Sans', -apple-system, sans-serif;
+            --bg:             #0b0e14;
+            --surface:        #121722;
+            --surface-card:   #0f141f;
+            --surface-hover:  #182030;
+            --border:         #222c3d;
+            --text:           #f8fafc;
+            --muted:          #94a3b8;
+            --text-dim:       #64748b;
+            --primary:        #f59e0b;
+            --primary-hover:  #fbbf24;
+            --accent-cyan:    #38bdf8;
+            --success:        #10b981;
+            --danger:         #ef4444;
+            --purple:         #a855f7;
+            --font-mono:      'JetBrains Mono', monospace;
+            --font-sans:      'Plus Jakarta Sans', -apple-system, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: var(--font-sans);
-            background: var(--bg);
+            background-color: var(--bg);
             color: var(--text);
-            line-height: 1.75;
-            font-size: 16px;
+            font-family: var(--font-sans);
+            font-size: 14.5px;
+            line-height: 1.7;
+            min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Grelha sutil de fundo retro-terminal  */
         body::before {
             content: "";
             position: fixed;
             inset: 0;
-            background-image: 
+            background-image:
                 linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
             background-size: 36px 36px;
@@ -179,11 +123,16 @@
             z-index: -1;
         }
 
+        /* ─── Unified Header (1120px across all pages) ─── */
         .site-header {
             border-bottom: 1px solid var(--border);
             padding: 0.72rem 1.25rem;
-            position: sticky; top: 0; background: rgba(11, 14, 20, 0.94);
-            backdrop-filter: blur(14px); z-index: 100;
+            position: sticky;
+            top: 0;
+            background: rgba(11, 14, 20, 0.94);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 100;
         }
         .header-inner {
             max-width: 1120px;
@@ -195,12 +144,15 @@
         }
         .nav-brand {
             font-family: var(--font-mono);
-            font-size: 0.92rem; font-weight: 700; color: var(--text);
-            text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;
-            transition: opacity 0.15s ease;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
             white-space: nowrap;
         }
-        .nav-brand:hover { opacity: 0.85; }
         .brand-dot {
             width: 8px; height: 8px; background: var(--success);
             border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--success);
@@ -225,7 +177,6 @@
             border-color: var(--primary);
             color: var(--primary);
             background: rgba(245, 158, 11, 0.08);
-            text-decoration: none;
         }
         @media (max-width: 640px) {
             .site-header { padding: 0.55rem 0.75rem; }
@@ -233,191 +184,698 @@
             .brand-sub, .brand-sep { display: none; }
         }
 
+        /* ─── Unified 1120px 2-Column Roadmap Layout ─── */
         .wrapper {
             max-width: 1120px;
             margin: 0 auto;
             padding: 28px 20px 80px;
             display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 32px;
+            grid-template-columns: 260px 1fr;
+            gap: 28px;
             align-items: start;
         }
-        .guide-article { min-width: 0; max-width: 820px; }
-        @media (max-width: 900px) {
-            .wrapper { grid-template-columns: 1fr; gap: 20px; padding: 24px 16px 64px; }
-            .toc { position: static !important; max-height: none !important; }
+        .guide-article { min-width: 0; }
+        @media (max-width: 920px) {
+            .wrapper { grid-template-columns: 1fr; gap: 20px; padding: 20px 14px 64px; }
+            .roadmap-sidebar { position: static !important; max-height: none !important; }
         }
 
-        .article-header { margin-bottom: 36px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
-        .article-tag {
-            display: inline-block;
-            font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-            text-transform: uppercase; color: var(--primary);
-            background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25);
-            padding: 3px 10px; border-radius: 20px; margin-bottom: 14px;
-            font-family: var(--font-mono);
-        }
-        h1 {
-            font-size: clamp(24px, 3.6vw, 34px);
-            font-weight: 600; line-height: 1.25;
-            margin-bottom: 14px;
-        }
-        h1 em { color: var(--primary); font-style: normal; }
-        .article-meta { font-size: 13px; color: var(--muted); }
-
-        .toc {
+        /* ─── Sticky Roadmap Sidebar ─── */
+        .roadmap-sidebar {
             position: sticky;
             top: 72px;
-            max-height: calc(100vh - 96px);
+            max-height: calc(100vh - 92px);
             overflow-y: auto;
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 12px; padding: 18px 20px; margin-bottom: 0;
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
         }
-        .toc-title { font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.08em; color: var(--primary); margin-bottom: 12px; }
-        .toc ol { padding-left: 18px; }
-        .toc li { margin-bottom: 7px; }
-        .toc a { color: var(--muted); text-decoration: none; font-size: 13px; line-height: 1.4; transition: color 0.15s; }
-        .toc a:hover { color: var(--primary); }
-
-        h2 {
-            font-size: 22px; font-weight: 600;
-            margin: 48px 0 16px;
-            padding-top: 48px; border-top: 1px solid var(--border);
-            scroll-margin-top: 80px;
+        .progress-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--primary);
+            margin-bottom: 8px;
         }
-        h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
-        h3 { font-size: 17px; font-weight: 600; margin: 28px 0 12px; color: var(--text); }
+        .progress-track {
+            height: 6px;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            transition: width 0.3s ease;
+        }
+        .sidebar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .sidebar-step {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 12.5px;
+            transition: all 0.16s ease;
+        }
+        .sidebar-step:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .sidebar-step.done {
+            color: var(--text);
+            border-color: rgba(16, 185, 129, 0.25);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        .step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .sidebar-step.done .step-num {
+            background: rgba(16, 185, 129, 0.18);
+            border-color: rgba(16, 185, 129, 0.5);
+            color: var(--success);
+        }
+        .step-meta { display: flex; flex-direction: column; line-height: 1.25; }
+        .step-meta small { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+        .sidebar-divider { height: 1px; background: var(--border); margin: 12px 0; }
+        .sidebar-quick-links { display: flex; flex-direction: column; gap: 6px; }
+        .sidebar-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 7px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            background: var(--primary);
+            color: #0b0e14;
+            transition: opacity 0.15s;
+        }
+        .sidebar-cta:hover { opacity: 0.9; }
+        .sidebar-cta.secondary {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+        .sidebar-cta.secondary:hover { border-color: var(--primary); color: var(--primary); }
 
-        p { margin-bottom: 16px; color: var(--muted); }
-        p strong { color: var(--text); }
+        /* ─── Hero & Visual Roadmap Track ─── */
+        .course-hero {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(56, 189, 248, 0.04) 60%, var(--surface-card));
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 26px 28px;
+            margin-bottom: 22px;
+        }
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 3px 10px;
+            border-radius: 99px;
+            margin-bottom: 12px;
+        }
+        .course-hero h1 {
+            font-family: var(--font-mono);
+            font-size: clamp(22px, 3vw, 31px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+        }
+        .course-hero h1 em { color: var(--primary); font-style: normal; }
+        .course-hero p { color: var(--muted); font-size: 14px; max-width: 680px; margin-bottom: 16px; }
+        .hero-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .hero-pill {
+            padding: 4px 9px;
+            border-radius: 6px;
+            background: rgba(11, 14, 20, 0.7);
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-        a { color: var(--primary); text-decoration: none; }
-        a:hover { text-decoration: underline; }
-
-        pre {
-            background: var(--code-bg);
+        /* 6-Step Visual Roadmap Cards */
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 720px) { .roadmap-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 460px) { .roadmap-grid { grid-template-columns: 1fr; } }
+        .rm-card {
+            background: var(--surface-card);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 20px;
-            overflow-x: auto;
-            margin: 20px 0 24px;
-            font-size: 13.5px;
-            line-height: 1.6;
+            padding: 12px 14px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.18s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
+        .rm-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            background: var(--surface);
+        }
+        .rm-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .rm-card-title { font-weight: 700; font-size: 13px; color: var(--text); }
+        .rm-card-desc { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+
+        /* ─── Module Sections ─── */
+        .module-card {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px 26px;
+            margin-bottom: 22px;
+            scroll-margin-top: 76px;
+        }
+        @media (max-width: 560px) { .module-card { padding: 18px 16px; } }
+
+        .module-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+        }
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .module-card h2 {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+        .btn-mark-done {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 11px;
+            border-radius: 7px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-mark-done:hover { border-color: var(--success); color: var(--success); }
+        .btn-mark-done.completed {
+            background: rgba(16, 185, 129, 0.14);
+            border-color: rgba(16, 185, 129, 0.45);
+            color: var(--success);
+        }
+
+        .module-card h3 {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 22px 0 8px;
+        }
+        .module-card p { color: #cbd5e1; margin-bottom: 12px; }
+        .module-card ul, .module-card ol { padding-left: 20px; margin-bottom: 14px; color: #cbd5e1; }
+        .module-card li { margin-bottom: 6px; }
+        strong { color: var(--text); }
         code {
             font-family: var(--font-mono);
-            font-size: 13px;
-        }
-        p code, li code {
-            background: var(--surface);
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
-            padding: 1px 6px; border-radius: 4px;
+            padding: 1px 6px;
+            border-radius: 5px;
             color: var(--primary);
-            font-size: 13px;
         }
-        .comment { color: #6b7280; }
-        .kw      { color: #c084fc; }
-        .fn      { color: #60a5fa; }
-        .str     { color: #86efac; }
-        .num     { color: #fb923c; }
-        .var     { color: #f1f5f9; }
+        a { color: var(--primary); }
 
-        .sscc-diagram {
-            background: var(--code-bg);
+        /* ─── Comparison Cards (GS1 Keys & Barcode Types) ─── */
+        .key-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 14px 0 18px;
+        }
+        @media (max-width: 640px) { .key-grid { grid-template-columns: 1fr; } }
+        .key-card {
+            background: #0b0e14;
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 24px 20px;
-            margin: 20px 0 24px;
+            padding: 13px 15px;
+        }
+        .key-card.highlight { border-color: rgba(245, 158, 11, 0.45); background: rgba(245, 158, 11, 0.04); }
+        .key-tag {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .key-tag span.digits {
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+        .key-card p { font-size: 12.5px; color: var(--muted); margin: 0; line-height: 1.5; }
+
+        /* ─── Interactive SSCC Anatomy Lab ─── */
+        .anatomy-lab {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .lab-controls {
+            display: grid;
+            grid-template-columns: 90px 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        @media (max-width: 600px) { .lab-controls { grid-template-columns: 1fr; } }
+        .lab-field label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+        .lab-field input, .lab-field select {
+            width: 100%;
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            padding: 7px 9px;
+            border-radius: 6px;
+        }
+        .lab-field input:focus, .lab-field select:focus { outline: none; border-color: var(--primary); }
+
+        .sscc-visual-strip {
+            display: grid;
+            grid-template-columns: auto auto 1fr 1fr auto;
+            gap: 6px;
+            margin-bottom: 10px;
             overflow-x: auto;
         }
-        .sscc-diagram table { border-collapse: collapse; width: 100%; min-width: 480px; }
-        .sscc-diagram td {
+        .sscc-seg {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
             text-align: center;
-            padding: 10px 6px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 13px;
+            min-width: 64px;
+        }
+        .sscc-seg .seg-val {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            display: block;
+        }
+        .sscc-seg .seg-lbl {
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 4px;
+            display: block;
+        }
+        .seg-ai  { border-color: rgba(148, 163, 184, 0.3); } .seg-ai .seg-val { color: var(--muted); }
+        .seg-ext { border-color: rgba(245, 158, 11, 0.45); } .seg-ext .seg-val { color: var(--primary); }
+        .seg-gcp { border-color: rgba(56, 189, 248, 0.45); } .seg-gcp .seg-val { color: var(--accent-cyan); }
+        .seg-ser { border-color: rgba(248, 250, 252, 0.25); } .seg-ser .seg-val { color: var(--text); }
+        .seg-cd  { border-color: rgba(16, 185, 129, 0.55); background: rgba(16, 185, 129, 0.08); } .seg-cd .seg-val { color: var(--success); }
+
+        .lab-output-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--muted);
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ─── Annotated 3-Zone GS1 Pallet Label Blueprint ─── */
+        .label-blueprint-wrap {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 18px;
+            align-items: start;
+            margin: 16px 0;
+        }
+        @media (max-width: 720px) { .label-blueprint-wrap { grid-template-columns: 1fr; } }
+
+        .mock-gs1-label {
+            background: #ffffff;
+            color: #0b0e14;
+            border-radius: 8px;
+            border: 2px solid #0b0e14;
+            overflow: hidden;
+            font-family: var(--font-mono);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+        }
+        .mock-zone {
+            padding: 10px 12px;
+            border-bottom: 2px solid #0b0e14;
+            position: relative;
+        }
+        .mock-zone:last-child { border-bottom: none; }
+        .zone-pill {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .z1 { background: #dbeafe; color: #1d4ed8; }
+        .z2 { background: #fef3c7; color: #b45309; }
+        .z3 { background: #d1fae5; color: #047857; }
+        .mock-bars {
+            height: 44px;
+            margin: 6px 0 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                #000 0px, #000 2px, #fff 2px, #fff 4px,
+                #000 4px, #000 7px, #fff 7px, #fff 9px,
+                #000 9px, #000 10px, #fff 10px, #fff 13px,
+                #000 13px, #000 16px, #fff 16px, #fff 18px
+            );
+            border-left: 14px solid #fff;
+            border-right: 14px solid #fff;
+        }
+        .mock-bars.tall { height: 58px; }
+
+        .zone-explain-list { display: flex; flex-direction: column; gap: 10px; }
+        .zone-explain-item {
+            background: #0b0e14;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+        .zone-explain-item.z-blue { border-left-color: var(--accent-cyan); }
+        .zone-explain-item.z-green { border-left-color: var(--success); }
+        .zone-explain-item h4 { font-family: var(--font-mono); font-size: 12px; margin-bottom: 4px; color: var(--text); }
+        .zone-explain-item p { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.5; }
+
+        /* ─── Tables ─── */
+        .table-wrap { overflow-x: auto; margin: 14px 0 18px; }
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+        table.data-table th {
+            text-align: left;
+            padding: 9px 11px;
+            background: #0b0e14;
+            border: 1px solid var(--border);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+        }
+        table.data-table td {
+            padding: 9px 11px;
+            border: 1px solid var(--border);
+            color: #cbd5e1;
+            vertical-align: top;
+        }
+        table.calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            text-align: center;
+        }
+        table.calc-table th, table.calc-table td {
+            padding: 6px 5px;
             border: 1px solid var(--border);
         }
-        .sscc-diagram .label { font-size: 11px; color: var(--muted); background: var(--surface); font-family: 'IBM Plex Sans', sans-serif; }
-        .cell-ai   { color: #94a3b8; }
-        .cell-ext  { color: #60a5fa; font-weight: 600; }
-        .cell-gcp  { color: #f1f5f9; }
-        .cell-ref  { color: #f1f5f9; }
-        .cell-cd   { color: #10b981; font-weight: 600; }
+        table.calc-table th { background: #0b0e14; color: var(--muted); }
+        table.calc-table tr.total td { background: rgba(16, 185, 129, 0.1); color: var(--success); font-weight: 700; }
 
-        .calc-table {
-            width: 100%; border-collapse: collapse;
+        /* ─── Code Tabs & Pre ─── */
+        .code-tabs {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            padding: 6px 10px;
+            margin-top: 14px;
+        }
+        .code-tab-group { display: flex; gap: 5px; }
+        .code-tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--muted);
             font-family: var(--font-mono);
-            font-size: 13px; margin: 20px 0 24px;
-            overflow-x: auto; display: block;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
         }
-        .calc-table th {
-            background: var(--surface); color: var(--muted);
-            font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
-            padding: 8px 12px; border: 1px solid var(--border); font-weight: 500;
-            font-family: var(--font-sans);
+        .code-tab-btn.active {
+            background: var(--surface);
+            border-color: rgba(245, 158, 11, 0.4);
+            color: var(--primary);
         }
-        .calc-table td { padding: 8px 12px; border: 1px solid var(--border); text-align: center; }
-        .calc-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
-        .calc-table .total td { background: var(--surface); color: var(--text); font-weight: 600; }
+        pre {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.65;
+            color: #e2e8f0;
+            margin: 10px 0 16px;
+        }
+        .code-pane pre { border-radius: 0 0 10px 10px; margin-top: 0; }
+        pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+        .kw { color: #f59e0b; } .fn { color: #38bdf8; } .str { color: #10b981; }
+        .num { color: #c084fc; } .comment { color: #64748b; font-style: italic; } .var { color: #e2e8f0; }
 
+        /* ─── Callouts & Flow Diagram ─── */
         .callout {
-            border-left: 3px solid var(--primary);
             background: rgba(245, 158, 11, 0.06);
-            border-radius: 0 8px 8px 0;
-            padding: 14px 18px;
-            margin: 20px 0 24px;
-            font-size: 14px; color: var(--muted);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-left: 3px solid var(--primary);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 14px 0;
+            font-size: 13px;
+            color: #cbd5e1;
         }
-        .callout strong { color: var(--text); }
-        .callout.success { border-color: var(--success); background: rgba(16,185,129,0.06); }
+        .callout.success {
+            background: rgba(16, 185, 129, 0.06);
+            border-color: rgba(16, 185, 129, 0.25);
+            border-left-color: var(--success);
+        }
+        .flow-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 14px 0 18px;
+        }
+        @media (max-width: 680px) { .flow-strip { grid-template-columns: repeat(2, 1fr); } }
+        .flow-box {
+            background: #0b0e14;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 12px;
+            text-align: center;
+        }
+        .flow-box .fb-num { font-family: var(--font-mono); font-size: 10px; color: var(--primary); font-weight: 700; }
+        .flow-box .fb-title { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text); margin: 3px 0; }
+        .flow-box .fb-sub { font-size: 11px; color: var(--muted); line-height: 1.35; }
 
-        .segment-table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
-        .segment-table th { background: var(--surface); color: var(--muted); font-size: 12px;
-            text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 14px;
-            border: 1px solid var(--border); font-weight: 500; text-align: left; font-family: var(--font-mono); }
-        .segment-table td { padding: 10px 14px; border: 1px solid var(--border); color: var(--muted); }
-        .segment-table td:first-child { font-family: var(--font-mono); color: var(--primary); font-size: 13px; }
-        .segment-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+        /* ─── Interactive Mini-Quiz ─── */
+        .quiz-box {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin: 18px 0;
+        }
+        .quiz-q { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+        .quiz-q:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .quiz-q p { font-weight: 600; font-size: 13.5px; color: var(--text); margin-bottom: 8px; }
+        .quiz-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+        .quiz-btn {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            padding: 6px 11px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .quiz-btn:hover { border-color: var(--primary); color: var(--text); }
+        .quiz-btn.correct { background: rgba(16, 185, 129, 0.16); border-color: var(--success); color: var(--success); font-weight: 700; }
+        .quiz-btn.wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: #f87171; }
+        .quiz-feedback { font-size: 12px; margin-top: 6px; font-family: var(--font-mono); min-height: 16px; }
 
-        /* FAQ Styling Robust */
-        .faq-container { margin: 20px 0 24px; display: flex; flex-direction: column; gap: 12px; }
-        .faq-container details { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; transition: border-color 0.2s; }
-        .faq-container details:hover { border-color: rgba(245, 158, 11, 0.35); }
-        .faq-container summary { font-family: var(--font-mono); font-size: 13.5px; font-weight: 600; color: var(--text); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        /* ─── FAQ & Final CTA ─── */
+        .faq-container { display: flex; flex-direction: column; gap: 9px; margin: 14px 0; }
+        .faq-container details {
+            background: #0b0e14;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 12px 15px;
+        }
+        .faq-container summary {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
         .faq-container summary::-webkit-details-marker { display: none; }
-        .faq-container summary::after { content: '＋'; color: var(--primary); font-size: 16px; }
-        .faq-container details[open] summary::after { content: '－'; }
-        .faq-answer { margin-top: 12px; color: var(--muted); font-size: 14.5px; line-height: 1.6; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 12px; font-family: var(--font-sans); }
+        .faq-container summary::after { content: '+'; color: var(--primary); font-size: 16px; }
+        .faq-container details[open] summary::after { content: '−'; }
+        .faq-answer { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+        .faq-answer p { margin: 0; }
 
         .cta-box {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(56, 189, 248, 0.06));
-            border: 1px solid rgba(245, 158, 11, 0.25);
-            border-radius: 14px; padding: 32px;
-            text-align: center; margin-top: 48px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), var(--surface-card));
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 22px;
         }
-        .cta-box h3 { font-family: var(--font-mono); font-size: 19px; margin-bottom: 10px; color: var(--text); }
-        .cta-box p { margin-bottom: 20px; color: var(--muted); }
+        .cta-box h3 { font-family: var(--font-mono); font-size: 16px; margin: 0 0 8px; }
+        .cta-box p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
         .cta-btn {
-            display: inline-block;
-            background: var(--primary); color: #0b0e14;
-            padding: 11px 26px; border-radius: 6px;
-            font-family: var(--font-mono); font-weight: 700; font-size: 13px; text-decoration: none;
-            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary);
+            color: #0b0e14;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 12.5px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: opacity 0.15s;
         }
-        .cta-btn:hover { background: var(--primary-light); transform: translateY(-1px); text-decoration: none; }
-
-        ul, ol { padding-left: 22px; margin-bottom: 16px; }
-        li { margin-bottom: 6px; color: var(--muted); }
-        li strong { color: var(--text); }
-
-        @media (max-width: 600px) {
-            .wrapper { padding: 32px 16px 60px; }
-            h2 { font-size: 19px; }
+        .cta-btn:hover { opacity: 0.9; }
+        .cta-btn.outline {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--primary);
+            border: 1px solid rgba(245, 158, 11, 0.45);
         }
     </style>
-    <!-- Auto-Redirect GitHub Pages to ssccapi.com/ -->
+
     <script>
     (function() {
         var map = { 'index.html': '', 'calculator.html': 'calculator', 'guide.html': 'guide', 'sscc-api-guide.html': 'docs' };
@@ -453,488 +911,722 @@
 </header>
 
 <div class="wrapper">
-    <nav class="toc" aria-label="Table of contents">
-        <div class="toc-title">Technical Guide</div>
-        <ol>
-            <li><a href="#what-is-sscc">What is an SSCC?</a></li>
-            <li><a href="#structure">SSCC Structure</a></li>
-            <li><a href="#algorithm">Check Digit Algorithm</a></li>
-            <li><a href="#common-mistakes">Common Mistakes</a></li>
-            <li><a href="#javascript">JavaScript Implementation</a></li>
-            <li><a href="#python">Python Implementation</a></li>
-            <li><a href="#edifact">Extracting from EDIFACT</a></li>
-            <li><a href="#sap-idoc">SAP IDocs (E1EDL44/EXIDV)</a></li>
-            <li><a href="#sunrise-2027">Sunrise 2027 &amp; ZPL-II</a></li>
-            <li><a href="#retailer-compliance">Retailer GS1 Profiles</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#tool">Studio &amp; Cloud API</a></li>
-        </ol>
-    </nav>
+    <!-- ==================== STICKY ROADMAP SIDEBAR ==================== -->
+    <aside class="roadmap-sidebar" aria-label="Course Roadmap Navigation">
+        <div class="progress-head">
+            <span>Roadmap Progress</span>
+            <span id="progress-label">0 / 6</span>
+        </div>
+        <div class="progress-track">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
 
-    <article class="guide-article">
-    <header class="article-header">
-        <span class="article-tag">SSCCAPI Technical Reference</span>
-        <h1>How to Validate <em>SSCC Codes</em> — Format, Algorithm &amp; Tools</h1>
-        <p class="article-meta">GS1-128 · Check Digit · EDIFACT · SAP IDoc · Zebra ZPL-II</p>
-    </header>
+        <nav class="sidebar-list">
+            <a href="#what-is-sscc" class="sidebar-step" data-step="1">
+                <span class="step-num">01</span>
+                <span class="step-meta"><strong>GS1 Keys &amp; Barcodes</strong><small>SSCC vs GTIN · 1D vs 2D</small></span>
+            </a>
+            <a href="#structure" class="sidebar-step" data-step="2">
+                <span class="step-num">02</span>
+                <span class="step-meta"><strong>SSCC-18 Anatomy Lab</strong><small>Interactive 18-digit builder</small></span>
+            </a>
+            <a href="#pallet-label" class="sidebar-step" data-step="3">
+                <span class="step-num">03</span>
+                <span class="step-meta"><strong>GS1 Pallet Labels</strong><small>3 zones, A5/4×6" &amp; placement</small></span>
+            </a>
+            <a href="#algorithm" class="sidebar-step" data-step="4">
+                <span class="step-num">04</span>
+                <span class="step-meta"><strong>Modulo 10 &amp; Code</strong><small>Math, JS, Python &amp; traps</small></span>
+            </a>
+            <a href="#edifact" class="sidebar-step" data-step="5">
+                <span class="step-num">05</span>
+                <span class="step-meta"><strong>EDI, SAP &amp; Zebra ZPL</strong><small>DESADV, EXIDV &amp; ^BCN/^BQN</small></span>
+            </a>
+            <a href="#retailer-compliance" class="sidebar-step" data-step="6">
+                <span class="step-num">06</span>
+                <span class="step-meta"><strong>Retailers, Quiz &amp; FAQ</strong><small>Sonae, JM, Mercadona, Amazon</small></span>
+            </a>
+        </nav>
 
-    <h2 id="what-is-sscc">What is an SSCC?</h2>
-    <p>The <strong>Serial Shipping Container Code (SSCC)</strong> is an 18 digit GS1 identifier used in logistics to uniquely identify a physical shipping unit, a pallet, box, roll cage, or any other logistic unit. It is the primary identifier used in supply chain transactions between trading partners.</p>
-    <p>SSCCs appear in two main contexts:</p>
-    <ul>
-        <li><strong>Physically</strong>, encoded in a <strong>GS1 128 barcode</strong> (a variant of Code 128) printed on pallet labels</li>
-        <li><strong>Electronically</strong>, transmitted in EDI messages such as <strong>DESADV</strong> (Despatch Advice / ASN) and <strong>IFTMIN</strong> (Forwarding Instruction) in segments like <code>GIN+BJ</code></li>
-    </ul>
-    <p>The SSCC is always accompanied by the <strong>Application Identifier (AI) 00</strong>, which signals to any GS1 compliant system that what follows is an SSCC.</p>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-quick-links">
+            <a href="/" class="sidebar-cta">⚡ Open SSCCAPI Studio</a>
+            <a href="/calculator" class="sidebar-cta secondary">🧮 Check Digit Calculator</a>
+            <a href="/docs" class="sidebar-cta secondary">🔌 REST API &amp; Sandbox</a>
+        </div>
+    </aside>
 
-    <h2 id="structure">SSCC Structure</h2>
-    <p>An SSCC has exactly <strong>18 digits</strong>, structured as follows:</p>
+    <!-- ==================== MAIN ROADMAP CONTENT ==================== -->
+    <main class="guide-article">
 
-    <div class="sscc-diagram">
-        <table>
-            <tr>
-                <td class="label">AI</td>
-                <td class="label">Extension</td>
-                <td class="label" colspan="2">GS1 Company Prefix</td>
-                <td class="label">Serial Reference</td>
-                <td class="label">Check Digit</td>
-            </tr>
-            <tr>
-                <td class="cell-ai">(00)</td>
-                <td class="cell-ext">3</td>
-                <td class="cell-gcp" colspan="2">56012345</td>
-                <td class="cell-ref">00000001</td>
-                <td class="cell-cd">6</td>
-            </tr>
-            <tr>
-                <td class="label">not stored</td>
-                <td class="label">1 digit</td>
-                <td class="label" colspan="2">7 to 10 digits</td>
-                <td class="label">variable</td>
-                <td class="label">1 digit</td>
-            </tr>
-        </table>
-    </div>
+        <!-- Hero Banner -->
+        <section class="course-hero">
+            <span class="hero-kicker">SSCCAPI Academy · Interactive Roadmap</span>
+            <h1>Master <em>SSCC-18</em>, GS1 Pallet Labels &amp; Supply Chain Barcodes</h1>
+            <p>A practical 6-module roadmap for warehouse managers, EDI specialists, and ERP developers. Learn how barcode types differ, how a compliant GS1 pallet label is built, and how physical pallets connect to EDIFACT, SAP IDocs, and Zebra printers.</p>
+            <div class="hero-pills">
+                <span class="hero-pill">⏱ ~12 min complete track</span>
+                <span class="hero-pill">🧪 Live SSCC Anatomy Lab</span>
+                <span class="hero-pill">🏷️ 3-Zone Label Blueprint</span>
+                <span class="hero-pill">✅ Quick Mastery Quiz</span>
+            </div>
+        </section>
 
-    <ul>
-        <li><strong>AI (00)</strong>, Application Identifier. Always <code>(00)</code> for SSCCs. Not part of the 18 digits, it is a label that precedes them.</li>
-        <li><strong>Extension digit</strong>, A single digit (0 to 9) assigned by the company to extend the numbering capacity.</li>
-        <li><strong>GS1 Company Prefix</strong>, Issued by the local GS1 member organisation to the company. Length varies from 7 to 10 digits depending on the prefix allocation. The first 3 digits identify the issuing GS1 member country.</li>
-        <li><strong>Serial reference</strong>, Assigned sequentially or randomly by the company to uniquely identify each logistic unit. Length varies inversely with the GCP length.</li>
-        <li><strong>Check digit</strong>, Calculated from the preceding 17 digits using the GS1 modulo 10 algorithm. Used to detect transcription errors.</li>
-    </ul>
+        <!-- 6-Card Visual Roadmap Overview -->
+        <div class="roadmap-grid">
+            <a class="rm-card" href="#what-is-sscc">
+                <div class="rm-card-top"><span>MODULE 01</span><span>2 min</span></div>
+                <div class="rm-card-title">GS1 Keys &amp; Barcode Types</div>
+                <div class="rm-card-desc">SSCC vs GTIN vs GLN, plus 1D GS1-128 vs 2D QR Digital Link (Sunrise 2027).</div>
+            </a>
+            <a class="rm-card" href="#structure">
+                <div class="rm-card-top"><span>MODULE 02</span><span>2 min</span></div>
+                <div class="rm-card-title">SSCC-18 Interactive Lab</div>
+                <div class="rm-card-desc">Dissect AI (00), Extension digit, Company Prefix (GCP), Serial &amp; Check Digit live.</div>
+            </a>
+            <a class="rm-card" href="#pallet-label">
+                <div class="rm-card-top"><span>MODULE 03</span><span>2 min</span></div>
+                <div class="rm-card-title">How Pallet Labels Work</div>
+                <div class="rm-card-desc">Visual 3-zone blueprint, Multi-AI barcodes (02/15/37/10) &amp; pallet placement rules.</div>
+            </a>
+            <a class="rm-card" href="#algorithm">
+                <div class="rm-card-top"><span>MODULE 04</span><span>2 min</span></div>
+                <div class="rm-card-title">Modulo 10 Math &amp; Code</div>
+                <div class="rm-card-desc">Step-by-step calculation, common pitfalls, and ready-to-use JS &amp; Python code.</div>
+            </a>
+            <a class="rm-card" href="#edifact">
+                <div class="rm-card-top"><span>MODULE 05</span><span>2 min</span></div>
+                <div class="rm-card-title">EDI, SAP IDocs &amp; ZPL-II</div>
+                <div class="rm-card-desc">Link physical labels to EDIFACT GIN+BJ, SAP E1EDL44/EXIDV &amp; Zebra ^BCN/^BQN.</div>
+            </a>
+            <a class="rm-card" href="#retailer-compliance">
+                <div class="rm-card-top"><span>MODULE 06</span><span>2 min</span></div>
+                <div class="rm-card-title">Retailer Specs &amp; Quiz</div>
+                <div class="rm-card-desc">Sonae, Jerónimo Martins, Mercadona, Lidl, Amazon rules + 3-question check.</div>
+            </a>
+        </div>
 
-    <div class="callout">
-        <strong>Important:</strong> The GS1 Company Prefix identifies the organisation that <em>issued</em> the SSCC, not necessarily the country of origin of the goods. A Portuguese company with prefix <code>560</code> may ship goods manufactured anywhere in the world.
-    </div>
+        <!-- ==================== MODULE 01 ==================== -->
+        <section class="module-card" id="what-is-sscc">
+            <div class="module-header">
+                <div>
+                    <span class="module-badge">Module 01 · Foundations</span>
+                    <h2>GS1 Keys &amp; Barcode Types Explained</h2>
+                </div>
+                <button type="button" class="btn-mark-done" data-complete-step="1" onclick="toggleStepDone(1)">○ Mark Complete</button>
+            </div>
 
-    <h2 id="algorithm">Check Digit Algorithm</h2>
-    <p>The SSCC check digit uses the standard <strong>GS1 Modulo 10</strong> algorithm. Given the 17-digit body:</p>
-    <ol>
-        <li>Starting from the <strong>rightmost digit</strong>, multiply alternating digits by <strong>3</strong> and <strong>1</strong></li>
-        <li>Sum all products</li>
-        <li>Check digit = <code>(10 . (sum mod 10)) mod 10</code></li>
-    </ol>
+            <p>Supply chain teams often confuse product barcodes with pallet barcodes. In the GS1 system, <strong>each key identifies a different real-world entity</strong> — and the <strong>SSCC</strong> is the unique "license plate" of a physical logistics unit (pallet, carton, roll cage, or parcel).</p>
 
-    <h3>Worked Example</h3>
-    <p>Body: <code>35601234500000001</code></p>
+            <div class="key-grid">
+                <div class="key-card highlight">
+                    <div class="key-tag"><span>SSCC · AI (00) — Logistics Unit</span><span class="digits">18 digits</span></div>
+                    <p>Uniquely identifies <strong>one specific physical pallet or shipment unit</strong>. Never repeated on another pallet (like a vehicle license plate). Used in EDI <code>DESADV</code> and warehouse receiving gates.</p>
+                </div>
+                <div class="key-card">
+                    <div class="key-tag"><span>GTIN · AI (01) / (02) — Trade Item</span><span class="digits">8 / 12 / 13 / 14</span></div>
+                    <p>Identifies a <strong>product SKU</strong> (e.g. "Box of 12 Olive Oil Bottles"). Every identical box carries the same GTIN. On pallet labels, <code>AI (02)</code> tells the WMS what GTIN is packed inside the pallet.</p>
+                </div>
+                <div class="key-card">
+                    <div class="key-tag"><span>GLN · AI (410) / (414) — Location</span><span class="digits">13 digits</span></div>
+                    <p>Identifies a <strong>company, warehouse, or loading dock</strong> (e.g. Sonae Azambuja Hub). Used in EDI <code>NAD+CZ</code> / <code>NAD+SU</code> headers to route shipments accurately.</p>
+                </div>
+                <div class="key-card">
+                    <div class="key-tag"><span>Attribute AIs · (10) (15) (37) (400)</span><span class="digits">Variable</span></div>
+                    <p>Dynamic shipment metadata attached to a pallet: <code>(10)</code> Batch/Lot, <code>(15)</code> Best Before Date <code>YYMMDD</code>, <code>(37)</code> Trade Item Count, and <code>(400)</code> Customer Purchase Order.</p>
+                </div>
+            </div>
 
-    <table class="calc-table">
-        <tr>
-            <th>Position (from right)</th>
-            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th>
-            <th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th>
-        </tr>
-        <tr>
-            <th>Digit</th>
-            <td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5</td>
-            <td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>6</td><td>5</td><td>3</td>
-        </tr>
-        <tr>
-            <th>Multiplier</th>
-            <td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td>
-            <td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td>
-        </tr>
-        <tr>
-            <th>Product</th>
-            <td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>15</td>
-            <td>4</td><td>9</td><td>2</td><td>3</td><td>0</td><td>18</td><td>5</td><td>9</td>
-        </tr>
-        <tr class="total">
-            <td colspan="18">Sum = 68 . Check digit = (10 . (68 mod 10)) mod 10 = (10 . 8) mod 10 = <strong>2</strong></td>
-        </tr>
-    </table>
+            <h3 id="sunrise-2027">Barcode Carriers: 1D GS1-128 vs 2D QR Digital Link (Sunrise 2027)</h3>
+            <p>The same GS1 data can be carried by different barcode symbologies depending on your scanners and retail partner requirements:</p>
 
-    <p>Full SSCC: <code>(00) 35601234500000001 2</code></p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Barcode Type</th><th>Standard</th><th>Payload Example</th><th>Where It Is Used</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1D GS1-128</strong></td>
+                            <td>Code 128 Subset C + FNC1</td>
+                            <td><code>]C100356012345600000016</code></td>
+                            <td><strong>Mandatory global standard</strong> for pallet labels. Read at 1–3 m distance by laser guns, forklift terminals, and automated conveyor gates.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2D QR Digital Link</strong></td>
+                            <td>ISO/IEC 18004 QR (ECC M)</td>
+                            <td><code>https://ssccapi.com/00/356012345600000016</code></td>
+                            <td><strong>GS1 Sunrise 2027</strong> standard. Encodes SSCC + Lot + Expiry inside a web URI readable by both 2D industrial imagers and smartphones.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dual (1D + 2D)</strong></td>
+                            <td>Hybrid Transition Label</td>
+                            <td>Lower 1D GS1-128 + Upper-Right 2D QR</td>
+                            <td><strong>Recommended today.</strong> Guarantees 100% compatibility with legacy 1D warehouse lasers while already passing Sunrise 2027 2D audits.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EAN-13 / ITF-14</strong></td>
+                            <td>Retail POS / Corrugated Case</td>
+                            <td><code>5601234567892</code></td>
+                            <td>Only encodes a static GTIN (no SSCC, no expiry, no lot). Used on consumer retail units and outer cardboard cartons — <em>not</em> for SSCC pallet labels.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-    <div class="callout success">
-        <strong>Quick check:</strong> If the result of <code>(sum + check_digit) mod 10 === 0</code>, the SSCC is valid. This is the fastest way to validate an existing 18 digit SSCC.
-    </div>
+        <!-- ==================== MODULE 02 ==================== -->
+        <section class="module-card" id="structure">
+            <div class="module-header">
+                <div>
+                    <span class="module-badge">Module 02 · Interactive Lab</span>
+                    <h2>Anatomy of an 18-Digit SSCC</h2>
+                </div>
+                <button type="button" class="btn-mark-done" data-complete-step="2" onclick="toggleStepDone(2)">○ Mark Complete</button>
+            </div>
 
-    <h2 id="common-mistakes">Common Mistakes</h2>
+            <p>Every SSCC has <strong>strictly 18 digits</strong> (preceded visually by Application Identifier <code>(00)</code>, which is <em>not</em> counted in the 18 digits). Try editing the Extension Digit, GS1 Company Prefix, or Serial below to see how the structure and Modulo 10 check digit adapt live:</p>
 
-    <h3>1. Confusing the AI with the SSCC digits</h3>
-    <p>The AI <code>(00)</code> is a label, not part of the 18 digits. When a barcode is scanned with a GS1 128 reader, the raw output is often <code>00</code> followed by the 18 digits, giving 20 characters total. Always strip the leading <code>00</code> before validating the check digit.</p>
+            <!-- Interactive SSCC Anatomy Lab -->
+            <div class="anatomy-lab">
+                <div class="lab-controls">
+                    <div class="lab-field">
+                        <label for="lab-ext">Extension</label>
+                        <select id="lab-ext" onchange="updateAnatomyLab()">
+                            <option value="0">0 (Pallet)</option>
+                            <option value="1">1 (Case)</option>
+                            <option value="3" selected>3 (Mixed)</option>
+                            <option value="9">9 (Custom)</option>
+                        </select>
+                    </div>
+                    <div class="lab-field">
+                        <label for="lab-gcp">GS1 Company Prefix (7–10 digits)</label>
+                        <input type="text" id="lab-gcp" value="56012345" maxlength="10" oninput="updateAnatomyLab()">
+                    </div>
+                    <div class="lab-field">
+                        <label for="lab-ser">Serial Reference (auto-padded)</label>
+                        <input type="text" id="lab-ser" value="1" maxlength="9" oninput="updateAnatomyLab()">
+                    </div>
+                </div>
 
-    <h3>2. Wrong digit count</h3>
-    <p>An SSCC body is always exactly <strong>17 digits</strong> (before the check digit) or <strong>18 digits</strong> (including it). Numbers with 19, 20 or more digits are either GTINs, IBANs, or other identifiers, not SSCCs.</p>
+                <div class="sscc-visual-strip">
+                    <div class="sscc-seg seg-ai"><span class="seg-val">(00)</span><span class="seg-lbl">AI · Not stored</span></div>
+                    <div class="sscc-seg seg-ext"><span class="seg-val" id="vis-ext">3</span><span class="seg-lbl">Extension (1)</span></div>
+                    <div class="sscc-seg seg-gcp"><span class="seg-val" id="vis-gcp">56012345</span><span class="seg-lbl" id="vis-gcp-lbl">GCP (8 digits)</span></div>
+                    <div class="sscc-seg seg-ser"><span class="seg-val" id="vis-ser">00000001</span><span class="seg-lbl" id="vis-ser-lbl">Serial (8 digits)</span></div>
+                    <div class="sscc-seg seg-cd"><span class="seg-val" id="vis-cd">2</span><span class="seg-lbl">Check Digit (1)</span></div>
+                </div>
 
-    <h3>3. Padding zeros</h3>
-    <p>Some ERP systems store SSCCs in fixed width fields padded with leading zeros. A 20 character field starting with <code>00</code> followed by an 18 digit SSCC, or a 21 character field where the last character is a line number, always extract exactly 18 digits for the SSCC.</p>
+                <div class="lab-output-bar">
+                    <span>Full SSCC-18: <strong id="vis-full" style="color:var(--text);">356012345000000012</strong> · Issuing GS1 MO: <strong id="vis-country" style="color:var(--primary);">🇵🇹 Portugal (560)</strong></span>
+                    <a id="vis-studio-link" href="/?sscc=356012345000000012&label=1" style="font-weight:700;text-decoration:none;">Open in Label Studio →</a>
+                </div>
+            </div>
 
-    <h3>4. GS1 prefix vs country of origin</h3>
-    <p>The GS1 prefix (first 3 digits of the SSCC after the extension digit) identifies the GS1 member organisation that issued the company prefix, <strong>not</strong> the country where the goods were made or shipped from. A company registered in Portugal (<code>560</code>) may ship from a warehouse in Spain.</p>
+            <ul>
+                <li><strong>AI (00):</strong> Signals to GS1-128 scanners and WMS parsers that the next 18 digits are an SSCC.</li>
+                <li><strong>Extension Digit (0–9):</strong> Chosen by your company to increase numbering capacity or classify packaging level (e.g. <code>0</code> = Euro-pallet, <code>3</code> = mixed pallet).</li>
+                <li><strong>GS1 Company Prefix (GCP):</strong> Officially licensed by your local GS1 Member Organisation (7–10 digits). The first 3 digits identify the issuing GS1 country (e.g. <code>560</code> Portugal, <code>840–849</code> Spain, <code>400–440</code> Germany).</li>
+                <li><strong>Serial Reference:</strong> Assigned sequentially by your ERP/WMS so no two pallets ever collide. Its length adjusts automatically so <code>1 + GCP + Serial = 17 digits</code>.</li>
+                <li><strong>Check Digit (18th digit):</strong> Computed with Modulo 10 to immediately catch scan errors or manual typos.</li>
+            </ul>
 
-    <h2 id="javascript">JavaScript Implementation</h2>
-    <p>Here is a complete, independent JavaScript implementation for validating and generating SSCC check digits. It uses <code>BigInt</code> to safely handle the large numbers involved.</p>
+            <div class="callout">
+                <strong>Important:</strong> The GS1 prefix identifies the organisation that <em>issued</em> the company prefix — <strong>not</strong> the country of manufacture or origin of the goods.
+            </div>
+        </section>
 
-<pre><code><span class="comment">/**
- * Calculate the GS1 check digit for a 17 digit SSCC body.
- * @param {string} body17 . 17 digit string (no check digit)
- * @returns {number} check digit (0 to 9)
- */</span>
+        <!-- ==================== MODULE 03 ==================== -->
+        <section class="module-card" id="pallet-label">
+            <div class="module-header">
+                <div>
+                    <span class="module-badge">Module 03 · Physical Logistics</span>
+                    <h2>How a Compliant GS1 Pallet Label Works</h2>
+                </div>
+                <button type="button" class="btn-mark-done" data-complete-step="3" onclick="toggleStepDone(3)">○ Mark Complete</button>
+            </div>
+
+            <p>A GS1 Logistics Label (typically <strong>A5 · 148×210 mm</strong> in European retail, or <strong>4×6" · 100×150 mm</strong> on Zebra thermal printers) is always organized into <strong>three standardized horizontal zones</strong> from top to bottom:</p>
+
+            <div class="label-blueprint-wrap">
+                <!-- Visual Mockup of a GS1 Pallet Label -->
+                <div class="mock-gs1-label" aria-label="GS1 3-Zone Pallet Label Blueprint">
+                    <div class="mock-zone">
+                        <span class="zone-pill z1">Zone 1 · Free Format</span>
+                        <div style="font-size:9px;color:#475569;font-weight:700;">FROM: LOGISTICS DISPATCH LTD</div>
+                        <div style="font-size:11px;font-weight:800;margin-top:2px;">TO: SONAE MC — HUB AZAMBUJA</div>
+                        <div style="font-size:9px;color:#334155;margin-top:2px;">ORDER: PO-2026-994 · WEIGHT: 450 KG</div>
+                    </div>
+                    <div class="mock-zone">
+                        <span class="zone-pill z2">Zone 2 · Trade &amp; Multi-AI</span>
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px;">
+                            <div style="font-size:9.5px;line-height:1.45;">
+                                <div><strong>GTIN (02):</strong> 05601234567892</div>
+                                <div><strong>COUNT (37):</strong> 48 · <strong>LOT (10):</strong> LOT-26</div>
+                                <div><strong>BEST BEFORE (15):</strong> 2026-12-31</div>
+                            </div>
+                            <div style="width:42px;height:42px;border:2px solid #000;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;flex-shrink:0;background:#f8fafc;">2D QR</div>
+                        </div>
+                        <div class="mock-bars"></div>
+                        <div style="font-size:8.5px;text-align:center;font-weight:700;">(02)05601234567892(15)261231(37)48(10)LOT-26</div>
+                    </div>
+                    <div class="mock-zone">
+                        <span class="zone-pill z3">Zone 3 · Mandatory SSCC</span>
+                        <div style="font-size:10px;font-weight:800;">SSCC (00)</div>
+                        <div class="mock-bars tall"></div>
+                        <div style="font-size:11px;text-align:center;font-weight:800;letter-spacing:0.04em;">(00) 3 56012345 00000001 2</div>
+                    </div>
+                </div>
+
+                <!-- Explanations of the 3 Zones -->
+                <div class="zone-explain-list">
+                    <div class="zone-explain-item z-blue">
+                        <h4>Zone 1 (Top) — Company &amp; Routing Info</h4>
+                        <p>Human-readable header: Consignor (FROM), Consignee (TO), Purchase Order reference, gross weight, and pallet count (e.g. <em>Pallet 1 of 24</em>).</p>
+                    </div>
+                    <div class="zone-explain-item">
+                        <h4>Zone 2 (Middle) — Trade Details &amp; Secondary Multi-AI</h4>
+                        <p>Required by most European supermarket chains for homogeneous pallets. Combines <code>(02)</code> GTIN + <code>(15)</code> Expiry + <code>(37)</code> Quantity + <code>(10)</code> Lot in one GS1-128 barcode, plus optional Sunrise 2027 <strong>2D QR Digital Link</strong>.</p>
+                    </div>
+                    <div class="zone-explain-item z-green">
+                        <h4>Zone 3 (Bottom) — Mandatory SSCC-18 Barcode</h4>
+                        <p>Always at the <strong>very bottom</strong> of the label so forklift scanners read it cleanly. Minimum bar height: <strong>32 mm</strong>. Mandatory white <strong>Quiet Zones ≥ 10X</strong> on both left and right edges.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Physical Placement Rules on the Pallet (GS1 Standard)</h3>
+            <ul>
+                <li><strong>Two Adjacent Faces:</strong> Apply <strong>2 identical labels</strong> on adjacent sides (one short side + one long side) — or all 4 sides for Amazon LTL pallets.</li>
+                <li><strong>Height from Floor:</strong> Place between <strong>400 mm and 800 mm</strong> from the base of the pallet so automated conveyor scanners never miss the barcode.</li>
+                <li><strong>Edge Clearance:</strong> Keep at least <strong>50 mm</strong> away from vertical pallet edges (never wrap a barcode around a corner!).</li>
+                <li><strong>Stretch-Wrap Contrast:</strong> Apply over or cleanly beneath clear, non-wrinkled stretch film; wrinkled film causes laser refraction errors.</li>
+            </ul>
+        </section>
+
+        <!-- ==================== MODULE 04 ==================== -->
+        <section class="module-card" id="algorithm">
+            <div class="module-header">
+                <div>
+                    <span class="module-badge">Module 04 · Math &amp; Implementation</span>
+                    <h2>Check Digit Algorithm (GS1 Modulo 10) &amp; Code</h2>
+                </div>
+                <button type="button" class="btn-mark-done" data-complete-step="4" onclick="toggleStepDone(4)">○ Mark Complete</button>
+            </div>
+
+            <p>Given the 17-digit SSCC body (without check digit and without AI <code>00</code>):</p>
+            <ol>
+                <li>Starting from the <strong>rightmost digit</strong>, multiply alternating digits by <strong>3</strong> and <strong>1</strong>.</li>
+                <li>Sum all 17 products together.</li>
+                <li>Check digit = <code>(10 - (sum mod 10)) mod 10</code>.</li>
+            </ol>
+
+            <h3>Worked Example · Body: <code>35601234500000001</code></h3>
+            <div class="table-wrap">
+                <table class="calc-table">
+                    <tr>
+                        <th>Pos (R→L)</th>
+                        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th>
+                        <th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th>
+                    </tr>
+                    <tr>
+                        <th>Digit</th>
+                        <td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5</td>
+                        <td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>6</td><td>5</td><td>3</td>
+                    </tr>
+                    <tr>
+                        <th>Weight</th>
+                        <td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td>
+                        <td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td><td>1</td><td>3</td>
+                    </tr>
+                    <tr>
+                        <th>Product</th>
+                        <td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>15</td>
+                        <td>4</td><td>9</td><td>2</td><td>3</td><td>0</td><td>18</td><td>5</td><td>9</td>
+                    </tr>
+                    <tr class="total">
+                        <td colspan="18">Sum = 68 · Check digit = (10 − (68 mod 10)) mod 10 = (10 − 8) mod 10 = <strong>2</strong> → Full SSCC: <strong>356012345000000012</strong></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="callout success">
+                <strong>Fast validation trick:</strong> Including the check digit (with weight <code>1</code> at the rightmost position), any valid SSCC satisfies <code>totalSum % 10 === 0</code>. Try any GS1 key (GTIN-8/12/13/14, GLN, SSCC) in our <a href="/calculator">Interactive Calculator</a>.
+            </div>
+
+            <!-- Code Implementation Tabs (JavaScript & Python) -->
+            <div id="javascript"></div>
+            <div id="python"></div>
+            <div class="code-tabs">
+                <div class="code-tab-group">
+                    <button type="button" class="code-tab-btn active" onclick="switchCodeTab('js', this)">JavaScript (ES6+)</button>
+                    <button type="button" class="code-tab-btn" onclick="switchCodeTab('py', this)">Python 3</button>
+                </div>
+                <button type="button" class="btn-mark-done" onclick="copyActiveCode(this)">📋 Copy</button>
+            </div>
+
+            <div id="code-pane-js" class="code-pane">
+<pre><code><span class="comment">/** Calculate GS1 Modulo 10 check digit for a 17-digit SSCC body. */</span>
 <span class="kw">function</span> <span class="fn">getCheckDigit</span>(<span class="var">body17</span>) {
     <span class="kw">let</span> <span class="var">sum</span> = <span class="num">0</span>;
     <span class="kw">const</span> <span class="var">digits</span> = <span class="var">body17</span>.<span class="fn">split</span>(<span class="str">''</span>).<span class="fn">reverse</span>();
     <span class="kw">for</span> (<span class="kw">let</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="var">digits</span>.length; <span class="var">i</span>++) {
-        <span class="var">sum</span> += <span class="fn">parseInt</span>(<span class="var">digits</span>[<span class="var">i</span>]) * (<span class="var">i</span> % <span class="num">2</span> === <span class="num">0</span> ? <span class="num">3</span> : <span class="num">1</span>);
+        <span class="var">sum</span> += <span class="fn">parseInt</span>(<span class="var">digits</span>[<span class="var">i</span>], <span class="num">10</span>) * (<span class="var">i</span> % <span class="num">2</span> === <span class="num">0</span> ? <span class="num">3</span> : <span class="num">1</span>);
     }
     <span class="kw">return</span> (<span class="num">10</span> - (<span class="var">sum</span> % <span class="num">10</span>)) % <span class="num">10</span>;
 }
 
-<span class="comment">/**
- * Validate an 18 digit SSCC string.
- * @param {string} sscc18 . 18 digit SSCC (without AI prefix)
- * @returns {{ valid: boolean, expected: number, provided: number }}
- */</span>
-<span class="kw">function</span> <span class="fn">validateSSCC</span>(<span class="var">sscc18</span>) {
-    <span class="kw">const</span> <span class="var">digits</span> = <span class="var">sscc18</span>.<span class="fn">replace</span>(<span class="str">/\D/g</span>, <span class="str">''</span>);
-    <span class="kw">if</span> (<span class="var">digits</span>.length !== <span class="num">18</span>) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'SSCC must be 18 digits'</span>);
-
-    <span class="kw">const</span> <span class="var">body</span>     = <span class="var">digits</span>.<span class="fn">substring</span>(<span class="num">0</span>, <span class="num">17</span>);
-    <span class="kw">const</span> <span class="var">provided</span> = <span class="fn">parseInt</span>(<span class="var">digits</span>[<span class="num">17</span>]);
-    <span class="kw">const</span> <span class="var">expected</span> = <span class="fn">getCheckDigit</span>(<span class="var">body</span>);
-
-    <span class="kw">return</span> { <span class="var">valid</span>: <span class="var">provided</span> === <span class="var">expected</span>, <span class="var">expected</span>, <span class="var">provided</span> };
+<span class="comment">/** Normalise &amp; validate 17, 18, or 20-digit (AI 00) SSCC strings. */</span>
+<span class="kw">function</span> <span class="fn">validateSSCC</span>(<span class="var">raw</span>) {
+    <span class="kw">let</span> <span class="var">d</span> = <span class="fn">String</span>(<span class="var">raw</span>).<span class="fn">replace</span>(<span class="str">/\D/g</span>, <span class="str">''</span>);
+    <span class="kw">if</span> (<span class="var">d</span>.length === <span class="num">20</span> &amp;&amp; <span class="var">d</span>.<span class="fn">startsWith</span>(<span class="str">'00'</span>)) <span class="var">d</span> = <span class="var">d</span>.<span class="fn">slice</span>(<span class="num">2</span>);
+    <span class="kw">if</span> (<span class="var">d</span>.length !== <span class="num">18</span>) <span class="kw">return</span> { <span class="var">valid</span>: <span class="kw">false</span>, <span class="var">error</span>: <span class="str">'Expected 18 digits'</span> };
+    <span class="kw">const</span> <span class="var">expected</span> = <span class="fn">getCheckDigit</span>(<span class="var">d</span>.<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">17</span>));
+    <span class="kw">const</span> <span class="var">provided</span> = <span class="fn">parseInt</span>(<span class="var">d</span>[<span class="num">17</span>], <span class="num">10</span>);
+    <span class="kw">return</span> { <span class="var">valid</span>: <span class="var">provided</span> === <span class="var">expected</span>, <span class="var">sscc</span>: <span class="var">d</span>, <span class="var">expected</span>, <span class="var">provided</span> };
 }
 
-<span class="comment">/**
- * Normalise any SSCC input to an 18 digit string.
- * Handles: 17 digits (generates CD), 18 digits, 20 digits with AI "00".
- */</span>
-<span class="kw">function</span> <span class="fn">normaliseSSCC</span>(<span class="var">raw</span>) {
-    <span class="kw">const</span> <span class="var">d</span> = <span class="var">raw</span>.<span class="fn">replace</span>(<span class="str">/\D/g</span>, <span class="str">''</span>);
-    <span class="kw">if</span> (<span class="var">d</span>.length === <span class="num">17</span>) <span class="kw">return</span> <span class="var">d</span> + <span class="fn">getCheckDigit</span>(<span class="var">d</span>);
-    <span class="kw">if</span> (<span class="var">d</span>.length === <span class="num">18</span>) <span class="kw">return</span> <span class="var">d</span>;
-    <span class="kw">if</span> (<span class="var">d</span>.length === <span class="num">20</span> && <span class="var">d</span>.<span class="fn">startsWith</span>(<span class="str">'00'</span>)) <span class="kw">return</span> <span class="var">d</span>.<span class="fn">substring</span>(<span class="num">2</span>);
-    <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`Unexpected length: ${d.length}`</span>);
-}
+<span class="fn">validateSSCC</span>(<span class="str">'(00)356012345000000012'</span>); <span class="comment">// { valid: true, expected: 2, provided: 2 }</span></code></pre>
+            </div>
 
-// Examples
-<span class="fn">validateSSCC</span>(<span class="str">'356012345000000012'</span>);  <span class="comment">// { valid: true, expected: 2, provided: 2 }</span>
-<span class="fn">validateSSCC</span>(<span class="str">'356012345000000019'</span>);  <span class="comment">// { valid: false, expected: 2, provided: 9 }</span>
-<span class="fn">normaliseSSCC</span>(<span class="str">'00356012345000000012'</span>); <span class="comment">// '356012345000000012' (strips AI)</span>
-<span class="fn">normaliseSSCC</span>(<span class="str">'35601234500000001'</span>);   <span class="comment">// '356012345000000012' (generates CD)</span></code></pre>
-
-    <h2 id="python">Python Implementation: Check Digit &amp; Batch Validation</h2>
-    <p>For data pipelines, ERP extractors, and backend services, here is the clean Python 3 implementation of the GS1 Modulo 10 check digit calculation and SSCC validator:</p>
-
+            <div id="code-pane-py" class="code-pane" style="display:none;">
 <pre><code><span class="kw">def</span> <span class="fn">calculate_sscc_check_digit</span>(<span class="var">body17</span>: <span class="str">str</span>) -&gt; <span class="str">int</span>:
-    <span class="str">"""
-    Calculates the GS1 Modulo 10 check digit for a 17-digit SSCC payload.
-    """</span>
+    <span class="str">"""Calculates the GS1 Modulo 10 check digit for a 17-digit SSCC payload."""</span>
     <span class="kw">if</span> <span class="fn">len</span>(<span class="var">body17</span>) != <span class="num">17</span> <span class="kw">or not</span> <span class="var">body17</span>.<span class="fn">isdigit</span>():
         <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">"SSCC payload must be exactly 17 digits"</span>)
-    
-    <span class="comment"># Alternate multipliers 3 and 1 starting from the rightmost digit</span>
     <span class="var">digits</span> = [<span class="fn">int</span>(<span class="var">d</span>) <span class="kw">for</span> <span class="var">d</span> <span class="kw">in</span> <span class="fn">reversed</span>(<span class="var">body17</span>)]
     <span class="var">total</span> = <span class="fn">sum</span>(<span class="var">d</span> * (<span class="num">3</span> <span class="kw">if</span> <span class="var">i</span> % <span class="num">2</span> == <span class="num">0</span> <span class="kw">else</span> <span class="num">1</span>) <span class="kw">for</span> <span class="var">i</span>, <span class="var">d</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="var">digits</span>))
     <span class="kw">return</span> (<span class="num">10</span> - (<span class="var">total</span> % <span class="num">10</span>)) % <span class="num">10</span>
 
-
 <span class="kw">def</span> <span class="fn">validate_sscc</span>(<span class="var">raw</span>: <span class="str">str</span>) -&gt; <span class="str">bool</span>:
-    <span class="str">"""
-    Validates any SSCC string (18 digits or 20 digits with leading (00)).
-    """</span>
+    <span class="str">"""Validates 18-digit or 20-digit (AI 00) SSCC strings."""</span>
     <span class="var">clean</span> = <span class="str">""</span>.<span class="fn">join</span>(<span class="var">ch</span> <span class="kw">for</span> <span class="var">ch</span> <span class="kw">in</span> <span class="var">raw</span> <span class="kw">if</span> <span class="var">ch</span>.<span class="fn">isdigit</span>())
     <span class="kw">if</span> <span class="fn">len</span>(<span class="var">clean</span>) == <span class="num">20</span> <span class="kw">and</span> <span class="var">clean</span>.<span class="fn">startswith</span>(<span class="str">"00"</span>):
         <span class="var">clean</span> = <span class="var">clean</span>[<span class="num">2</span>:]
-    <span class="kw">if</span> <span class="fn">len</span>(<span class="var">clean</span>) != <span class="num">18</span>:
-        <span class="kw">return False</span>
-    <span class="kw">return</span> <span class="fn">int</span>(<span class="var">clean</span>[-<span class="num">1</span>]) == <span class="fn">calculate_sscc_check_digit</span>(<span class="var">clean</span>[:<span class="num">17</span>])
+    <span class="kw">return</span> <span class="fn">len</span>(<span class="var">clean</span>) == <span class="num">18</span> <span class="kw">and</span> <span class="fn">int</span>(<span class="var">clean</span>[-<span class="num">1</span>]) == <span class="fn">calculate_sscc_check_digit</span>(<span class="var">clean</span>[:<span class="num">17</span>])
 
-<span class="comment"># Examples:</span>
-<span class="fn">print</span>(<span class="fn">validate_sscc</span>(<span class="str">"356012345000000012"</span>))    <span class="comment"># True</span>
-<span class="fn">print</span>(<span class="fn">validate_sscc</span>(<span class="str">"(00)356012345000000012"</span>))<span class="comment"># True</span>
-<span class="fn">print</span>(<span class="fn">validate_sscc</span>(<span class="str">"356012345000000019"</span>))    <span class="comment"># False (Invalid CD)</span></code></pre>
+<span class="fn">print</span>(<span class="fn">validate_sscc</span>(<span class="str">"(00)356012345000000012"</span>))  <span class="comment"># True</span></code></pre>
+            </div>
 
-    <h2 id="edifact">Extracting SSCCs from EDIFACT Files</h2>
-    <p>In EDIFACT messages, SSCCs appear in several segments. The most common is <code>GIN</code> with qualifier <code>BJ</code> (Goods Identity Number, SSCC), used in <strong>DESADV</strong> (Despatch Advice) and <strong>IFTMIN</strong> (Forwarding Instruction).</p>
+            <h3 id="common-mistakes">4 Classic Mistakes That Break Warehouse Receiving</h3>
+            <ul>
+                <li><strong>Keeping the leading <code>00</code> AI:</strong> Laser scanners output 20 digits (<code>00</code> + 18-digit SSCC). Always strip <code>00</code> before storing in SAP <code>EXIDV</code> or computing the check digit.</li>
+                <li><strong>Excel scientific notation corruption:</strong> Opening an SSCC CSV in Excel turns <code>356012345000000012</code> into <code>3.56012E+17</code> and zeroes out the final digits! Always store SSCCs as text strings (never float/int64 in spreadsheets).</li>
+                <li><strong>Forgetting FNC1 (<code>&gt;8</code>) in Zebra ZPL:</strong> Without <code>&gt;8</code>, Zebra prints plain Code 128 instead of GS1-128 — retail dock scanners will reject the pallet.</li>
+                <li><strong>Reusing serial numbers too early:</strong> GS1 rules prohibit reusing an SSCC within 12 months (best practice: never reuse).</li>
+            </ul>
+        </section>
 
-    <table class="segment-table">
-        <tr>
-            <th>Segment</th>
-            <th>Description</th>
-            <th>Example</th>
-        </tr>
-        <tr>
-            <td>GIN+BJ:&lt;SSCC&gt;</td>
-            <td>Primary SSCC segment in DESADV / IFTMIN</td>
-            <td><code>GIN+BJ:356012345000000012'</code></td>
-        </tr>
-        <tr>
-            <td>RFF+SI:&lt;SSCC&gt;</td>
-            <td>Reference, qualifier SI = Shipment ID</td>
-            <td><code>RFF+SI:356012345000000012'</code></td>
-        </tr>
-        <tr>
-            <td>RFF+AAK:&lt;SSCC&gt;</td>
-            <td>Reference, qualifier AAK = Despatch number</td>
-            <td><code>RFF+AAK:356012345000000012'</code></td>
-        </tr>
-        <tr>
-            <td>PAC</td>
-            <td>Package segment, SSCC sometimes embedded</td>
-            <td><code>PAC+1++09:356012345000000012'</code></td>
-        </tr>
-    </table>
+        <!-- ==================== MODULE 05 ==================== -->
+        <section class="module-card" id="edifact">
+            <div class="module-header">
+                <div>
+                    <span class="module-badge">Module 05 · Systems Integration</span>
+                    <h2>Connecting Physical Labels to EDIFACT, SAP IDocs &amp; Zebra ZPL-II</h2>
+                </div>
+                <button type="button" class="btn-mark-done" data-complete-step="5" onclick="toggleStepDone(5)">○ Mark Complete</button>
+            </div>
 
-    <h3>Parsing GIN+BJ with JavaScript</h3>
+            <p>An SSCC only unlocks automated warehouse receiving when the <strong>exact same 18-digit code</strong> travels in parallel physically (on the pallet label) and electronically (in the Advance Shipping Notice sent before the truck arrives):</p>
 
-<pre><code><span class="comment">/**
- * Extract all SSCCs from an EDIFACT message string.
- * Handles custom UNA delimiters.
- */</span>
-<span class="kw">function</span> <span class="fn">extractSSCCsFromEDIFACT</span>(<span class="var">text</span>) {
-    <span class="kw">const</span> <span class="var">ssccList</span> = [];
+            <div class="flow-strip">
+                <div class="flow-box"><div class="fb-num">STEP A</div><div class="fb-title">ERP / WMS</div><div class="fb-sub">Assigns unique SSCC-18 per pallet</div></div>
+                <div class="flow-box"><div class="fb-num">STEP B</div><div class="fb-title">Zebra ZPL-II</div><div class="fb-sub">Prints A5 / 4×6" GS1-128 + 2D QR</div></div>
+                <div class="flow-box"><div class="fb-num">STEP C</div><div class="fb-title">EDI DESADV / IDoc</div><div class="fb-sub">Sends GIN+BJ / EXIDV ahead of truck</div></div>
+                <div class="flow-box"><div class="fb-num">STEP D</div><div class="fb-title">1-Scan Intake</div><div class="fb-sub">Hub scans (00) &amp; auto-receives full pallet</div></div>
+            </div>
 
-    <span class="comment">// Read custom delimiters from UNA service string</span>
-    <span class="kw">let</span> <span class="var">compSep</span> = <span class="str">':'</span>, <span class="var">elemSep</span> = <span class="str">'+'</span>, <span class="var">segTerm</span> = <span class="str">"'"</span>;
-    <span class="kw">const</span> <span class="var">una</span> = <span class="var">text</span>.<span class="fn">match</span>(<span class="str">/^UNA(.{6})/</span>);
-    <span class="kw">if</span> (<span class="var">una</span>) {
-        <span class="var">compSep</span> = <span class="var">una</span>[<span class="num">1</span>][<span class="num">0</span>];
-        <span class="var">elemSep</span> = <span class="var">una</span>[<span class="num">1</span>][<span class="num">1</span>];
-        <span class="var">segTerm</span> = <span class="var">una</span>[<span class="num">1</span>][<span class="num">5</span>];
-    }
+            <h3>1. UN/EDIFACT D.96A DESADV Segments</h3>
+            <p>In European retail EDI (<code>DESADV</code> Despatch Advice &amp; <code>IFTMIN</code>), SSCCs are transmitted inside the <code>CPS / PAC / PCI+33E / GIN+BJ</code> hierarchy:</p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Segment</th><th>Role</th><th>Example</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>GIN+BJ+&lt;SSCC&gt;'</code></td><td>Primary SSCC-18 identifier (<code>BJ</code> = GS1 Serial Shipping Container Code)</td><td><code>GIN+BJ+356012345000000012'</code></td></tr>
+                        <tr><td><code>PCI+33E'</code></td><td>Package Identification: marked with GS1 SSCC</td><td><code>PCI+33E'</code></td></tr>
+                        <tr><td><code>RFF+SI:&lt;SSCC&gt;'</code></td><td>Shipment Reference fallback used by some carriers</td><td><code>RFF+SI:356012345000000012'</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
 
-    <span class="kw">const</span> <span class="var">segments</span> = <span class="var">text</span>
-        .<span class="fn">replace</span>(<span class="str">/
-?
-/g</span>, <span class="str">''</span>)
-        .<span class="fn">split</span>(<span class="var">segTerm</span>)
-        .<span class="fn">map</span>(<span class="var">s</span> => <span class="var">s</span>.<span class="fn">trim</span>())
-        .<span class="fn">filter</span>(<span class="var">Boolean</span>);
-
-    <span class="kw">for</span> (<span class="kw">const</span> <span class="var">seg</span> <span class="kw">of</span> <span class="var">segments</span>) {
-        <span class="kw">const</span> <span class="var">parts</span> = <span class="var">seg</span>.<span class="fn">split</span>(<span class="var">elemSep</span>);
-        <span class="kw">if</span> (<span class="var">parts</span>[<span class="num">0</span>] !== <span class="str">'GIN'</span>) <span class="kw">continue</span>;
-
-        <span class="kw">for</span> (<span class="kw">const</span> <span class="var">el</span> <span class="kw">of</span> <span class="var">parts</span>.<span class="fn">slice</span>(<span class="num">1</span>)) {
-            <span class="kw">const</span> [<span class="var">qualifier</span>, <span class="var">value</span>] = <span class="var">el</span>.<span class="fn">split</span>(<span class="var">compSep</span>);
-            <span class="kw">if</span> (<span class="var">qualifier</span> === <span class="str">'BJ'</span> && <span class="var">value</span>) {
-                <span class="kw">const</span> <span class="var">result</span> = <span class="fn">validateSSCC</span>(<span class="var">value</span>);
-                <span class="var">ssccList</span>.<span class="fn">push</span>({ <span class="var">sscc</span>: <span class="var">value</span>, ...<span class="var">result</span> });
-            }
-        }
-    }
-    <span class="kw">return</span> <span class="var">ssccList</span>;
-}</code></pre>
-
-    <div class="callout">
-        <strong>Note on custom delimiters:</strong> EDIFACT allows trading partners to define custom component, element and segment separators in the UNA service string. Always read the UNA header before parsing, defaulting to <code>: + '</code> will silently fail on non-standard files.
-    </div>
-
-    <h2 id="sap-idoc">SSCC in SAP IDocs (E1EDL44 / EXIDV)</h2>
-    <p>In SAP ERP, ECC, and S/4HANA environments (modules SD, LE, WM, and EWM), SSCC numbers are handled as <strong>External Handling Unit Identifiers (HU)</strong>. They are exchanged in Outbound Delivery, Despatch Advice, and Shipment IDocs like <code>DELVRY03</code>, <code>DELVRY07</code>, and <code>DESADV01</code>.</p>
-
-    <table class="segment-table">
-        <tr>
-            <th>Segment</th>
-            <th>Field</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>E1EDL37</td>
-            <td>EXIDV</td>
-            <td>Handling Unit Header: External Handling Unit Identification (18-digit SSCC)</td>
-        </tr>
-        <tr>
-            <td>E1EDL44</td>
-            <td>EXIDV</td>
-            <td>Handling Unit Item: SSCC associated with packed delivery items</td>
-        </tr>
-        <tr>
-            <td>E1EDL37</td>
-            <td>VHILM_KU</td>
-            <td>Customer Packaging Material / Pallet Type code (e.g. EURO PALLET)</td>
-        </tr>
-    </table>
-
-    <p>Sample XML IDoc segment structure representing a logistics handling unit with SSCC:</p>
+            <h3 id="sap-idoc">2. SAP ERP / S/4HANA IDocs (<code>DELVRY03</code> / <code>E1EDL44</code> / <code>EXIDV</code>)</h3>
+            <p>In SAP SD/LE/WM/EWM, SSCCs are stored as <strong>External Handling Unit IDs (<code>EXIDV</code>)</strong> inside <code>E1EDL37</code> (HU Header) and <code>E1EDL44</code> (HU Item Assignment):</p>
 
 <pre><code><span class="kw">&lt;E1EDL37</span> <span class="var">SEGMENT</span>=<span class="str">"1"</span><span class="kw">&gt;</span>
-    <span class="kw">&lt;EXIDV&gt;</span>356012345000000012<span class="kw">&lt;/EXIDV&gt;</span>
-    <span class="kw">&lt;VHILM_KU&gt;</span>CHEP-01<span class="kw">&lt;/VHILM_KU&gt;</span>
+    <span class="kw">&lt;EXIDV&gt;</span>356012345000000012<span class="kw">&lt;/EXIDV&gt;</span>   <span class="comment">&lt;!-- 18-digit SSCC --&gt;</span>
+    <span class="kw">&lt;VHILM_KU&gt;</span>00<span class="kw">&lt;/VHILM_KU&gt;</span>
     <span class="kw">&lt;E1EDL44</span> <span class="var">SEGMENT</span>=<span class="str">"1"</span><span class="kw">&gt;</span>
         <span class="kw">&lt;VELIN&gt;</span>1<span class="kw">&lt;/VELIN&gt;</span>
+        <span class="kw">&lt;MATNR&gt;</span>05601234567892<span class="kw">&lt;/MATNR&gt;</span>
+        <span class="kw">&lt;VEMNG&gt;</span>48.000<span class="kw">&lt;/VEMNG&gt;</span>
         <span class="kw">&lt;EXIDV&gt;</span>356012345000000012<span class="kw">&lt;/EXIDV&gt;</span>
     <span class="kw">&lt;/E1EDL44&gt;</span>
 <span class="kw">&lt;/E1EDL37&gt;</span></code></pre>
 
-    <p>Both <strong>SSCCAPI</strong> and its REST API natively parse these XML IDoc tags as well as flat text IDoc streams up to 1 MB without requiring intermediate transformations.</p>
+            <h3>3. Zebra ZPL-II Command Anatomy (<code>^BCN</code> + <code>^BQN</code>)</h3>
+            <p>When printing on industrial Zebra printers (ZT411, ZD421, GK420d via Raw TCP Port 9100), every compliant GS1 ZPL stream must follow four linter rules:</p>
+<pre><code><span class="kw">^XA</span>
+<span class="comment">; 2D GS1 Digital Link QR Code (Model 2, Magnification 4, ECC Q)</span>
+<span class="kw">^FO</span>575,168<span class="kw">^BQN</span>,2,4<span class="kw">^FD</span>QA,https://ssccapi.com/00/356012345600000016<span class="kw">^FS</span>
 
-    <h2 id="sunrise-2027">GS1 Sunrise 2027: Dual 1D GS1-128 &amp; 2D QR Digital Link + Zebra ZPL-II</h2>
-    <p>Under the global <strong>GS1 Sunrise 2027</strong> initiative and the <strong>GS1 Digital Link</strong> standard, logistics pallet labels are transitioning from single 1D linear barcodes to <strong>Dual-Symbology (1D + 2D QR Code)</strong> and standalone <strong>2D QR Digital Link</strong> barcodes.</p>
+<span class="comment">; 1D GS1-128 Linear Barcode: FNC1 (&gt;8) + Subset C (&gt;5) + AI 00 + 18-digit SSCC</span>
+<span class="kw">^FO</span>65,565<span class="kw">^BY</span>3,3,210<span class="kw">^BCN</span>,210,N,N,N,D<span class="kw">^FD</span>&gt;8&gt;500356012345600000016<span class="kw">^FS</span>
+<span class="kw">^XZ</span></code></pre>
+            <ul>
+                <li><strong><code>^XA ... ^XZ</code> Frame:</strong> Valid label start/end delimiters.</li>
+                <li><strong><code>&gt;8</code> FNC1 Escape:</strong> Mandatory inside <code>^BC</code> to identify the barcode as GS1-128 (without <code>&gt;8</code> it scans as plain Code 128!).</li>
+                <li><strong><code>&gt;5</code> Code 128 Subset C:</strong> Compresses numeric pairs for high density and crisp scanning.</li>
+                <li><strong>Valid Modulo-10 SSCC:</strong> Test any ZPL snippet live in the <a href="/#labels">Zebra ZPL-II Linter</a> inside SSCCAPI Studio.</li>
+            </ul>
+        </section>
 
-    <table class="segment-table">
-        <tr>
-            <th>Symbology Mode</th>
-            <th>Standard / Carrier</th>
-            <th>Encoded Payload &amp; Industrial Use Case</th>
-        </tr>
-        <tr>
-            <td>1D GS1-128</td>
-            <td>Code 128 Subset C + FNC1</td>
-            <td><code>]C100356012345600000016</code> — Universal compatibility with legacy laser gates and conveyor scanners.</td>
-        </tr>
-        <tr>
-            <td>2D QR Digital Link</td>
-            <td>ISO/IEC 18004 QR Code (ECC M)</td>
-            <td><code>https://ssccapi.com/?sscc=356012345600000016&amp;10=LOT99&amp;15=261231</code> — Scannable by both industrial 2D imagers and standard smartphones.</td>
-        </tr>
-        <tr>
-            <td>Dual (1D + 2D)</td>
-            <td>Hybrid Logistics Label</td>
-            <td>Combines the lower 1D GS1-128 barcode (and optional middle AI 02/15/37/10 barcode) with an upper-right 2D QR Digital Link for 100% transition compliance.</td>
-        </tr>
-    </table>
-
-    <h3>Zebra ZPL-II Command Anatomy (1D ^BCN + 2D ^BQN)</h3>
-    <p>When printing on 4×6" (100×150mm, 203 dpi) industrial Zebra thermal printers, <strong>SSCCAPI</strong> and the <a href="/docs">Labels REST API (<code>POST /v1/labels</code>)</a> compile native ZPL-II streams combining <code>^BCN</code> (Code 128 Subset C with FNC1 escape <code>&gt;8</code>) and <code>^BQN</code> (QR Code Model 2):</p>
-
-<pre><code><span class="comment">; 2D GS1 Digital Link QR Code (Model 2, Magnification 4, Error Correction Q/M)</span>
-<span class="kw">^FO</span>575,168<span class="kw">^BQN</span>,2,4<span class="kw">^FD</span>QA,https://ssccapi.com/?sscc=356012345600000016&amp;10=LOT99<span class="kw">^FS</span>
-
-<span class="comment">; 1D GS1-128 Linear Barcode (Subset C &gt;5, FNC1 &gt;8, AI 00 + 18-digit SSCC)</span>
-<span class="kw">^FO</span>65,565<span class="kw">^BY</span>3,3,210<span class="kw">^BCN</span>,210,N,N,N,D<span class="kw">^FD</span>&gt;8&gt;500356012345600000016<span class="kw">^FS</span></code></pre>
-
-    <h2 id="retailer-compliance">Retailer GS1 Compliance Profiles &amp; Reverse Diagnostics</h2>
-    <p>Leading European retailers enforce strict pallet labeling and electronic dispatch advice guidelines to guarantee automated intake at high-throughput distribution hubs. Failing compliance results in physical inspection delays, chargebacks, or shipment rejections.</p>
-
-    <table class="segment-table">
-        <tr>
-            <th>Retailer Profile</th>
-            <th>Primary Hubs</th>
-            <th>Pallet Label &amp; EDI Requirements</th>
-        </tr>
-        <tr>
-            <td><strong>🇵🇹 Sonae MC / Continente</strong></td>
-            <td>Azambuja, Maia</td>
-            <td>A5 Portrait format · Lower <code>AI (00)</code> SSCC-18 (min 32 mm height) · Secondary GS1-128 barcode encoding <code>AI (02)</code> GTIN-14, <code>AI (15)</code> Best Before, <code>AI (37)</code> Quantity, and <code>AI (10)</code> Batch/Lot. Must match EDI <code>DESADV D.96A GIN+BJ</code> segment.</td>
-        </tr>
-        <tr>
-            <td><strong>🇵🇹 Jerónimo Martins / Pingo Doce</strong></td>
-            <td>Azambuja, Alfena, Algoz</td>
-            <td>A5 Portrait format · Dual Barcode layout mandatory · SSCC-18 check digit verified against GS1 Portugal company prefix · Electronic DESADV must be received before truck gate check-in.</td>
-        </tr>
-        <tr>
-            <td><strong>🇪🇸 Mercadona</strong></td>
-            <td>Póvoa de Varzim, Santarém, Almacén Central</td>
-            <td>A5 Portrait standard · High-contrast GS1-128 barcodes (PCS &gt; 80%) · Upper logistics barcode mandatory for homogeneous multi-pack pallets.</td>
-        </tr>
-        <tr>
-            <td><strong>🇩🇪 Lidl / Schwarz Group</strong></td>
-            <td>Sintra, Santo Tirso Hubs</td>
-            <td>Schwarz Group GS1 Logistics Spec: A5 Portrait · Dual-symbology ready (1D GS1-128 + 2D QR Digital Link) · <code>DESADV D.96A</code> with <code>CPS/PAC/MEA/GIN+BJ</code> hierarchy.</td>
-        </tr>
-        <tr>
-            <td><strong>📦 Amazon Vendor / FBA Pallet</strong></td>
-            <td>Fulfillment Centers (MAD4, BCN1, etc.)</td>
-            <td>4×6" (100×150 mm) Direct Thermal ZPL-II · <code>AI (00)</code> SSCC-18 + Amazon PO Reference · 4 identical labels placed squarely on all 4 pallet faces.</td>
-        </tr>
-    </table>
-
-    <h3>Zebra ZPL-II Linter Diagnostic Rules</h3>
-    <p>When compiling or troubleshooting Zebra ZPL-II code for industrial label applicators, our built-in <strong>ZPL-II GS1 Linter</strong> validates four critical supply chain requirements:</p>
-    <ul>
-        <li><strong>FNC1 Escape (<code>&gt;8</code>)</strong>: In Zebra ZPL-II <code>^BC</code> commands, omitting <code>&gt;8</code> causes barcode scanners to interpret the data as plain generic Code 128 rather than certified GS1-128, triggering intake rejection at retail hubs.</li>
-        <li><strong>Code 128 Subset C (<code>&gt;5</code>)</strong>: Mandated for double-density numeric pairs, drastically reducing label footprint and optical scan errors.</li>
-        <li><strong>Valid Framing</strong>: Verifies that every label block begins with <code>^XA</code> and cleanly terminates with <code>^XZ</code>.</li>
-        <li><strong>Embedded SSCC Check Digit</strong>: Automatically parses the <code>(00)</code> 18-digit sequence from the <code>^FD</code> field and recalculates the Modulo 10 check digit.</li>
-    </ul>
-
-    <h2 id="faq">Frequently Asked Questions</h2>
-    <div class="faq-container">
-        <details>
-            <summary>Why does my scanner read a 20 digit SSCC?</summary>
-            <div class="faq-answer">
-                <p>Most GS1 128 barcode scanners are configured to read the Application Identifier <code>00</code> along with the code itself. An SSCC is strictly 18 digits long. You must always strip the first two zeros before processing the data or validating the check digit.</p>
+        <!-- ==================== MODULE 06 ==================== -->
+        <section class="module-card" id="retailer-compliance">
+            <div class="module-header">
+                <div>
+                    <span class="module-badge">Module 06 · Production Compliance &amp; Mastery Check</span>
+                    <h2>European Retailer GS1 Specs, Quiz &amp; FAQ</h2>
+                </div>
+                <button type="button" class="btn-mark-done" data-complete-step="6" onclick="toggleStepDone(6)">○ Mark Complete</button>
             </div>
-        </details>
 
-        <details>
-            <summary>Can the GS1 Company Prefix length vary?</summary>
-            <div class="faq-answer">
-                <p>Yes. Depending on the capacity assigned to the company by the local GS1 member organization, the company prefix can range from 7 to 10 digits. The Serial Reference length adjusts automatically so that the total code length remains exactly 18 digits.</p>
+            <p>Major European retail hubs enforce strict pallet specs — non-compliant labels cause dock rejections or chargebacks. All 5 profiles below are pre-built into <a href="/#labels">SSCCAPI Pallet Label Studio</a>:</p>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Retailer Profile</th><th>Primary Hubs</th><th>Mandatory Label &amp; EDI Rules</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>🇵🇹 Sonae MC / Continente</strong></td>
+                            <td>Azambuja, Maia</td>
+                            <td>A5 Portrait · Lower <code>AI (00)</code> SSCC-18 (≥32 mm) + Secondary <code>AI (02)+(15)+(37)+(10)</code> · <code>DESADV D.96A GIN+BJ</code> required prior to gate check-in.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🇵🇹 Jerónimo Martins / Pingo Doce</strong></td>
+                            <td>Azambuja, Alfena, Algoz</td>
+                            <td>A5 Portrait on 2 adjacent faces · Dual Barcode mandatory for FMCG/perishables · Quiet zone ≥ 10X.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🇪🇸 Mercadona</strong></td>
+                            <td>Ribarroja, Póvoa, Santarém</td>
+                            <td>A5 / 4×6" · High-contrast GS1-128 (PCS &gt; 80%) · Upper multi-AI barcode required for homogeneous multi-pack pallets.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🇪🇺 Lidl / Schwarz Group</strong></td>
+                            <td>Sintra, Santo Tirso, EU Hubs</td>
+                            <td>A5 Portrait · Dual-symbology ready (1D GS1-128 + 2D QR Digital Link) · <code>DESADV D.96A</code> with <code>CPS/PAC/MEA/GIN+BJ</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>📦 Amazon Vendor / FBA LTL</strong></td>
+                            <td>MAD4, BCN1, EU FCs</td>
+                            <td>4×6" (100×150 mm) Direct Thermal ZPL-II · <code>AI (00)</code> SSCC-18 + PO Reference · 4 identical labels on all 4 pallet sides.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </details>
 
-        <details>
-            <summary>Is the SSCC check digit algorithm the same as the GTIN?</summary>
-            <div class="faq-answer">
-                <p>Yes. Both use the standard GS1 Modulo 10 algorithm. However, because the total length is different (18 digits for SSCC vs 13 or 14 for GTIN), the alternating multipliers of 3 and 1 will align differently starting from the rightmost digit.</p>
+            <!-- Interactive 3-Question Mastery Quiz -->
+            <h3>Quick Mastery Check (3 Questions)</h3>
+            <div class="quiz-box">
+                <div class="quiz-q" data-answer="b">
+                    <p>1. Your laser scanner outputs <code>00356012345000000012</code> (20 digits). What should you store as the SSCC in SAP <code>EXIDV</code>?</p>
+                    <div class="quiz-opts">
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, false, 'Keep all 20 digits — actually 00 is the AI header, not part of the 18-digit SSCC.')">All 20 digits</button>
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, true, 'Correct! Strip the leading AI (00) so you store the exact 18-digit SSCC.')">356012345000000012 (18 digits)</button>
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, false, 'Stripping the last digit removes the Modulo 10 check digit.')">First 17 digits</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-q" data-answer="a">
+                    <p>2. Which Zebra ZPL-II escape sequence is mandatory inside <code>^BC</code> to encode a certified GS1-128 barcode (FNC1)?</p>
+                    <div class="quiz-opts">
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, true, 'Correct! >8 injects the GS1 FNC1 function code (and >5 enables dense Subset C).')">&gt;8 (FNC1)</button>
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, false, '^XZ only closes the ZPL label block.')">^XZ</button>
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, false, 'Plain ^FD without >8 prints generic Code 128, which retail hubs reject.')">No escape needed</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-q" data-answer="c">
+                    <p>3. On a standard 3-zone GS1 pallet label, where must the mandatory <code>AI (00)</code> SSCC-18 barcode be placed?</p>
+                    <div class="quiz-opts">
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, false, 'Zone 1 (top) is reserved for sender, consignee, and order text.')">Top (Zone 1)</button>
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, false, 'Zone 2 (middle) holds GTIN/Lot/Expiry details and secondary barcodes.')">Middle (Zone 2)</button>
+                        <button type="button" class="quiz-btn" onclick="answerQuiz(this, true, 'Correct! Zone 3 (very bottom), minimum 32 mm bar height, with ≥10X quiet zones.')">Bottom (Zone 3, ≥32 mm height)</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
             </div>
-        </details>
 
-        <details>
-            <summary>What is the difference between an SSCC and a GTIN?</summary>
-            <div class="faq-answer">
-                <p>A GTIN (Global Trade Item Number) identifies a specific class of trade item like a specific model of a laptop. An SSCC identifies a unique physical logistics unit like a specific pallet containing fifty of those laptops. Every SSCC is globally unique to that exact physical shipment.</p>
+            <!-- FAQ Accordion -->
+            <h3 id="faq">Frequently Asked Questions</h3>
+            <div class="faq-container">
+                <details>
+                    <summary>Why does my scanner read a 20-digit SSCC?</summary>
+                    <div class="faq-answer"><p>GS1-128 barcode scanners include the 2-digit Application Identifier <code>00</code> ahead of the 18-digit SSCC. Always strip the leading <code>00</code> before validating or storing the code.</p></div>
+                </details>
+                <details>
+                    <summary>Can the GS1 Company Prefix (GCP) length vary?</summary>
+                    <div class="faq-answer"><p>Yes. Depending on the allocation assigned by your GS1 Member Organization, the GCP is between 7 and 10 digits. The Serial Reference length adjusts automatically so the total SSCC is always 18 digits.</p></div>
+                </details>
+                <details>
+                    <summary>Is the SSCC check digit algorithm identical to GTIN-13 / GTIN-14?</summary>
+                    <div class="faq-answer"><p>Yes — every GS1 numeric key uses the exact same Modulo 10 (alternating weights 3 and 1 from right to left).</p></div>
+                </details>
+                <details>
+                    <summary>Can I reuse an SSCC number?</summary>
+                    <div class="faq-answer"><p>GS1 General Specifications forbid reusing an SSCC for at least 12 months after shipment. Best practice for global traceability is never to reuse serial references.</p></div>
+                </details>
             </div>
-        </details>
+        </section>
 
-        <details>
-            <summary>Can I reuse an SSCC number?</summary>
-            <div class="faq-answer">
-                <p>According to GS1 General Specifications, an SSCC must not be reallocated within one year of the shipment date. However, to ensure pristine global traceability and avoid conflicts in modern tracking systems, many companies choose to never reuse their serial references.</p>
+        <!-- Final CTA -->
+        <section class="cta-box" id="tool">
+            <h3>Ready to Put It Into Practice?</h3>
+            <p>Validate batches, deconstruct Multi-AI scans, export EDIFACT/SAP IDocs, lint Zebra ZPL-II, or print compliant A5/4×6" pallet labels — in the Studio or via Cloud REST API.</p>
+            <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+                <a class="cta-btn" href="/">Open SSCCAPI Studio →</a>
+                <a class="cta-btn outline" href="/calculator">Check Digit Calculator</a>
+                <a class="cta-btn outline" href="/docs">REST API &amp; Swagger Sandbox</a>
             </div>
-        </details>
+        </section>
 
-        <details>
-            <summary>Where is the SSCC located in SAP IDocs?</summary>
-            <div class="faq-answer">
-                <p>In SAP Outbound Deliveries (such as IDoc types DELVRY03, DELVRY07, or DESADV01), the 18-digit SSCC is stored under the Handling Unit Item segment <code>E1EDL44</code> in field <code>EXIDV</code> (External Handling Unit Identification), as well as in the Handling Unit Header segment <code>E1EDL37</code>.</p>
-            </div>
-        </details>
-
-        <details>
-            <summary>How to calculate the GS1 SSCC check digit in Python?</summary>
-            <div class="faq-answer">
-                <p>Reverse the 17-digit payload string, multiply digits at odd indices (0-indexed even) by 3 and even indices by 1, sum the products, and calculate <code>(10 - (sum % 10)) % 10</code>. See our Python Implementation section above for the full function.</p>
-            </div>
-        </details>
-    </div>
-
-    <h2 id="tool">GS1 Pallet Label Studio, Barcode Generator &amp; Cloud REST API</h2>
-    <p>Whether you need to validate an EDIFACT/SAP IDoc shipment, generate standalone <strong>1D GS1-128</strong> &amp; <strong>2D QR Digital Link</strong> barcodes (<code>.svg</code>, <code>300 DPI .png</code>, <code>.zpl</code>) to compose in your own template, or automate full <strong>4×6" Zebra thermal pallet labels</strong> from your ERP:</p>
-
-    <ul>
-        <li><strong>Standalone Barcodes or Full Pallet Labels</strong>: Switch between <em>Full GS1 Pallet Label</em> (A5 / A6 / 4×6") and <em>Barcode Only (SSCC Strip)</em> in 1D GS1-128, 2D QR Digital Link, or Dual mode.</li>
-        <li><strong>4 Industrial Output Formats</strong>: Direct Print/PDF, native Zebra ZPL-II (<code>^BCN</code> + <code>^BQN</code>), pure Vector <code>.svg</code>, and high-resolution <code>300 DPI .png</code>.</li>
-        <li><strong>Cloudflare Edge REST API</strong>: Validate for free on <code>https://ssccapi.com/validate</code> or generate labels &amp; barcodes via <code>https://ssccapi.com/v1/labels</code> (25 free labels included; Pro packs from <strong>5 €</strong>).</li>
-        <li><strong>Custom ERP &amp; Retailer Templates</strong>: Need bespoke label layouts (Sonae, Jerónimo Martins, Mercadona, Amazon) or SAP/Odoo connectors? Contact us for custom engineering.</li>
-    </ul>
-
-    <div class="cta-box">
-        <h3>Start Validating or Generating GS1 Barcodes &amp; ZPL Labels</h3>
-        <p>Free Web Studio, Universal GS1 Check Digit Calculator, and Interactive OpenAPI 3.1 Swagger Sandbox.</p>
-        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
-            <a class="cta-btn" href="/">Open Validator &amp; Label Studio →</a>
-            <a class="cta-btn" href="/docs" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">Explore REST API &amp; Sandbox →</a>
-        </div>
-    </div>
-    </article>
+    </main>
 </div>
 
+<script>
+// ─── 1. Roadmap Progress Persistence ───
+const PROGRESS_KEY = 'ssccapi_guide_progress_v1';
+let completedSteps = new Set();
+try {
+    const saved = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '[]');
+    if (Array.isArray(saved)) completedSteps = new Set(saved);
+} catch (_) {}
+
+function renderProgress() {
+    const total = 6;
+    const count = completedSteps.size;
+    const pct = Math.round((count / total) * 100);
+    const fill = document.getElementById('progress-fill');
+    const lbl  = document.getElementById('progress-label');
+    if (fill) fill.style.width = pct + '%';
+    if (lbl)  lbl.textContent = `${count} / ${total}`;
+
+    document.querySelectorAll('.sidebar-step').forEach(el => {
+        const s = parseInt(el.dataset.step, 10);
+        const done = completedSteps.has(s);
+        el.classList.toggle('done', done);
+        const num = el.querySelector('.step-num');
+        if (num) num.textContent = done ? '✓' : String(s).padStart(2, '0');
+    });
+
+    document.querySelectorAll('[data-complete-step]').forEach(btn => {
+        const s = parseInt(btn.dataset.completeStep, 10);
+        const done = completedSteps.has(s);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : '○ Mark Complete';
+    });
+}
+
+function toggleStepDone(step) {
+    if (completedSteps.has(step)) completedSteps.delete(step);
+    else completedSteps.add(step);
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify([...completedSteps])); } catch (_) {}
+    renderProgress();
+}
+
+// ─── 2. Interactive SSCC-18 Anatomy Lab ───
+const GS1_MO = {
+    '560': '🇵🇹 Portugal (560)', '840': '🇪🇸 Spain (840–849)', '300': '🇫🇷 France (300–379)',
+    '400': '🇩🇪 Germany (400–440)', '500': '🇬🇧 UK (500–509)', '800': '🇮🇹 Italy (800–839)',
+    '870': '🇳🇱 Netherlands (870–879)', '540': '🇧🇪 Belgium/Lux (540–549)', '000': '🇺🇸 USA/Canada (000–139)'
+};
+function lookupMO(prefix3) {
+    const n = parseInt(prefix3, 10);
+    if (prefix3 === '560') return '🇵🇹 Portugal (560)';
+    if (n >= 840 && n <= 849) return `🇪🇸 Spain (${prefix3})`;
+    if (n >= 300 && n <= 379) return `🇫🇷 France (${prefix3})`;
+    if (n >= 400 && n <= 440) return `🇩🇪 Germany (${prefix3})`;
+    if (n >= 500 && n <= 509) return `🇬🇧 UK (${prefix3})`;
+    if (n >= 800 && n <= 839) return `🇮🇹 Italy (${prefix3})`;
+    if (n >= 870 && n <= 879) return `🇳🇱 Netherlands (${prefix3})`;
+    if (n >= 540 && n <= 549) return `🇧🇪 Belgium/Lux (${prefix3})`;
+    if (n >= 0 && n <= 139) return `🇺🇸 USA/Canada (${prefix3})`;
+    return `🌍 GS1 Prefix (${prefix3})`;
+}
+
+function calcMod10(body17) {
+    let sum = 0;
+    const rev = body17.split('').reverse();
+    for (let i = 0; i < rev.length; i++) sum += parseInt(rev[i], 10) * (i % 2 === 0 ? 3 : 1);
+    return (10 - (sum % 10)) % 10;
+}
+
+function updateAnatomyLab() {
+    const ext = (document.getElementById('lab-ext')?.value || '3').replace(/\D/g, '').slice(0, 1) || '0';
+    let gcp = (document.getElementById('lab-gcp')?.value || '56012345').replace(/\D/g, '').slice(0, 10);
+    if (gcp.length < 7) gcp = gcp.padEnd(7, '0');
+    const serLen = 16 - gcp.length;
+    let ser = (document.getElementById('lab-ser')?.value || '1').replace(/\D/g, '').slice(-serLen).padStart(serLen, '0');
+    const body17 = ext + gcp + ser;
+    const cd = calcMod10(body17);
+    const full = body17 + cd;
+
+    document.getElementById('vis-ext').textContent = ext;
+    document.getElementById('vis-gcp').textContent = gcp;
+    document.getElementById('vis-gcp-lbl').textContent = `GCP (${gcp.length} digits)`;
+    document.getElementById('vis-ser').textContent = ser;
+    document.getElementById('vis-ser-lbl').textContent = `Serial (${serLen} digits)`;
+    document.getElementById('vis-cd').textContent = cd;
+    document.getElementById('vis-full').textContent = full;
+    document.getElementById('vis-country').textContent = lookupMO(gcp.slice(0, 3));
+    const link = document.getElementById('vis-studio-link');
+    if (link) link.href = `/?sscc=${full}&label=1`;
+}
+
+// ─── 3. Code Tab Switcher & Copy ───
+let activeCodeLang = 'js';
+function switchCodeTab(lang, btn) {
+    activeCodeLang = lang;
+    document.querySelectorAll('.code-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('code-pane-js').style.display = lang === 'js' ? 'block' : 'none';
+    document.getElementById('code-pane-py').style.display = lang === 'py' ? 'block' : 'none';
+}
+function copyActiveCode(btn) {
+    const pane = document.getElementById('code-pane-' + activeCodeLang);
+    if (!pane) return;
+    const text = pane.innerText.trim();
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            const old = btn.textContent;
+            btn.textContent = '✓ Copied';
+            setTimeout(() => { btn.textContent = old; }, 1600);
+        });
+    }
+}
+
+// ─── 4. Interactive Mini-Quiz ───
+function answerQuiz(btn, isCorrect, explanation) {
+    const q = btn.closest('.quiz-q');
+    q.querySelectorAll('.quiz-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    const fb = q.querySelector('.quiz-feedback');
+    fb.style.color = isCorrect ? 'var(--success)' : '#f87171';
+    fb.textContent = (isCorrect ? '✓ ' : '✗ ') + explanation;
+
+    // Auto-complete Module 6 when all 3 questions are answered correctly
+    const allCorrect = document.querySelectorAll('.quiz-q .quiz-btn.correct').length === 3;
+    if (allCorrect && !completedSteps.has(6)) {
+        completedSteps.add(6);
+        try { localStorage.setItem(PROGRESS_KEY, JSON.stringify([...completedSteps])); } catch (_) {}
+        renderProgress();
+    }
+}
+
+renderProgress();
+updateAnatomyLab();
+</script>
 </body>
 </html>

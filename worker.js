@@ -615,7 +615,7 @@ export default {
                     return json({
                         name:    'SSCCAPI',
                         version: '5.9.0',
-                        docs:    'https://ssccapi.com/sscc-api-guide.html',
+                        docs:    'https://ssccapi.com/docs',
                         webApp:  'https://ssccapi.com/',
                         endpoints: {
                             validate: '/validate?sscc=356012345600000016',

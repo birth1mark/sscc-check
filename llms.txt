@@ -7,9 +7,9 @@
 - Public Validation REST API Base URL: https://ssccapi.com (Mirror: https://sscc.birth1mark.workers.dev)
 - OpenAPI 3.1 Specification (JSON): https://ssccapi.com/openapi.json
 - OpenAPI 3.1 Specification (YAML): https://ssccapi.com/openapi.yaml
-- Universal GS1 Check Digit Calculator: https://ssccapi.com/calculator.html
-- Technical Guide & GS1-128 Spec: https://ssccapi.com/guide.html
-- API Documentation & Playground: https://ssccapi.com/sscc-api-guide.html
+- Universal GS1 Check Digit Calculator: https://ssccapi.com/calculator
+- Technical Guide & GS1-128 Spec: https://ssccapi.com/guide
+- API Documentation & Playground: https://ssccapi.com/docs
 - Source Repository: https://github.com/birth1mark/sscc-check
 - License: MIT
 

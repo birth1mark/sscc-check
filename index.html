@@ -1792,10 +1792,16 @@
         }
     </style>
     <script>
-    if (window.location.hostname.includes('github.io') || window.location.hostname.includes('pormenores.net')) {
-        var path = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '');
-        window.location.replace('https://ssccapi.com/' + path + window.location.search + window.location.hash);
-    }
+    (function() {
+        var map = { 'index.html': '', 'calculator.html': 'calculator', 'guide.html': 'guide', 'sscc-api-guide.html': 'docs' };
+        var clean = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '').replace(/^\//, '');
+        var nice = (clean in map) ? map[clean] : clean;
+        if (window.location.hostname.includes('github.io') || window.location.hostname.includes('pormenores.net')) {
+            window.location.replace('https://ssccapi.com/' + nice + window.location.search + window.location.hash);
+        } else if (clean in map && window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', '/' + nice + window.location.search + window.location.hash);
+        }
+    })();
     </script>
 </head>
 <body>
@@ -1803,19 +1809,19 @@
 <header class="site-header">
     <div class="header-inner">
         <div class="brand">
-            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
+            <a href="/" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
                 <span class="brand-dot"></span>
                 <span>ssccapi.com</span>
             </a>
             <span class="brand-sep">/</span>
-            <a href="index.html" class="brand-sub" style="text-decoration:none;" title="SSCCAPI Studio">studio</a>
+            <a href="/" class="brand-sub" style="text-decoration:none;" title="SSCCAPI Studio">studio</a>
         </div>
         <nav class="header-nav">
             <div class="nav-group-links">
-                <a href="index.html" class="nav-pill active">Studio</a>
-                <a href="calculator.html" class="nav-pill" title="Universal GS1 Check Digit Calculator">Calculator</a>
-                <a href="guide.html" class="nav-pill">Guide</a>
-                <a href="sscc-api-guide.html" class="nav-pill">API</a>
+                <a href="/" class="nav-pill active">Studio</a>
+                <a href="/calculator" class="nav-pill" title="Universal GS1 Check Digit Calculator">Calculator</a>
+                <a href="/guide" class="nav-pill">Guide</a>
+                <a href="/docs" class="nav-pill">API</a>
             </div>
             <div class="nav-group-tools">
                 <button class="nav-icon-btn" onclick="openHistoryModal()" title="Local Audit History">

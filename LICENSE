@@ -20,7 +20,7 @@ The commercial GS1 Logistics Pallet Label Studio, Dual-Symbology (1D GS1-128 + 2
 barcode engine, and Zebra ZPL-II compiler hosted at https://ssccapi.com/ and
 https://sscc-labels.birth1mark.workers.dev are proprietary software. All rights reserved.
 Free evaluation quota (25 labels) and commercial API keys are governed by the terms at:
-https://ssccapi.com/sscc-api-guide.html
+https://ssccapi.com/docs
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

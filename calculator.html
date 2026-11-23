@@ -9,14 +9,14 @@
     <meta name="keywords" content="GS1 check digit calculator, GTIN check digit, EAN 13 check digit, UPC check digit, SSCC check digit, modulo 10 algorithm, GS1-128 calculator, barcode check digit">
     <meta name="author" content="SSCCAPI">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://ssccapi.com/calculator.html">
+    <link rel="canonical" href="https://ssccapi.com/calculator">
     <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SSCCAPI">
     <meta property="og:title" content="SSCCAPI — Universal GS1 Check Digit Calculator (GTIN, EAN, UPC &amp; SSCC)">
     <meta property="og:description" content="Interactive Modulo 10 GS1 check digit calculator with step-by-step visual multiplier table. 100% free and client-side.">
-    <meta property="og:url" content="https://ssccapi.com/calculator.html">
+    <meta property="og:url" content="https://ssccapi.com/calculator">
     <meta property="og:image" content="https://ssccapi.com/og-image.png">
 
     <meta name="twitter:card" content="summary_large_image">
@@ -32,7 +32,7 @@
         {
           "@type": "WebApplication",
           "name": "Universal GS1 Check Digit Calculator",
-          "url": "https://ssccapi.com/calculator.html",
+          "url": "https://ssccapi.com/calculator",
           "description": "Calculate and verify official GS1 Modulo 10 check digits for GTIN-8, GTIN-12, GTIN-13, GTIN-14, and SSCC logistics codes.",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "Any",
@@ -428,13 +428,25 @@
         .seo-article ul { padding-left: 20px; margin-bottom: 12px; }
         .seo-article li { margin-bottom: 4px; }
     </style>
+    <script>
+    (function() {
+        var map = { 'index.html': '', 'calculator.html': 'calculator', 'guide.html': 'guide', 'sscc-api-guide.html': 'docs' };
+        var clean = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '').replace(/^\//, '');
+        var nice = (clean in map) ? map[clean] : clean;
+        if (window.location.hostname.includes('github.io') || window.location.hostname.includes('pormenores.net')) {
+            window.location.replace('https://ssccapi.com/' + nice + window.location.search + window.location.hash);
+        } else if (clean in map && window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', '/' + nice + window.location.search + window.location.hash);
+        }
+    })();
+    </script>
 </head>
 <body>
 
 <header class="site-header">
     <div class="header-inner">
         <div class="brand">
-            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
+            <a href="/" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
                 <span class="brand-dot"></span>
                 <span>ssccapi.com</span>
             </a>
@@ -442,10 +454,10 @@
             <span class="brand-sub">calculator</span>
         </div>
         <nav class="header-nav">
-            <a href="index.html" class="nav-pill">Studio</a>
-            <a href="calculator.html" class="nav-pill active">Calculator</a>
-            <a href="guide.html" class="nav-pill">Guide</a>
-            <a href="sscc-api-guide.html" class="nav-pill">API</a>
+            <a href="/" class="nav-pill">Studio</a>
+            <a href="/calculator" class="nav-pill active">Calculator</a>
+            <a href="/guide" class="nav-pill">Guide</a>
+            <a href="/docs" class="nav-pill">API</a>
         </nav>
     </div>
 </header>
@@ -521,11 +533,11 @@
             <h3>Generate GS1-128 &amp; 2D QR Barcodes, Zebra ZPL or Full Pallet Labels</h3>
             <p>Export standalone SSCC barcodes (<code>SVG</code>, <code>300 DPI PNG</code>, <code>ZPL-II</code>) or complete A5/4×6" GS1 logistics pallet labels in the Web Studio or via our Cloud REST API (25 free labels included · Pro packs from 5 €).</p>
             <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
-                <a href="index.html#labels" class="cta-btn">
+                <a href="/#labels" class="cta-btn">
                     <i data-lucide="printer" style="width:14px;height:14px;"></i>
                     <span>Open Label &amp; Barcode Studio</span>
                 </a>
-                <a href="sscc-api-guide.html" class="cta-btn" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">
+                <a href="/docs" class="cta-btn" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">
                     <i data-lucide="terminal" style="width:14px;height:14px;"></i>
                     <span>REST API &amp; Swagger Sandbox</span>
                 </a>
@@ -645,9 +657,9 @@ function openCalculatedInLabelStudio() {
     const cd = document.getElementById('res-cd-val').textContent;
     const full = raw + cd;
     if (full.length === 18) {
-        window.location.href = `index.html?sscc=${encodeURIComponent(full)}&label=1`;
+        window.location.href = `/?sscc=${encodeURIComponent(full)}&label=1`;
     } else {
-        window.location.href = `index.html?sscc=${encodeURIComponent(full)}`;
+        window.location.href = `/?sscc=${encodeURIComponent(full)}`;
     }
 }
 

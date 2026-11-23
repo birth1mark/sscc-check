@@ -3,8 +3,8 @@
 > Free, open-source SSCC validator, check digit calculator and REST API. Works in any modern browser, installs as a PWA on Android and iOS — no app store required.
 
 🔗 **Live app**: [birth1mark.github.io/sscc-check](https://birth1mark.github.io/sscc-check/)
-🔗 **Technical guide**: [birth1mark.github.io/sscc-check/guide.html](https://birth1mark.github.io/sscc-check/guide.html)
-🔗 **API documentation**: [birth1mark.github.io/sscc-check/sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
+🔗 **Technical guide**: [ssccapi.com/guide](https://ssccapi.com/guide)
+🔗 **API documentation**: [birth1mark.github.io/sscc-check/sscc-api-guide.html](https://ssccapi.com/docs)
 🔗 **REST API**: [sscc.birth1mark.workers.dev](https://sscc.birth1mark.workers.dev)
 
 ---
@@ -89,7 +89,7 @@ SSCCs are encoded in **GS1-128** barcodes and transmitted in EDI messages such a
 
 ### 🔌 API
 - Use the REST API for programmatic access from any system
-- Full docs at [sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)
+- Full docs at [ssccapi.com/docs](https://ssccapi.com/docs)
 
 ---
 
@@ -172,7 +172,7 @@ A free public REST API is available at `https://sscc.birth1mark.workers.dev`.
 - Built on Cloudflare Workers — edge network, no cold starts
 - No data stored or logged
 
-Full documentation with live playground: **[sscc-api-guide.html](https://birth1mark.github.io/sscc-check/sscc-api-guide.html)**
+Full documentation with live playground: **[ssccapi.com/docs](https://ssccapi.com/docs)**
 
 API source code: **[github.com/birth1mark/sscc-api](https://github.com/birth1mark/sscc-api)**
 
@@ -246,7 +246,7 @@ A standalone technical article covers:
 - Complete JavaScript implementation
 - EDIFACT segment reference and parsing code
 
-🔗 **[birth1mark.github.io/sscc-check/guide.html](https://birth1mark.github.io/sscc-check/guide.html)**
+🔗 **[ssccapi.com/guide](https://ssccapi.com/guide)**
 
 ---
 

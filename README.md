@@ -3,9 +3,9 @@
 **Enterprise-grade SSCC-18 validator, standalone GS1-128 & 2D QR Digital Link barcode generator (`SVG`, `300 DPI PNG`, `Zebra ZPL-II`), A5/4×6" pallet label studio, EDIFACT/SAP IDoc extractor, and Cloudflare Edge REST API.**
 
 🔗 **[Launch Web Studio (ssccapi.com) →](https://ssccapi.com/)**
-🔗 **[Interactive Swagger API Sandbox →](https://ssccapi.com/sscc-api-guide.html)**
-🔗 **[Universal GS1 Check Digit Calculator →](https://ssccapi.com/calculator.html)**
-🔗 **[Technical Guide (GS1-128, Sunrise 2027, SAP IDoc, EDIFACT) →](https://ssccapi.com/guide.html)**
+🔗 **[Interactive Swagger API Sandbox →](https://ssccapi.com/docs)**
+🔗 **[Universal GS1 Check Digit Calculator →](https://ssccapi.com/calculator)**
+🔗 **[Technical Guide (GS1-128, Sunrise 2027, SAP IDoc, EDIFACT) →](https://ssccapi.com/guide)**
 
 ![Version](https://img.shields.io/badge/version-5.9.0-amber)
 ![GS1 Sunrise 2027](https://img.shields.io/badge/GS1_Sunrise_2027-1D_GS1--128_%2B_2D_QR-10b981)
@@ -34,7 +34,7 @@
 
 ## 🔌 Cloud REST APIs & Interactive Swagger Sandbox
 
-Explore and test all endpoints live in the **[Interactive OpenAPI 3.1 Swagger Sandbox](https://ssccapi.com/sscc-api-guide.html)**.
+Explore and test all endpoints live in the **[Interactive OpenAPI 3.1 Swagger Sandbox](https://ssccapi.com/docs)**.
 
 ### Server 1: Free Validation & EDI Extraction API (`https://ssccapi.com`)
 *100% free · No API key required · 500 req/hr*
@@ -87,7 +87,7 @@ curl -s -X POST "https://ssccapi.com/v1/labels" \
 | **⭐ Pro Unlimited** | **100,000 Labels / Year** *(Full ERP API)* | **29 € / year** | **[Unlock Pro Unlimited →](https://buy.stripe.com/28EeVdeR0eHG53s3pFe3e03)** |
 
 > 💬 **Need Custom Features, Retailer Label Templates (Sonae, Jerónimo Martins, Mercadona, Amazon) or SAP / Odoo / WMS Integration?**
-> Use the **"Request Custom Features / Contact"** button on [ssccapi.com](https://ssccapi.com/) or [ssccapi.com/sscc-api-guide.html](https://ssccapi.com/sscc-api-guide.html) to request bespoke engineering.
+> Use the **"Request Custom Features / Contact"** button on [ssccapi.com](https://ssccapi.com/) or [ssccapi.com/docs](https://ssccapi.com/docs) to request bespoke engineering.
 
 ---
 
@@ -95,7 +95,7 @@ curl -s -X POST "https://ssccapi.com/v1/labels" \
 
 Complete guide to SSCC validation — structure, check digit algorithm, JavaScript implementation and EDIFACT parsing:
 
-🔗 **[birth1mark.github.io/sscc-check/guide.html](https://ssccapi.com/guide.html)**
+🔗 **[ssccapi.com/guide](https://ssccapi.com/guide)**
 
 ---
 
@@ -190,4 +190,4 @@ If SSCCAPI saves you time or helps your logistics workflow, consider [buying me 
 ## 📄 License (Open-Core)
 
 - **Core Validator, Check Digit Calculator & EDI Extractor**: Open-source under the **MIT License**.
-- **GS1 Pallet Label, ZPL-II & 2D QR Digital Link Cloud Engine (`sscc-labels.birth1mark.workers.dev` & Hosted Studio at `ssccapi.com/`)**: Commercial service (includes 25 free evaluation labels; Pro credit packs and unlimited annual API keys available at [ssccapi.com/sscc-api-guide.html](https://ssccapi.com/sscc-api-guide.html)).
+- **GS1 Pallet Label, ZPL-II & 2D QR Digital Link Cloud Engine (`sscc-labels.birth1mark.workers.dev` & Hosted Studio at `ssccapi.com/`)**: Commercial service (includes 25 free evaluation labels; Pro credit packs and unlimited annual API keys available at [ssccapi.com/docs](https://ssccapi.com/docs)).

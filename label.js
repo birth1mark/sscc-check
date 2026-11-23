@@ -6,7 +6,7 @@
  * and the official Web Studio: https://ssccapi.com/
  *
  * - Free Evaluation Tier: 25 labels included per GS1 Company Prefix (GCP)
- * - Pro API Keys (X-API-Key: sscc_pro_...): https://ssccapi.com/sscc-api-guide.html
+ * - Pro API Keys (X-API-Key: sscc_pro_...): https://ssccapi.com/docs
  */
 
 const LABELS_API_BASE_URL = 'https://ssccapi.com';
@@ -75,7 +75,7 @@ function setLabelSourceMode() { redirectToHostedLabelStudio(); }
 function regenerateBatchSequence() {}
 function updateLabelPreview() {}
 function syncBatchStudioCount() {}
-function openProUpgradeModal() { window.location.href = 'https://ssccapi.com/sscc-api-guide.html#quotas-pricing'; }
+function openProUpgradeModal() { window.location.href = 'https://ssccapi.com/docs#quotas-pricing'; }
 function closeProUpgradeModal() {}
 function applyRetailerComplianceProfile() { redirectToHostedLabelStudio(); }
 function updateRetailerComplianceBanner() {}

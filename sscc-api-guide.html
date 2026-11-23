@@ -8,14 +8,14 @@
     <meta name="keywords" content="SSCC API, GS1 pallet label API, Zebra ZPL API, GS1 Digital Link QR API, SSCC validation API, EDIFACT SSCC extract, Swagger sandbox">
     <meta name="author" content="SSCCAPI">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://ssccapi.com/sscc-api-guide.html">
+    <link rel="canonical" href="https://ssccapi.com/docs">
     <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SSCCAPI">
-    <meta property="og:url" content="https://ssccapi.com/sscc-api-guide.html">
+    <meta property="og:url" content="https://ssccapi.com/docs">
     <meta property="og:title" content="SSCCAPI — Developer Portal &amp; Interactive API Sandbox">
     <meta property="og:description" content="Live Swagger-style API sandbox, architecture diagrams and ERP manuals for GS1-128, 2D QR Digital Link and Zebra ZPL pallet labels.">
     <meta property="og:image" content="https://ssccapi.com/og-image.png">
@@ -25,7 +25,7 @@
       "@type": "TechArticle",
       "headline": "SSCCAPI — Developer Portal, Interactive API Sandbox & ERP Integration Manual",
       "description": "Complete technical documentation and live sandbox for SSCC-18 validation, EDI extraction, GS1-128 & 2D QR Digital Link pallet labels, and Zebra ZPL-II generation.",
-      "url": "https://ssccapi.com/sscc-api-guide.html"
+      "url": "https://ssccapi.com/docs"
     }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -664,10 +664,16 @@
         .lbl-pallet-tag { font-size: 9px; font-weight: 800; color: #000; background: #e2e8f0; padding: 1px 5px; border-radius: 3px; font-family: monospace; }
     </style>
     <script>
-    if (window.location.hostname.includes('github.io') || window.location.hostname.includes('pormenores.net')) {
-        var path = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '');
-        window.location.replace('https://ssccapi.com/' + path + window.location.search + window.location.hash);
-    }
+    (function() {
+        var map = { 'index.html': '', 'calculator.html': 'calculator', 'guide.html': 'guide', 'sscc-api-guide.html': 'docs' };
+        var clean = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '').replace(/^\//, '');
+        var nice = (clean in map) ? map[clean] : clean;
+        if (window.location.hostname.includes('github.io') || window.location.hostname.includes('pormenores.net')) {
+            window.location.replace('https://ssccapi.com/' + nice + window.location.search + window.location.hash);
+        } else if (clean in map && window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', '/' + nice + window.location.search + window.location.hash);
+        }
+    })();
     </script>
 </head>
 <body>
@@ -675,18 +681,18 @@
 <header class="site-header">
     <div class="header-inner">
         <div class="nav-brand">
-            <a href="index.html" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
+            <a href="/" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
                 <span class="brand-dot"></span>
                 <span>ssccapi.com</span>
             </a>
             <span class="brand-sep">/</span>
-            <span class="brand-sub">api</span>
+            <span class="brand-sub">docs</span>
         </div>
         <nav class="nav-links">
-            <a class="nav-pill" href="index.html">Studio</a>
-            <a class="nav-pill" href="calculator.html">Calculator</a>
-            <a class="nav-pill" href="guide.html">Guide</a>
-            <a class="nav-pill active" href="sscc-api-guide.html">API</a>
+            <a class="nav-pill" href="/">Studio</a>
+            <a class="nav-pill" href="/calculator">Calculator</a>
+            <a class="nav-pill" href="/guide">Guide</a>
+            <a class="nav-pill active" href="/docs">API</a>
         </nav>
     </div>
 </header>

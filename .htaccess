@@ -2,3 +2,15 @@
     # Permite acesso à câmara para o scanner de código de barras GS1-128
     Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=(), payment=()"
 </IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Nice URLs (internal rewrites — zero redirect loops with Cloudflare Edge Proxy)
+    RewriteRule ^calculator/?$ calculator.html [L]
+    RewriteRule ^guide/?$ guide.html [L]
+    RewriteRule ^docs/?$ sscc-api-guide.html [L]
+
+    # Native GS1 Digital Link URI: /00/<18-digit-SSCC>
+    RewriteRule ^00/([0-9]{18})/?$ https://ssccapi.com/?sscc=$1 [R=302,L,QSA]
+</IfModule>

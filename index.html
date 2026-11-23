@@ -10,7 +10,7 @@
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         font-src https://fonts.gstatic.com;
         img-src 'self' data:;
-        connect-src 'self' https://sscc.birth1mark.workers.dev https://unpkg.com;
+        connect-src 'self' https://sscc.birth1mark.workers.dev https://sscc-labels.birth1mark.workers.dev https://*.workers.dev https://unpkg.com;
         media-src 'self' blob:;
         worker-src 'self';
         base-uri 'self';
@@ -814,6 +814,126 @@
         .badge-gen  { background: rgba(245,158,11,0.15); color: var(--primary); border: 1px solid rgba(245,158,11,0.3); }
         .badge-dup  { background: rgba(245,158,11,0.18); color: #fbbf24;        border: 1px solid rgba(245,158,11,0.45); }
 
+        /* Quota & Symbology Bar */
+        .quota-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: rgba(18, 23, 34, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 11px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .quota-pill {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        .quota-pill.quota-ok { color: #e2e8f0; }
+        .quota-pill.quota-warn { color: var(--primary); }
+        .quota-pill.quota-exhausted { color: #f87171; font-weight: 700; }
+        .quota-pill.quota-pro { color: var(--success); }
+
+        .sym-bar {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr;
+            gap: 6px;
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 12px;
+        }
+        @media (max-width: 480px) {
+            .sym-bar { grid-template-columns: 1fr; }
+        }
+        .sym-pill {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .sym-pill:hover:not(.active) { color: var(--text-main); background: rgba(255,255,255,0.03); }
+        .sym-pill.active {
+            background: rgba(245, 158, 11, 0.14);
+            border-color: rgba(245, 158, 11, 0.45);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Credit Plans Grid in Pro Modal */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 12px 0 16px;
+        }
+        @media (max-width: 500px) {
+            .plans-grid { grid-template-columns: 1fr; }
+        }
+        .plan-card {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .plan-card.popular {
+            border-color: var(--primary);
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, #080a0f 100%);
+        }
+        .plan-tag {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: var(--primary);
+            color: #0b0e14;
+            padding: 1px 6px;
+            border-radius: 8px;
+            align-self: center;
+            margin-bottom: 6px;
+        }
+        .plan-name { font-family: var(--font-mono); font-size: 11.5px; font-weight: 700; color: var(--text-main); }
+        .plan-credits { font-family: var(--font-mono); font-size: 13px; font-weight: 800; color: var(--primary); margin: 4px 0; }
+        .plan-price { font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: #fff; margin: 4px 0; }
+        .plan-sub { font-size: 10px; color: var(--text-muted); margin-bottom: 10px; }
+        .plan-btn {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 8px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.15s;
+        }
+        .plan-card.popular .plan-btn, .plan-btn:hover {
+            background: var(--primary);
+            color: #0b0e14;
+        }
+
         .btn-fix-cd {
             background: rgba(245, 158, 11, 0.14);
             border: 1px solid rgba(245, 158, 11, 0.45);
@@ -1568,8 +1688,8 @@
 <div class="container">
     <main class="card">
         <div class="card-header">
-            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.8.0</span></h1>
-            <p class="tagline">GS1-128 validator, EDI extractor &amp; logistics pallet label studio</p>
+            <h1>SSCC <span>PRO VISION</span> <span class="version-badge">v5.9.0</span></h1>
+            <p class="tagline">GS1-128 &amp; 2D QR Digital Link validator, EDI extractor &amp; pallet label studio</p>
         </div>
 
         <!-- Primary Workspace Mode Switcher -->
@@ -1633,6 +1753,38 @@
 
         <!-- ==================== TAB 2: PALLET LABELS & ZPL STUDIO ==================== -->
         <section id="panel-labels" role="tabpanel" style="display:none;">
+            <!-- Quota & Pro API Key Bar -->
+            <div class="quota-bar">
+                <span id="quota-status-pill" class="quota-pill quota-ok" onclick="openProUpgradeModal()" title="100 free labels included per company prefix">
+                    🟢 Free Quota: <strong>100 / 100</strong> labels remaining
+                </span>
+                <button type="button" class="micro-btn" onclick="openProUpgradeModal()" style="border-color:rgba(245,158,11,0.4);color:var(--primary);">
+                    <i data-lucide="key" style="width:11px;height:11px;"></i>
+                    <span>Pro Key / Credits</span>
+                </button>
+            </div>
+
+            <!-- GS1 Symbology Mode Switcher (Dual 1D+2D QR vs 1D Only vs 2D QR Only) -->
+            <div class="sym-bar" role="group" aria-label="GS1 Barcode Symbology">
+                <button type="button" class="sym-pill active" data-sym="dual" onclick="setLabelSymbology('dual')" title="Print both 1D GS1-128 linear barcode and 2D GS1 Digital Link QR Code">
+                    <i data-lucide="qr-code" style="width:12px;height:12px;"></i>
+                    <span>Dual: GS1-128 + 2D QR</span>
+                </button>
+                <button type="button" class="sym-pill" data-sym="gs1-128" onclick="setLabelSymbology('gs1-128')" title="Classic 1D GS1-128 linear barcode only">
+                    <i data-lucide="barcode" style="width:12px;height:12px;"></i>
+                    <span>1D GS1-128 Only</span>
+                </button>
+                <button type="button" class="sym-pill" data-sym="qr" onclick="setLabelSymbology('qr')" title="Modern 2D GS1 Digital Link QR Code only (Sunrise 2027)">
+                    <i data-lucide="scan" style="width:12px;height:12px;"></i>
+                    <span>2D QR Digital Link</span>
+                </button>
+                <select id="lbl-symbology" style="display:none;" onchange="updateLabelPreview()">
+                    <option value="dual" selected>Dual (1D + 2D QR)</option>
+                    <option value="gs1-128">1D GS1-128</option>
+                    <option value="qr">2D QR Code</option>
+                </select>
+            </div>
+
             <!-- Source Switcher: Sequential Generator vs Audited List -->
             <div class="studio-source-bar">
                 <span class="source-label">Label Source:</span>
@@ -1854,6 +2006,7 @@
         <details class="info-accordion">
             <summary>Changelog</summary>
             <div class="changelog" style="margin-top:10px;">
+                <p><span class="version">v5.9.0</span> GS1 Sunrise 2027 &amp; Cloud API. Dual-symbology pallet labels (1D <code>GS1-128</code> + 2D <code>QR Code GS1 Digital Link</code> in SVG &amp; Zebra ZPL <code>^BQN</code>), 100-label free quota with Pro credit packs, and dedicated Cloudflare Labels API.</p>
                 <p><span class="version">v5.8.0</span> Logistics Intelligence. Duplicate SSCC detection across batches &amp; EDI files, 1-click invalid check digit auto-fixer, continuous batch camera scanner, secondary GS1-128 barcode for GTIN/Batch/Expiry (AI 02/10/15/37), and <code>llms.txt</code> for AI agents.</p>
                 <p><span class="version">v5.7.0</span> UX Overhaul. Unified 2-tab workspace (Validate &amp; Extract vs. Pallet Labels &amp; ZPL Studio), real-time zero-click validation, interactive sample chips, and streamlined EDI file feedback.</p>
                 <p><span class="version">v5.6.0</span> Major Release. Batch GS1 Pallet Label printing &amp; multi-label ZPL export, Universal Check Digit Calculator, Offline Session History, Laser Scanner listener &amp; Serverless URL sharing.</p>
@@ -1895,6 +2048,68 @@
         <div class="label-modal-footer">
             <button class="main-btn btn-clear" onclick="clearAllHistory()">CLEAR ALL</button>
             <button class="main-btn btn-audit" onclick="closeHistoryModal()">CLOSE</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pro Upgrade & Credit Packs (100 Labels Limit / X-API-Key) -->
+<div id="pro-upgrade-modal-backdrop" class="label-modal-backdrop" style="display:none;" onclick="if(event.target===this)closeProUpgradeModal()">
+    <div class="label-modal">
+        <div class="label-modal-header">
+            <div class="label-modal-title">
+                <i data-lucide="zap" style="width:16px;height:16px;color:var(--primary);"></i>
+                <span>SSCC Pro Vision — Label Credits &amp; API Key</span>
+            </div>
+            <button class="label-modal-close" onclick="closeProUpgradeModal()" title="Close">✕</button>
+        </div>
+        <div class="label-modal-body">
+            <div id="pro-modal-reason" style="display:none;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.4);color:#fca5a5;padding:10px 12px;border-radius:8px;font-family:var(--font-mono);font-size:11.5px;margin-bottom:12px;"></div>
+
+            <p style="font-size:12px;color:var(--text-muted);line-height:1.5;">
+                Every company includes <strong>100 free GS1 pallet labels</strong> (~3 full truckloads). Need higher volume or direct ERP REST API access (<code>ZPL</code> / <code>SVG</code> / <code>2D QR Digital Link</code>)? Choose a credit pack:
+            </p>
+
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-name">Starter Pack</div>
+                        <div class="plan-credits">1,000 Labels</div>
+                        <div class="plan-price">9 €</div>
+                        <div class="plan-sub">One-time · Never expires (~30 trucks)</div>
+                    </div>
+                    <a href="https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00" target="_blank" rel="noopener" class="plan-btn">Get 1,000 Credits</a>
+                </div>
+
+                <div class="plan-card popular">
+                    <div>
+                        <div class="plan-tag">Most Popular</div>
+                        <div class="plan-name">Business Pack</div>
+                        <div class="plan-credits">5,000 Labels</div>
+                        <div class="plan-price">29 €</div>
+                        <div class="plan-sub">One-time · Never expires (~150 trucks)</div>
+                    </div>
+                    <a href="https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00" target="_blank" rel="noopener" class="plan-btn">Get 5,000 Credits</a>
+                </div>
+
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-name">Pro Unlimited</div>
+                        <div class="plan-credits">Unlimited / 1 Yr</div>
+                        <div class="plan-price">79 €</div>
+                        <div class="plan-sub">100k labels/yr + Full ERP API</div>
+                    </div>
+                    <a href="https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00" target="_blank" rel="noopener" class="plan-btn">Get Unlimited</a>
+                </div>
+            </div>
+
+            <div class="lbl-input-group" style="margin-top:8px;">
+                <label for="pro-api-key-input">Already have a Pro API Key (X-API-Key)?</label>
+                <input type="text" id="pro-api-key-input" placeholder="sscc_pro_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+            </div>
+        </div>
+        <div class="label-modal-footer">
+            <button class="main-btn btn-audit" onclick="closeProUpgradeModal()">CLOSE</button>
+            <button class="main-btn btn-live" onclick="saveProApiKeyFromModal()">ACTIVATE KEY</button>
         </div>
     </div>
 </div>

@@ -1,4 +1,4 @@
-const CACHE = 'sscc-v48';
+const CACHE = 'sscc-v49';
 const ASSETS = [
   '/',
   '/calculator',

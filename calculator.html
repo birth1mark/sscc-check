@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SSCCAPI — Universal GS1 Check Digit Calculator (GTIN-8, 12, 13, 14, GLN &amp; SSCC)</title>
-    <meta name="description" content="Free online universal GS1 check digit calculator by SSCCAPI. Calculate and verify check digits for GTIN-8, GTIN-12 (UPC), GTIN-13 (EAN), GTIN-14, GLN, and SSCC pallet codes. Interactive step-by-step Modulo 10 algorithm.">
-    <meta name="keywords" content="GS1 check digit calculator, GTIN check digit, EAN 13 check digit, UPC check digit, SSCC check digit, modulo 10 algorithm, GS1-128 calculator, barcode check digit">
+    <title>SSCCAPI — Interactive GS1 Check Digit Calculator &amp; Visual Modulo 10 Tutor</title>
+    <meta name="description" content="Free interactive GS1 check digit calculator & visual Modulo 10 trainer by SSCCAPI. Calculate, verify, and learn step-by-step how GTIN-8, GTIN-12 (UPC), GTIN-13 (EAN), GTIN-14, GLN, and SSCC check digits work with animated visual math and typo detection.">
+    <meta name="keywords" content="GS1 check digit calculator, interactive modulo 10 tutorial, GTIN check digit, EAN 13 check digit, UPC check digit, SSCC check digit, modulo 10 algorithm visual, GS1-128 calculator, barcode check digit">
     <meta name="author" content="SSCCAPI">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://ssccapi.com/calculator">
@@ -14,14 +14,14 @@
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SSCCAPI">
-    <meta property="og:title" content="SSCCAPI — Universal GS1 Check Digit Calculator (GTIN, EAN, UPC &amp; SSCC)">
-    <meta property="og:description" content="Interactive Modulo 10 GS1 check digit calculator with step-by-step visual multiplier table. 100% free and client-side.">
+    <meta property="og:title" content="SSCCAPI — Interactive GS1 Check Digit Calculator &amp; Visual Modulo 10 Tutor">
+    <meta property="og:description" content="Visual step-by-step Modulo 10 GS1 check digit calculator with animated walkthrough, number-line gauge, typo simulator, and practice quiz.">
     <meta property="og:url" content="https://ssccapi.com/calculator">
     <meta property="og:image" content="https://ssccapi.com/og-image.png">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Universal GS1 Check Digit Calculator">
-    <meta name="twitter:description" content="Calculate and verify check digits for GTIN, EAN, UPC, and SSCC barcodes.">
+    <meta name="twitter:title" content="Interactive GS1 Check Digit Calculator &amp; Visual Tutor">
+    <meta name="twitter:description" content="Calculate, visualize, and learn how GS1 Modulo 10 check digits work for GTIN, EAN, UPC, GLN, and SSCC.">
     <meta name="twitter:image" content="https://ssccapi.com/og-image.png">
 
     <!-- Schema.org WebApplication & HowTo -->
@@ -31,9 +31,9 @@
       "@graph": [
         {
           "@type": "WebApplication",
-          "name": "Universal GS1 Check Digit Calculator",
+          "name": "Interactive GS1 Check Digit Calculator & Visual Modulo 10 Tutor",
           "url": "https://ssccapi.com/calculator",
-          "description": "Calculate and verify official GS1 Modulo 10 check digits for GTIN-8, GTIN-12, GTIN-13, GTIN-14, and SSCC logistics codes.",
+          "description": "Calculate, verify, and learn official GS1 Modulo 10 check digits visually for GTIN-8, GTIN-12, GTIN-13, GTIN-14, GLN, and SSCC logistics codes.",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "Any",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
@@ -41,22 +41,22 @@
         {
           "@type": "HowTo",
           "name": "How to Calculate a GS1 Check Digit",
-          "description": "Step-by-step explanation of the GS1 Modulo 10 check digit calculation.",
+          "description": "Visual step-by-step explanation of the GS1 Modulo 10 check digit calculation.",
           "step": [
             {
               "@type": "HowToStep",
-              "name": "Multiply Digits",
-              "text": "Starting from the right-hand digit (excluding the check digit position), multiply alternate digits by 3 and 1."
+              "name": "Assign Alternating Weights Right-to-Left",
+              "text": "Starting from the rightmost payload digit (immediately before the check digit), assign alternating weights of 3 and 1 moving from right to left."
             },
             {
               "@type": "HowToStep",
-              "name": "Sum Products",
-              "text": "Sum all the multiplied values together."
+              "name": "Multiply and Sum Products",
+              "text": "Multiply each digit by its weight (3 or 1) and add all products together — or sum all x3 digits first, multiply by 3, then add all x1 digits."
             },
             {
               "@type": "HowToStep",
-              "name": "Determine Check Digit",
-              "text": "Subtract the sum from the nearest equal or higher multiple of 10. The result is your check digit."
+              "name": "Jump to the Next Multiple of 10",
+              "text": "Subtract the total sum from the nearest equal or higher multiple of 10: Check Digit = (10 - (Sum % 10)) % 10."
             }
           ]
         }
@@ -71,7 +71,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -86,18 +86,16 @@
             --text-dim:      #64748b;
             --primary:       #f59e0b;
             --primary-hover: #fbbf24;
+            --cyan:          #38bdf8;
             --success:       #10b981;
             --danger:        #ef4444;
+            --purple:        #a855f7;
             --font-mono:     'JetBrains Mono', monospace;
             --font-sans:     'Plus Jakarta Sans', -apple-system, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        html, body {
-            overflow-x: clip;
-            max-width: 100%;
-        }
+        html, body { overflow-x: clip; max-width: 100%; }
 
         body {
             font-family: var(--font-sans);
@@ -112,7 +110,7 @@
             content: "";
             position: fixed;
             inset: 0;
-            background-image: 
+            background-image:
                 linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
             background-size: 36px 36px;
@@ -130,7 +128,7 @@
             z-index: 100;
         }
         .header-inner {
-            max-width: 1120px;
+            max-width: 1160px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -178,46 +176,21 @@
             color: var(--primary);
             background: rgba(245, 158, 11, 0.08);
         }
-        @media (max-width: 640px) {
-            .site-header { padding: 0.55rem 0.75rem; }
-            .header-inner { flex-wrap: wrap; gap: 0.5rem; }
-            .brand { font-size: 0.88rem; }
-            .brand-sub, .brand-sep { display: none; }
-            .header-nav {
-                display: grid;
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-                gap: 0.35rem;
-                width: 100%;
-            }
-            .nav-pill {
-                font-size: 0.7rem;
-                padding: 0.38rem 0.3rem;
-                text-align: center;
-            }
-            .container { padding: 14px 10px 44px; }
-            .card, .seo-article { padding: 16px 14px; }
-            .calc-input { font-size: 15px; padding: 10px 12px; letter-spacing: 0.04em; }
-            .calc-input-box label { flex-wrap: wrap; gap: 4px; }
-            .result-highlight { flex-wrap: wrap; gap: 10px; }
-            .result-code-large { font-size: 15px; }
-            .cd-pill { margin-left: 0; font-size: 17px; }
-            .btn-copy-full { width: 100%; justify-content: center; }
-        }
 
         .container {
             width: 100%;
-            max-width: 1120px;
+            max-width: 1160px;
             margin: 0 auto;
             padding: 24px 20px 56px;
         }
         .calc-grid {
             display: grid;
-            grid-template-columns: 1.3fr 0.7fr;
-            gap: 24px;
+            grid-template-columns: minmax(0, 1.48fr) minmax(0, 0.52fr);
+            gap: 22px;
             align-items: start;
         }
         .calc-grid > * { min-width: 0; max-width: 100%; }
-        @media (max-width: 900px) {
+        @media (max-width: 960px) {
             .calc-grid { grid-template-columns: 1fr; }
         }
 
@@ -227,24 +200,57 @@
             padding: 24px;
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
             border: 1px solid var(--border);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .card-header {
-            margin-bottom: 20px;
-            text-align: center;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         h1 {
             font-family: var(--font-mono);
-            font-size: 1.25rem;
+            font-size: 1.22rem;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
         h1 span { color: var(--primary); }
         .tagline {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 4px;
+            font-size: 0.83rem;
+            margin-top: 3px;
+        }
+
+        /* Mode Switcher: Learn vs Practice Quiz */
+        .mode-switch {
+            display: inline-flex;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 3px;
+        }
+        .mode-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.18s;
+        }
+        .mode-tab.active {
+            background: rgba(245, 158, 11, 0.16);
+            color: var(--primary);
         }
 
         /* Type Selector Tabs */
@@ -252,8 +258,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-bottom: 16px;
-            justify-content: center;
+            margin-bottom: 14px;
         }
         .type-btn {
             background: var(--surface);
@@ -261,15 +266,12 @@
             color: var(--text-muted);
             font-family: var(--font-mono);
             font-size: 11.5px;
-            padding: 6px 12px;
+            padding: 6px 11px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.15s;
         }
-        .type-btn:hover {
-            border-color: var(--primary);
-            color: #fff;
-        }
+        .type-btn:hover { border-color: var(--primary); color: #fff; }
         .type-btn.active {
             background: rgba(245, 158, 11, 0.15);
             border-color: var(--primary);
@@ -277,23 +279,30 @@
             font-weight: 700;
         }
 
-        .calc-input-box {
-            margin-bottom: 16px;
-        }
+        .calc-input-box { margin-bottom: 14px; }
         .calc-input-box label {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-family: var(--font-mono);
             font-size: 11px;
             color: var(--text-muted);
             margin-bottom: 6px;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
         }
         .calc-input {
-            width: 100%;
+            flex: 1;
+            min-width: 0;
             background: #080a0f;
             border: 1.5px solid var(--border);
             border-radius: 8px;
-            padding: 12px 14px;
+            padding: 11px 14px;
             color: #f8fafc;
             font-family: var(--font-mono);
             font-size: 18px;
@@ -305,13 +314,29 @@
             border-color: var(--primary);
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
         }
+        .btn-dice {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 8px;
+            padding: 0 12px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+        .btn-dice:hover { border-color: var(--cyan); color: var(--cyan); }
 
         .result-panel {
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.015);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 16px;
-            margin-top: 16px;
+            margin-top: 14px;
             display: none;
         }
         .result-panel.show { display: block; }
@@ -322,32 +347,401 @@
             justify-content: space-between;
             padding-bottom: 14px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 14px;
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         .result-code-large {
             font-family: var(--font-mono);
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #f8fafc;
             word-break: break-all;
+            letter-spacing: 0.04em;
         }
         .cd-pill {
             background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.4);
+            border: 1px solid rgba(16, 185, 129, 0.45);
             color: var(--success);
             font-family: var(--font-mono);
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
-            padding: 4px 12px;
+            padding: 4px 14px;
             border-radius: 8px;
-            margin-left: 12px;
+            display: inline-block;
         }
 
-        /* Step-by-step Math Table */
-        .math-table-wrap {
+        /* Walkthrough Stepper Bar */
+        .walkthrough-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+        }
+        .step-pills {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .step-pill {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .step-pill:hover { border-color: var(--cyan); color: #fff; }
+        .step-pill.active {
+            background: rgba(56, 189, 248, 0.16);
+            border-color: var(--cyan);
+            color: var(--cyan);
+            font-weight: 700;
+        }
+        .walk-controls {
+            display: inline-flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .walk-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s;
+        }
+        .walk-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .walk-btn.playing {
+            background: rgba(245, 158, 11, 0.18);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Step Explanation Banner */
+        .step-explain {
+            background: rgba(56, 189, 248, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            border-radius: 10px;
+            padding: 11px 14px;
+            margin-bottom: 14px;
+            font-size: 12.5px;
+            color: #dbeafe;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .step-badge {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 800;
+            background: rgba(56, 189, 248, 0.18);
+            color: var(--cyan);
+            padding: 3px 8px;
+            border-radius: 5px;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        /* Visual Digit Tiles Strip */
+        .rtl-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .rtl-arrow {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tiles-scroll {
             overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+        }
+        .digit-tiles {
+            display: flex;
+            gap: 6px;
+            min-width: max-content;
+            padding: 4px 2px;
+        }
+        .d-tile {
+            width: 52px;
+            background: #080a0f;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            padding: 6px 4px;
+            text-align: center;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+            position: relative;
+            user-select: none;
+        }
+        .d-tile:hover, .d-tile.focused {
+            transform: translateY(-3px);
+            z-index: 2;
+        }
+        .d-tile.w3 { border-color: rgba(245, 158, 11, 0.38); }
+        .d-tile.w3:hover, .d-tile.w3.focused {
+            border-color: var(--primary);
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.28);
+        }
+        .d-tile.w1 { border-color: rgba(56, 189, 248, 0.35); }
+        .d-tile.w1:hover, .d-tile.w1.focused {
+            border-color: var(--cyan);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+        }
+        .d-tile.cd-tile {
+            width: 60px;
+            border-color: rgba(16, 185, 129, 0.65);
+            background: rgba(16, 185, 129, 0.08);
+            cursor: default;
+        }
+        .d-tile.dimmed { opacity: 0.34; }
+        .d-tile.typo-hit {
+            border-color: var(--danger) !important;
+            background: rgba(239, 68, 68, 0.14) !important;
+            box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
+        }
+
+        .d-pos { font-size: 9px; color: var(--text-dim); margin-bottom: 2px; }
+        .d-num { font-size: 18px; font-weight: 800; color: #f8fafc; line-height: 1.15; }
+        .d-weight {
+            display: inline-block;
+            margin: 4px 0 3px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+        .w3 .d-weight { background: rgba(245, 158, 11, 0.16); color: var(--primary); }
+        .w1 .d-weight { background: rgba(56, 189, 248, 0.16); color: var(--cyan); }
+        .cd-tile .d-weight { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+
+        .d-prod { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+        .w3 .d-prod { color: #fde68a; }
+        .w1 .d-prod { color: #bae6fd; }
+        .cd-tile .d-prod { color: var(--success); }
+
+        .d-bar-wrap {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 99px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .d-bar { height: 100%; border-radius: 99px; }
+        .w3 .d-bar { background: var(--primary); }
+        .w1 .d-bar { background: var(--cyan); }
+
+        /* Focused Digit Inspector */
+        .digit-inspector {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+            margin-bottom: 14px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .digit-inspector strong { color: var(--text-main); }
+
+        /* Visual Weight Buckets (Step 2) */
+        .buckets-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        @media (max-width: 640px) {
+            .buckets-grid { grid-template-columns: 1fr; }
+        }
+        .bucket-card {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 13px;
+            min-width: 0;
+        }
+        .bucket-card.b3 { border-color: rgba(245, 158, 11, 0.35); }
+        .bucket-card.b1 { border-color: rgba(56, 189, 248, 0.35); }
+        .bucket-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .b3 .bucket-head { color: var(--primary); }
+        .b1 .bucket-head { color: var(--cyan); }
+        .bucket-eq {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            word-break: break-word;
+            line-height: 1.55;
+        }
+        .bucket-eq strong { color: var(--text-main); }
+
+        /* Modulo-10 SVG Number Line Gauge (Step 3) */
+        .gauge-card {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+        .gauge-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .gauge-svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Typo / Error Detection Sandbox (Step 4) */
+        .typo-box {
+            background: rgba(168, 85, 247, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+        .typo-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .typo-title {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #d8b4fe;
+        }
+        .typo-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .typo-btn {
+            background: var(--bg);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #e9d5ff;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .typo-btn:hover { background: rgba(168, 85, 247, 0.18); }
+        .typo-result {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Practice Quiz Box */
+        .quiz-box {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .quiz-box.show { display: block; }
+        .quiz-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
             margin-top: 10px;
         }
+        .quiz-digits {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .quiz-num-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            background: #080a0f;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .quiz-num-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .quiz-num-btn.correct { background: rgba(16, 185, 129, 0.25); border-color: var(--success); color: var(--success); }
+        .quiz-num-btn.wrong { background: rgba(239, 68, 68, 0.22); border-color: var(--danger); color: #fca5a5; }
+        .quiz-feedback {
+            margin-top: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            min-height: 20px;
+        }
+
+        /* Collapsible Classic Table */
+        details.classic-details {
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #080a0f;
+            padding: 8px 12px;
+        }
+        details.classic-details summary {
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .math-table-wrap { overflow-x: auto; margin-top: 10px; }
         .math-table {
             width: 100%;
             border-collapse: collapse;
@@ -355,48 +749,26 @@
             font-size: 11px;
             text-align: center;
         }
-        .math-table th, .math-table td {
-            padding: 5px 4px;
-            border: 1px solid var(--border);
-        }
-        .math-table th {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text-muted);
-            font-size: 10px;
-        }
+        .math-table th, .math-table td { padding: 5px 4px; border: 1px solid var(--border); }
+        .math-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); font-size: 10px; }
         .math-table .row-weight { color: var(--primary); font-weight: 700; }
-        .math-table .row-prod { color: #38bdf8; font-weight: 700; }
-
-        .summary-formula {
-            margin-top: 14px;
-            padding: 10px 12px;
-            background: #080a0f;
-            border-radius: 6px;
-            font-family: var(--font-mono);
-            font-size: 11.5px;
-            color: var(--text-muted);
-            line-height: 1.7;
-        }
-        .summary-formula strong { color: var(--text-main); }
+        .math-table .row-prod { color: var(--cyan); font-weight: 700; }
 
         .btn-copy-full {
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 8px 14px;
+            padding: 7px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-family: var(--font-mono);
-            font-size: 12px;
+            font-size: 11.5px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             transition: all 0.15s;
         }
-        .btn-copy-full:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
+        .btn-copy-full:hover { border-color: var(--primary); color: var(--primary); }
 
         .cta-box {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(56, 189, 248, 0.05) 100%);
@@ -404,27 +776,18 @@
             border-radius: 12px;
             padding: 16px;
             text-align: center;
-            margin-top: 24px;
+            margin-top: 18px;
         }
-        .cta-box h3 {
-            font-size: 13.5px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-        .cta-box p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-        }
+        .cta-box h3 { font-size: 13.5px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+        .cta-box p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
         .cta-btn {
             background: var(--primary);
             color: #000;
             border: none;
-            padding: 8px 18px;
+            padding: 8px 16px;
             border-radius: 6px;
             font-family: var(--font-mono);
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 700;
             text-decoration: none;
             display: inline-flex;
@@ -438,31 +801,53 @@
             background: var(--surface-card);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 22px;
-            font-size: 13px;
+            padding: 20px;
+            font-size: 12.8px;
             color: var(--text-muted);
             line-height: 1.7;
         }
         .seo-article h2 {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-main);
             margin: 16px 0 8px;
             font-family: var(--font-mono);
         }
         .seo-article h2:first-child { margin-top: 0; }
         .seo-article p { margin-bottom: 10px; }
-        .seo-article ul { padding-left: 20px; margin-bottom: 12px; }
-        .seo-article li { margin-bottom: 4px; }
+        .seo-article ul { padding-left: 18px; margin-bottom: 12px; }
+        .seo-article li { margin-bottom: 5px; }
+        .tip-callout {
+            background: rgba(245, 158, 11, 0.07);
+            border-left: 3px solid var(--primary);
+            padding: 10px 12px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #fde68a;
+        }
 
         @media (max-width: 640px) {
+            .site-header { padding: 0.55rem 0.75rem; }
+            .header-inner { flex-wrap: wrap; gap: 0.5rem; }
+            .brand { font-size: 0.88rem; }
+            .brand-sub, .brand-sep { display: none; }
+            .header-nav {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 0.35rem;
+                width: 100%;
+            }
+            .nav-pill { font-size: 0.7rem; padding: 0.38rem 0.3rem; text-align: center; }
             .container { padding: 14px 10px 44px; }
-            .card, .seo-article { padding: 16px 14px; }
-            .calc-input { font-size: 15px; padding: 10px 12px; letter-spacing: 0.04em; }
-            .calc-input-box label { flex-wrap: wrap; gap: 4px; }
-            .result-highlight { flex-wrap: wrap; gap: 10px; }
-            .result-code-large { font-size: 15px; }
-            .cd-pill { margin-left: 0; font-size: 17px; }
+            .card, .seo-article { padding: 15px 12px; }
+            .calc-input { font-size: 15px; padding: 10px 11px; letter-spacing: 0.04em; }
+            .input-row { flex-direction: column; }
+            .btn-dice { justify-content: center; padding: 8px 12px; }
+            .result-code-large { font-size: 16px; }
+            .cd-pill { font-size: 18px; }
             .btn-copy-full { width: 100%; justify-content: center; }
+            .d-tile { width: 46px; }
+            .d-num { font-size: 16px; }
         }
     </style>
     <script>
@@ -501,203 +886,772 @@
 
 <div class="container">
     <div class="calc-grid">
-    <main class="card" style="margin-bottom:0;">
-        <div class="card-header">
-            <h1>GS1 <span>CHECK DIGIT</span> CALCULATOR</h1>
-            <p class="tagline">Universal Modulo 10 calculator for GTIN-8, 12, 13, 14, GLN &amp; SSCC</p>
-        </div>
-
-        <div class="type-tabs">
-            <button class="type-btn active" onclick="setType('sscc', 17, 'SSCC-18 (Pallets)', '35601234560000001')">SSCC-18</button>
-            <button class="type-btn" onclick="setType('gtin13', 12, 'GTIN-13 / EAN-13', '560123456789')">GTIN-13 (EAN)</button>
-            <button class="type-btn" onclick="setType('gtin12', 11, 'GTIN-12 / UPC-A', '01234567890')">GTIN-12 (UPC)</button>
-            <button class="type-btn" onclick="setType('gtin14', 13, 'GTIN-14 (Cartons)', '1560123456789')">GTIN-14</button>
-            <button class="type-btn" onclick="setType('gtin8', 7, 'GTIN-8 / EAN-8', '5601234')">GTIN-8</button>
-            <button class="type-btn" onclick="setType('gln', 12, 'GLN-13 (Locations)', '560123400001')">GLN-13</button>
-        </div>
-
-        <div class="calc-input-box">
-            <label>
-                <span id="type-label">Code payload (excluding final check digit):</span>
-                <span id="len-label" style="color:var(--primary);">17 digits</span>
-            </label>
-            <input type="text" id="calc-input" class="calc-input" placeholder="Enter digits..." value="35601234560000001" oninput="calculate()">
-        </div>
-
-        <div id="result-panel" class="result-panel show">
-            <div class="result-highlight">
+        <main class="card" style="margin-bottom:0;">
+            <div class="card-header">
                 <div>
-                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;font-family:var(--font-mono);">VERIFIED FULL CODE:</div>
-                    <div id="res-full-code" class="result-code-large">356012345600000016</div>
+                    <h1>GS1 <span>CHECK DIGIT</span> VISUAL LAB</h1>
+                    <p class="tagline">Calculate, visualize &amp; master the official GS1 Modulo 10 algorithm</p>
                 </div>
-                <div style="text-align:right;">
-                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;font-family:var(--font-mono);">CHECK DIGIT:</div>
-                    <span id="res-cd-val" class="cd-pill">6</span>
-                </div>
-            </div>
-
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-                <span style="font-size:11.5px;font-weight:700;font-family:var(--font-mono);">Step-by-Step Calculation (GS1 Modulo 10):</span>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                    <button class="btn-copy-full" onclick="openCalculatedInLabelStudio()" style="border-color:rgba(245,158,11,0.45);color:var(--primary);" title="Generate 1D GS1-128 Barcode, 2D QR Code, Zebra ZPL or Full Pallet Label">
-                        <i data-lucide="barcode" style="width:13px;height:13px;"></i>
-                        <span>Generate Barcode / Pallet Label</span>
+                <div class="mode-switch" role="group" aria-label="Calculator mode">
+                    <button type="button" class="mode-tab active" id="tab-learn" onclick="setMode('learn')">
+                        <i data-lucide="sparkles" style="width:13px;height:13px;"></i>
+                        <span>Visual Tutor</span>
                     </button>
-                    <button class="btn-copy-full" onclick="copyFullResult()">
-                        <i data-lucide="copy" style="width:13px;height:13px;"></i>
-                        <span>Copy Full Code</span>
+                    <button type="button" class="mode-tab" id="tab-quiz" onclick="setMode('quiz')">
+                        <i data-lucide="graduation-cap" style="width:13px;height:13px;"></i>
+                        <span>Practice Quiz</span>
                     </button>
                 </div>
             </div>
 
-            <div class="math-table-wrap">
-                <table class="math-table">
-                    <thead>
-                        <tr id="math-header"></tr>
-                    </thead>
-                    <tbody>
-                        <tr id="math-digits"></tr>
-                        <tr id="math-weights"></tr>
-                        <tr id="math-products"></tr>
-                    </tbody>
-                </table>
+            <div class="type-tabs">
+                <button type="button" class="type-btn active" onclick="setType(this, 'sscc', 17, 'SSCC-18 (Pallets)', '35601234560000001')">SSCC-18</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gtin13', 12, 'GTIN-13 / EAN-13', '560123456789')">GTIN-13 (EAN)</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gtin12', 11, 'GTIN-12 / UPC-A', '01234567890')">GTIN-12 (UPC)</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gtin14', 13, 'GTIN-14 (Cartons)', '1560123456789')">GTIN-14</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gtin8', 7, 'GTIN-8 / EAN-8', '5601234')">GTIN-8</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gln', 12, 'GLN-13 (Locations)', '560123400001')">GLN-13</button>
             </div>
 
-            <div id="summary-formula" class="summary-formula"></div>
-        </div>
-
-        <div class="cta-box">
-            <h3>Generate GS1-128 &amp; 2D QR Barcodes, Zebra ZPL or Full Pallet Labels</h3>
-            <p>Export standalone SSCC barcodes (<code>SVG</code>, <code>300 DPI PNG</code>, <code>ZPL-II</code>) or complete A5/4×6" GS1 logistics pallet labels in the Web Studio or via our Cloud REST API (25 free labels included · Pro packs from 5 €).</p>
-            <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
-                <a href="/#labels" class="cta-btn">
-                    <i data-lucide="printer" style="width:14px;height:14px;"></i>
-                    <span>Open Label &amp; Barcode Studio</span>
-                </a>
-                <a href="/docs" class="cta-btn" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">
-                    <i data-lucide="terminal" style="width:14px;height:14px;"></i>
-                    <span>REST API &amp; Swagger Sandbox</span>
-                </a>
+            <div class="calc-input-box">
+                <label>
+                    <span id="type-label">SSCC-18 (Pallets) — excluding final check digit:</span>
+                    <span id="len-label" style="color:var(--primary);">17 digits</span>
+                </label>
+                <div class="input-row">
+                    <input type="text" id="calc-input" class="calc-input" inputmode="numeric" placeholder="Enter digits..." value="35601234560000001" oninput="onUserInput()">
+                    <button type="button" class="btn-dice" onclick="generateRandomSample()" title="Generate random valid payload of current GS1 length">
+                        <i data-lucide="shuffle" style="width:14px;height:14px;"></i>
+                        <span>Random</span>
+                    </button>
+                </div>
             </div>
-        </div>
-    </main>
 
-    <article class="seo-article">
-        <h2>How Does the GS1 Modulo 10 Algorithm Work?</h2>
-        <p>The Check Digit is the final digit of any GS1 identification key (such as GTIN-13, GTIN-14, or SSCC-18). It ensures that numbers captured by barcode scanners or entered manually have not suffered transpositions or clerical errors.</p>
-        
-        <h2>Multiplication Rules:</h2>
-        <ul>
-            <li><strong>Step 1:</strong> Starting from the digit immediately preceding the check digit (moving right to left), multiply alternate digits by <strong>3</strong> and <strong>1</strong>.</li>
-            <li><strong>Step 2:</strong> Sum all partial products together.</li>
-            <li><strong>Step 3:</strong> Subtract this sum from the nearest equal or higher multiple of 10. The result is your check digit.</li>
-        </ul>
+            <div id="result-panel" class="result-panel show">
+                <!-- Result Banner -->
+                <div class="result-highlight">
+                    <div>
+                        <div style="font-size:10.5px;color:var(--text-muted);margin-bottom:3px;font-family:var(--font-mono);" id="res-label-top">VERIFIED FULL CODE:</div>
+                        <div id="res-full-code" class="result-code-large">356012345600000016</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <div style="text-align:right;">
+                            <div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;font-family:var(--font-mono);">CHECK DIGIT:</div>
+                            <span id="res-cd-val" class="cd-pill">6</span>
+                        </div>
+                    </div>
+                </div>
 
-        <h2>Mathematical Formula:</h2>
-        <p><code>Check Digit = (10 - (Sum % 10)) % 10</code>. If the remainder is 0, the check digit is 0.</p>
-    </article>
+                <!-- Action Buttons -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <button type="button" class="btn-copy-full" onclick="openCalculatedInLabelStudio()" style="border-color:rgba(245,158,11,0.45);color:var(--primary);">
+                            <i data-lucide="barcode" style="width:13px;height:13px;"></i>
+                            <span>Generate Barcode / Pallet Label</span>
+                        </button>
+                        <button type="button" class="btn-copy-full" id="btn-copy" onclick="copyFullResult()">
+                            <i data-lucide="copy" style="width:13px;height:13px;"></i>
+                            <span id="copy-label">Copy Full Code</span>
+                        </button>
+                    </div>
+                    <span id="len-warning" style="font-family:var(--font-mono);font-size:11px;color:var(--primary);display:none;"></span>
+                </div>
+
+                <!-- Practice Quiz Panel (shown only in Quiz mode) -->
+                <div id="quiz-box" class="quiz-box">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                        <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--success);">
+                            🧠 Practice Challenge — Compute the Check Digit yourself!
+                        </span>
+                        <span id="quiz-streak" style="font-family:var(--font-mono);font-size:11px;color:var(--primary);font-weight:700;">Streak: 0</span>
+                    </div>
+                    <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+                        Use the <strong>×3</strong> (amber) and <strong>×1</strong> (cyan) tiles below, find the jump to the next multiple of 10, and tap your answer:
+                    </p>
+                    <div class="quiz-row">
+                        <div class="quiz-digits" id="quiz-digits"></div>
+                        <button type="button" class="walk-btn" onclick="toggleQuizHint()">
+                            <i data-lucide="lightbulb" style="width:13px;height:13px;"></i>
+                            <span>Hint</span>
+                        </button>
+                        <button type="button" class="walk-btn" onclick="nextQuizRound()">
+                            <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
+                            <span>New Code</span>
+                        </button>
+                    </div>
+                    <div id="quiz-feedback" class="quiz-feedback"></div>
+                </div>
+
+                <!-- Walkthrough Step Controls -->
+                <div class="walkthrough-bar">
+                    <div class="step-pills">
+                        <button type="button" class="step-pill active" data-step="0" onclick="setStep(0)">All Steps</button>
+                        <button type="button" class="step-pill" data-step="1" onclick="setStep(1)">1. Weights (←)</button>
+                        <button type="button" class="step-pill" data-step="2" onclick="setStep(2)">2. ×3 / ×1 Buckets</button>
+                        <button type="button" class="step-pill" data-step="3" onclick="setStep(3)">3. Mod-10 Jump</button>
+                        <button type="button" class="step-pill" data-step="4" onclick="setStep(4)">4. Typo Proof</button>
+                    </div>
+                    <div class="walk-controls">
+                        <button type="button" class="walk-btn" onclick="prevStep()" title="Previous step">◀</button>
+                        <button type="button" class="walk-btn" id="btn-play" onclick="togglePlay()">
+                            <i data-lucide="play" style="width:12px;height:12px;"></i>
+                            <span id="play-label">Walkthrough</span>
+                        </button>
+                        <button type="button" class="walk-btn" onclick="nextStep()" title="Next step">▶</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Step Narrative -->
+                <div class="step-explain" id="step-explain"></div>
+
+                <!-- Interactive Digit Tiles -->
+                <div class="rtl-banner">
+                    <span>Click or hover any digit tile to inspect its exact contribution:</span>
+                    <span class="rtl-arrow">← Weights ALWAYS start at ×3 from the right</span>
+                </div>
+                <div class="tiles-scroll">
+                    <div class="digit-tiles" id="digit-tiles"></div>
+                </div>
+
+                <!-- Live Digit Inspector -->
+                <div class="digit-inspector" id="digit-inspector"></div>
+
+                <!-- Step 2: ×3 vs ×1 Visual Buckets -->
+                <div class="buckets-grid" id="buckets-grid">
+                    <div class="bucket-card b3">
+                        <div class="bucket-head">
+                            <span>● ×3 WEIGHT GROUP (ODD FROM RIGHT)</span>
+                            <span id="b3-total">= 0</span>
+                        </div>
+                        <div class="bucket-eq" id="b3-eq"></div>
+                    </div>
+                    <div class="bucket-card b1">
+                        <div class="bucket-head">
+                            <span>● ×1 WEIGHT GROUP (EVEN FROM RIGHT)</span>
+                            <span id="b1-total">= 0</span>
+                        </div>
+                        <div class="bucket-eq" id="b1-eq"></div>
+                    </div>
+                </div>
+
+                <!-- Step 3: SVG Modulo-10 Number-Line Gauge -->
+                <div class="gauge-card" id="gauge-card">
+                    <div class="gauge-head">
+                        <span style="color:var(--text-main);font-weight:700;">Visual Modulo-10 Jump to Next Multiple of 10</span>
+                        <span id="gauge-equation" style="color:var(--success);font-weight:700;"></span>
+                    </div>
+                    <svg id="mod10-svg" class="gauge-svg" viewBox="0 0 680 112" role="img" aria-label="Modulo 10 number line showing distance from weighted sum to next multiple of 10"></svg>
+                </div>
+
+                <!-- Step 4: Interactive Error-Detection / Typo Simulator -->
+                <div class="typo-box" id="typo-box">
+                    <div class="typo-head">
+                        <span class="typo-title">🧪 Why Check Digits Matter — Interactive Error-Detection Test</span>
+                        <div class="typo-actions">
+                            <button type="button" class="typo-btn" onclick="simulateTypo('single')">Simulate 1-Digit Typo</button>
+                            <button type="button" class="typo-btn" onclick="simulateTypo('swap')">Simulate Adjacent Swap</button>
+                            <button type="button" class="typo-btn" onclick="clearTypo()" style="border-color:var(--border);color:var(--text-muted);">Reset</button>
+                        </div>
+                    </div>
+                    <div class="typo-result" id="typo-result">
+                        Test how scanners catch human mistakes: click a simulation button above to alter a digit or swap two neighbors and watch the Modulo-10 checksum break instantly.
+                    </div>
+                </div>
+
+                <!-- Classic Compact Math Table (Optional Reference) -->
+                <details class="classic-details">
+                    <summary>Show classic tabular breakdown (P1..Pn)</summary>
+                    <div class="math-table-wrap">
+                        <table class="math-table">
+                            <thead><tr id="math-header"></tr></thead>
+                            <tbody>
+                                <tr id="math-digits"></tr>
+                                <tr id="math-weights"></tr>
+                                <tr id="math-products"></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </div>
+
+            <div class="cta-box">
+                <h3>Generate GS1-128 &amp; 2D QR Barcodes, Zebra ZPL or Full Pallet Labels</h3>
+                <p>Export standalone SSCC barcodes (<code>SVG</code>, <code>300 DPI PNG</code>, <code>ZPL-II</code>) or complete A5/4×6" GS1 logistics pallet labels in the Web Studio or via our Cloud REST API (25 free labels included · Pro packs from 5 €).</p>
+                <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+                    <a href="/#labels" class="cta-btn">
+                        <i data-lucide="printer" style="width:14px;height:14px;"></i>
+                        <span>Open Label &amp; Barcode Studio</span>
+                    </a>
+                    <a href="/docs" class="cta-btn" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">
+                        <i data-lucide="terminal" style="width:14px;height:14px;"></i>
+                        <span>REST API &amp; Swagger Sandbox</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <article class="seo-article">
+            <h2>How to Learn GS1 Modulo 10 in 30 Seconds</h2>
+            <p>Every GS1 key (<strong>GTIN-8, GTIN-12, GTIN-13, GTIN-14, GLN-13, SSCC-18</strong>) ends with a single check digit calculated by the exact same universal rule — regardless of length.</p>
+
+            <h2>The 3-Step Mental Shortcut:</h2>
+            <ul>
+                <li><strong>1. Start from the Right:</strong> Label the rightmost payload digit <strong>×3</strong>, the next left <strong>×1</strong>, alternating <code>3, 1, 3, 1...</code> all the way to the start.</li>
+                <li><strong>2. Group &amp; Multiply:</strong> Add all <strong>×3</strong> digits together and multiply by 3 once; then add all <strong>×1</strong> digits.</li>
+                <li><strong>3. Round Up to 10:</strong> Ask <em>"how much do I need to add to reach the next number ending in 0?"</em> That gap (0–9) is your check digit!</li>
+            </ul>
+
+            <h2>Why Alternate 3 and 1?</h2>
+            <p>A simple sum catches single-digit typos, but <em>cannot</em> catch swapped neighbors (<code>47</code> vs <code>74</code> have the same sum!). Multiplying neighbors by different weights (<strong>3</strong> and <strong>1</strong>) catches <strong>100% of single-digit errors</strong> and <strong>~89% of adjacent transpositions</strong> (except pairs differing by 5, like <code>16</code>↔<code>61</code>, where <code>5×(3-1)=10</code>).</p>
+
+            <h2>Formula:</h2>
+            <p><code>CD = (10 − (Sum mod 10)) mod 10</code></p>
+
+            <div class="tip-callout">
+                <strong>Pro Tip:</strong> Because weights anchor from the <em>right</em>, an 18-digit SSCC (17 payload digits) starts with <strong>×3</strong> on position 1, whereas a 13-digit EAN (12 payload digits) starts with <strong>×1</strong> on position 1. Try switching the tabs on the left to watch the colors flip!
+            </div>
+        </article>
     </div>
 </div>
 
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 <script>
 let currentExpectedLen = 17;
-let currentTypeName = 'SSCC-18';
+let currentTypeName = 'SSCC-18 (Pallets)';
+let currentMode = 'learn'; // 'learn' | 'quiz'
+let activeStep = 0;        // 0 = all, 1..4 = focused walkthrough step
+let focusedIndex = null;
+let playTimer = null;
+let quizStreak = 0;
+let quizRevealed = false;
+let quizHintShown = false;
+let activeTypo = null;     // { kind, indices, mutatedDigits, newSum, expectedMod }
+let lastCalc = null;
 
-function setType(type, reqLen, typeName, sampleVal) {
+function setMode(mode) {
+    currentMode = mode;
+    stopPlay();
+    clearTypo(true);
+    document.getElementById('tab-learn').classList.toggle('active', mode === 'learn');
+    document.getElementById('tab-quiz').classList.toggle('active', mode === 'quiz');
+    document.getElementById('quiz-box').classList.toggle('show', mode === 'quiz');
+    if (mode === 'quiz') {
+        quizRevealed = false;
+        quizHintShown = false;
+        buildQuizButtons();
+        if (!lastCalc) calculate();
+        renderAll();
+    } else {
+        quizRevealed = true;
+        renderAll();
+    }
+}
+
+function setType(btnEl, type, reqLen, typeName, sampleVal) {
     currentExpectedLen = reqLen;
     currentTypeName = typeName;
+    stopPlay();
+    clearTypo(true);
     document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (btnEl) btnEl.classList.add('active');
 
-    document.getElementById('type-label').textContent = `${typeName} (excluding final check digit):`;
+    document.getElementById('type-label').textContent = `${typeName} — excluding final check digit:`;
     document.getElementById('len-label').textContent = `${reqLen} digits`;
-    const input = document.getElementById('calc-input');
-    input.value = sampleVal;
+    document.getElementById('calc-input').value = sampleVal;
+    focusedIndex = null;
+    if (currentMode === 'quiz') {
+        quizRevealed = false;
+        quizHintShown = false;
+        buildQuizButtons();
+    }
+    calculate();
+}
+
+function generateRandomSample() {
+    stopPlay();
+    clearTypo(true);
+    let prefix = currentExpectedLen === 17 ? '3560' : (currentExpectedLen === 13 ? '1560' : '560');
+    let out = prefix.slice(0, Math.min(prefix.length, currentExpectedLen));
+    while (out.length < currentExpectedLen) {
+        out += Math.floor(Math.random() * 10);
+    }
+    document.getElementById('calc-input').value = out;
+    focusedIndex = null;
+    if (currentMode === 'quiz') {
+        quizRevealed = false;
+        quizHintShown = false;
+        buildQuizButtons();
+    }
+    calculate();
+}
+
+function onUserInput() {
+    stopPlay();
+    clearTypo(true);
+    focusedIndex = null;
+    if (currentMode === 'quiz') {
+        quizRevealed = false;
+        quizHintShown = false;
+        buildQuizButtons();
+    }
     calculate();
 }
 
 function calculate() {
     const raw = document.getElementById('calc-input').value.replace(/\D/g, '');
     const panel = document.getElementById('result-panel');
-
     if (!raw) {
         panel.classList.remove('show');
+        lastCalc = null;
+        return;
+    }
+    panel.classList.add('show');
+
+    const digits = raw.split('').map(c => parseInt(c, 10));
+    const n = digits.length;
+    const weights = [];
+    const products = [];
+    let sum = 0;
+    const w3Digits = [];
+    const w1Digits = [];
+
+    for (let i = 0; i < n; i++) {
+        const rtlIdx = n - 1 - i; // 0 = rightmost payload digit
+        const w = (rtlIdx % 2 === 0) ? 3 : 1;
+        const p = digits[i] * w;
+        weights.push(w);
+        products.push(p);
+        sum += p;
+        if (w === 3) w3Digits.push({ idx: i, d: digits[i], p });
+        else w1Digits.push({ idx: i, d: digits[i], p });
+    }
+
+    const sum3Digits = w3Digits.reduce((a, b) => a + b.d, 0);
+    const sum3Total = sum3Digits * 3;
+    const sum1Total = w1Digits.reduce((a, b) => a + b.d, 0);
+    const cd = (10 - (sum % 10)) % 10;
+    const next10 = Math.ceil(sum / 10) * 10;
+    const maxProd = Math.max(1, ...products);
+
+    lastCalc = { raw, digits, weights, products, sum, w3Digits, w1Digits, sum3Digits, sum3Total, sum1Total, cd, next10, maxProd };
+    renderAll();
+}
+
+function renderAll() {
+    if (!lastCalc) return;
+    const c = lastCalc;
+    const hideAnswer = (currentMode === 'quiz' && !quizRevealed);
+
+    // Top result highlight
+    document.getElementById('res-label-top').textContent = hideAnswer ? 'CHALLENGE PAYLOAD (FIND THE ?):' : 'VERIFIED FULL CODE:';
+    document.getElementById('res-full-code').innerHTML = hideAnswer
+        ? `${c.raw}<span style="color:var(--primary);font-weight:800;">?</span>`
+        : `${c.raw}<span style="color:var(--success);font-weight:800;">${c.cd}</span>`;
+    document.getElementById('res-cd-val').textContent = hideAnswer ? '?' : c.cd;
+    document.getElementById('res-cd-val').style.color = hideAnswer ? 'var(--primary)' : 'var(--success)';
+
+    // Length note
+    const warnEl = document.getElementById('len-warning');
+    if (c.raw.length !== currentExpectedLen) {
+        warnEl.style.display = 'inline';
+        warnEl.textContent = `Note: ${c.raw.length} digits entered (standard ${currentTypeName} payload is ${currentExpectedLen}).`;
+    } else {
+        warnEl.style.display = 'none';
+    }
+
+    renderStepBanner(c, hideAnswer);
+    renderDigitTiles(c, hideAnswer);
+    renderDigitInspector(c);
+    renderBuckets(c, hideAnswer);
+    renderGauge(c, hideAnswer);
+    renderClassicTable(c);
+
+    // Show/dim sections based on activeStep
+    document.getElementById('buckets-grid').style.opacity = (activeStep === 0 || activeStep === 2) ? '1' : '0.45';
+    document.getElementById('gauge-card').style.opacity = (activeStep === 0 || activeStep === 3) ? '1' : '0.45';
+    document.getElementById('typo-box').style.opacity = (activeStep === 0 || activeStep === 4) ? '1' : '0.5';
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function renderStepBanner(c, hideAnswer) {
+    const el = document.getElementById('step-explain');
+    const stepTexts = {
+        0: {
+            badge: 'OVERVIEW',
+            html: hideAnswer
+                ? `<strong>Quiz Active:</strong> Weights alternate <strong>×3</strong> (amber) and <strong>×1</strong> (cyan) from right to left. Sum the products and find how much is needed to reach the next multiple of 10!`
+                : `<strong>Complete Visual Proof:</strong> Multiply each digit from right to left by alternating <strong>×3</strong> and <strong>×1</strong> weights → total sum is <strong>${c.sum}</strong> → distance to next multiple of 10 (<strong>${c.next10}</strong>) gives check digit <strong style="color:var(--success);">${c.cd}</strong>.`
+        },
+        1: {
+            badge: 'STEP 1 / 4',
+            html: `<strong>Assign Weights Right-to-Left (←):</strong> Start at the last payload digit <strong>P${c.digits.length}</strong> with <strong style="color:var(--primary);">×3</strong>, then alternate <strong style="color:var(--cyan);">×1</strong>, <strong style="color:var(--primary);">×3</strong>... Notice why this works identically for 8, 12, 13, 14, and 18-digit GS1 keys!`
+        },
+        2: {
+            badge: 'STEP 2 / 4',
+            html: `<strong>Multiply &amp; Group Shortcut:</strong> Add all <strong style="color:var(--primary);">×3 digits</strong> (${c.sum3Digits}) × 3 = <strong>${c.sum3Total}</strong>, then add all <strong style="color:var(--cyan);">×1 digits</strong> = <strong>${c.sum1Total}</strong> → Total Weighted Sum = <strong>${c.sum}</strong>.`
+        },
+        3: {
+            badge: 'STEP 3 / 4',
+            html: hideAnswer
+                ? `<strong>Modulo-10 Jump:</strong> Take the weighted sum and find the smallest number (0–9) that rounds it up to a multiple of 10.`
+                : `<strong>Jump to Next Multiple of 10:</strong> From <strong>${c.sum}</strong>, the nearest equal or higher multiple of 10 is <strong>${c.next10}</strong>. Subtract: <code>${c.next10} − ${c.sum} = </code><strong style="color:var(--success);">${c.cd}</strong>${c.cd === 0 ? ' (already a multiple of 10, so check digit is 0!)' : '.'}`
+        },
+        4: {
+            badge: 'STEP 4 / 4',
+            html: `<strong>Verify &amp; Catch Typos:</strong> With check digit <strong>${hideAnswer ? '?' : c.cd}</strong> appended (weight ×1), the full code sums to <strong>${c.next10}</strong> (<code>${c.next10} mod 10 = 0</code>). Try the purple <strong>Error-Detection Test</strong> below to break a digit or swap two neighbors!`
+        }
+    };
+    const s = stepTexts[activeStep] || stepTexts[0];
+    el.innerHTML = `<span class="step-badge">${s.badge}</span><div>${s.html}</div>`;
+}
+
+function renderDigitTiles(c, hideAnswer) {
+    const wrap = document.getElementById('digit-tiles');
+    const typoIndices = activeTypo ? activeTypo.indices : [];
+    const shownDigits = activeTypo ? activeTypo.mutatedDigits : c.digits;
+    let html = '';
+
+    for (let i = 0; i < shownDigits.length; i++) {
+        const d = shownDigits[i];
+        const w = c.weights[i];
+        const p = d * w;
+        const barPct = Math.round((p / 27) * 100);
+        const isFocused = (focusedIndex === i);
+        const isTypo = typoIndices.includes(i);
+        const cls = `d-tile ${w === 3 ? 'w3' : 'w1'}${isFocused ? ' focused' : ''}${isTypo ? ' typo-hit' : ''}`;
+        const rtlPos = c.digits.length - i;
+
+        html += `
+            <div class="${cls}" onclick="focusDigit(${i})" onmouseenter="focusDigit(${i})" title="Position P${i + 1} (Right-to-Left #${rtlPos}): ${d} × ${w} = ${p}">
+                <div class="d-pos">P${i + 1}</div>
+                <div class="d-num">${d}</div>
+                <div class="d-weight">×${w}</div>
+                <div class="d-prod">${hideAnswer && !quizHintShown ? '·' : '=' + p}</div>
+                <div class="d-bar-wrap"><div class="d-bar" style="width:${hideAnswer && !quizHintShown ? 0 : barPct}%;"></div></div>
+            </div>`;
+    }
+
+    // Final Check Digit Tile
+    html += `
+        <div class="d-tile cd-tile" title="Final GS1 Check Digit (weight ×1 when validating full code)">
+            <div class="d-pos" style="color:var(--success);">CHECK</div>
+            <div class="d-num" style="color:${hideAnswer ? 'var(--primary)' : 'var(--success)'};">${hideAnswer ? '?' : c.cd}</div>
+            <div class="d-weight">CD</div>
+            <div class="d-prod">${hideAnswer ? 'guess' : 'mod 10'}</div>
+            <div class="d-bar-wrap"><div class="d-bar" style="width:100%;background:var(--success);"></div></div>
+        </div>`;
+
+    wrap.innerHTML = html;
+}
+
+function focusDigit(idx) {
+    focusedIndex = idx;
+    if (!lastCalc) return;
+    document.querySelectorAll('.d-tile').forEach((el, i) => {
+        el.classList.toggle('focused', i === idx);
+    });
+    renderDigitInspector(lastCalc);
+}
+
+function renderDigitInspector(c) {
+    const el = document.getElementById('digit-inspector');
+    const hideAnswer = (currentMode === 'quiz' && !quizRevealed && !quizHintShown);
+    if (focusedIndex === null || focusedIndex >= c.digits.length) {
+        const lastIdx = c.digits.length - 1;
+        el.innerHTML = `
+            <span><strong>Tip:</strong> Hover or tap any digit tile above to inspect its position, weight &amp; share of the total sum.</span>
+            <span style="color:var(--cyan);">Rightmost payload digit P${lastIdx + 1} = <strong>${c.digits[lastIdx]} × 3 = ${hideAnswer ? '?' : c.products[lastIdx]}</strong></span>`;
+        return;
+    }
+    const i = focusedIndex;
+    const d = activeTypo ? activeTypo.mutatedDigits[i] : c.digits[i];
+    const w = c.weights[i];
+    const p = d * w;
+    const rtl = c.digits.length - i;
+    const share = c.sum > 0 ? ((p / c.sum) * 100).toFixed(1) : '0.0';
+    el.innerHTML = `
+        <span>Inspecting <strong>Position P${i + 1}</strong> (#${rtl} from right → ${rtl % 2 === 1 ? 'odd' : 'even'} slot): digit <strong>${d}</strong> × weight <strong style="color:${w === 3 ? 'var(--primary)' : 'var(--cyan)'};">${w}</strong> = <strong>${hideAnswer ? '?' : p}</strong></span>
+        <span style="color:var(--text-dim);">${hideAnswer ? 'Hint hidden in Quiz mode' : `${share}% of weighted sum (${c.sum})`}</span>`;
+}
+
+function renderBuckets(c, hideAnswer) {
+    const showMath = !hideAnswer || quizHintShown;
+    document.getElementById('b3-total').textContent = showMath ? `= ${c.sum3Total}` : '= ?';
+    document.getElementById('b1-total').textContent = showMath ? `= ${c.sum1Total}` : '= ?';
+
+    const d3List = c.w3Digits.map(x => x.d).join(' + ');
+    const d1List = c.w1Digits.map(x => x.d).join(' + ');
+
+    document.getElementById('b3-eq').innerHTML = showMath
+        ? `(${d3List}) = <strong>${c.sum3Digits}</strong> → <strong>${c.sum3Digits} × 3 = ${c.sum3Total}</strong>`
+        : `Digits: (${d3List}) — sum them, then multiply by <strong>3</strong>`;
+
+    document.getElementById('b1-eq').innerHTML = showMath
+        ? `(${d1List || '0'}) × 1 = <strong>${c.sum1Total}</strong>`
+        : `Digits: (${d1List || '0'}) — add them directly (<strong>×1</strong>)`;
+}
+
+function renderGauge(c, hideAnswer) {
+    const svg = document.getElementById('mod10-svg');
+    const eq = document.getElementById('gauge-equation');
+
+    if (hideAnswer) {
+        eq.textContent = 'Solve the quiz above to reveal the Modulo-10 jump!';
+        svg.innerHTML = `
+            <rect x="10" y="20" width="660" height="72" rx="10" fill="#0f141f" stroke="#222c3d" stroke-dasharray="5 5"/>
+            <text x="340" y="61" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="13">
+                Quiz Mode — Number-line answer hidden until you submit or reveal
+            </text>`;
         return;
     }
 
-    panel.classList.add('show');
+    const base10 = Math.floor(c.sum / 10) * 10;
+    const top10 = base10 + 10;
+    const isExact = (c.sum % 10 === 0);
+    const target = isExact ? c.sum : top10;
+    eq.textContent = `${target} − ${c.sum} = ${c.cd}  (Check Digit)`;
 
-    // Multipliers alternate 3, 1 from right to left
-    const digits = raw.split('');
-    const reversed = [...digits].reverse();
-    const weightsReversed = [];
-    const productsReversed = [];
-    let sum = 0;
+    // Build ticks from base10 to top10 (11 ticks: 0..10)
+    const padL = 44, padR = 44, lineY = 74;
+    const span = 680 - padL - padR;
+    const xOf = offset => padL + (offset / 10) * span;
+    const sumOffset = c.sum - base10; // 0..9
+    const sumX = xOf(sumOffset);
+    const targetX = xOf(isExact ? 0 : 10);
 
-    for (let i = 0; i < reversed.length; i++) {
-        const w = (i % 2 === 0) ? 3 : 1;
-        const d = parseInt(reversed[i], 10);
-        const p = d * w;
-        weightsReversed.push(w);
-        productsReversed.push(p);
-        sum += p;
+    let ticks = '';
+    for (let k = 0; k <= 10; k++) {
+        const val = base10 + k;
+        const x = xOf(k);
+        const isTen = (k === 0 || k === 10);
+        const isSum = (k === sumOffset);
+        ticks += `
+            <line x1="${x}" y1="${lineY - (isTen ? 11 : 6)}" x2="${x}" y2="${lineY + (isTen ? 11 : 6)}" stroke="${isTen ? '#10b981' : '#334155'}" stroke-width="${isTen ? 2.5 : 1.5}"/>
+            <text x="${x}" y="${lineY + 27}" text-anchor="middle" fill="${isSum ? '#38bdf8' : (isTen ? '#10b981' : '#64748b')}" font-family="JetBrains Mono, monospace" font-size="${isTen || isSum ? 12 : 10.5}" font-weight="${isTen || isSum ? 700 : 500}">${val}</text>`;
     }
 
-    const weights = [...weightsReversed].reverse();
-    const products = [...productsReversed].reverse();
-    const cd = (10 - (sum % 10)) % 10;
-    const fullCode = raw + cd;
+    let arc = '';
+    if (!isExact) {
+        const midX = (sumX + targetX) / 2;
+        arc = `
+            <path d="M ${sumX} ${lineY - 10} Q ${midX} 12 ${targetX} ${lineY - 12}" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="6 4"/>
+            <polygon points="${targetX},${lineY - 8} ${targetX - 8},${lineY - 18} ${targetX + 3},${lineY - 18}" fill="#10b981"/>
+            <rect x="${midX - 58}" y="8" width="116" height="24" rx="6" fill="rgba(16,185,129,0.18)" stroke="#10b981"/>
+            <text x="${midX}" y="24" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono, monospace" font-size="12" font-weight="800">+${c.cd} (Check Digit)</text>`;
+    } else {
+        arc = `
+            <rect x="${sumX - 10}" y="10" width="215" height="26" rx="6" fill="rgba(16,185,129,0.18)" stroke="#10b981"/>
+            <text x="${sumX + 97}" y="27" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono, monospace" font-size="11.5" font-weight="800">Already multiple of 10 → CD = 0</text>`;
+    }
 
-    document.getElementById('res-full-code').innerHTML = `${raw}<span style="color:var(--success);font-weight:800;">${cd}</span>`;
-    document.getElementById('res-cd-val').textContent = cd;
+    svg.innerHTML = `
+        <line x1="${padL}" y1="${lineY}" x2="${680 - padR}" y2="${lineY}" stroke="#222c3d" stroke-width="3" stroke-linecap="round"/>
+        ${!isExact ? `<line x1="${sumX}" y1="${lineY}" x2="${targetX}" y2="${lineY}" stroke="#10b981" stroke-width="4"/>` : ''}
+        ${ticks}
+        ${arc}
+        <circle cx="${sumX}" cy="${lineY}" r="7" fill="#38bdf8" stroke="#0b0e14" stroke-width="2.5"/>
+        <text x="${sumX}" y="${lineY - 18}" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">Sum=${c.sum}</text>
+        <circle cx="${targetX}" cy="${lineY}" r="${isExact ? 4 : 7}" fill="#10b981" stroke="#0b0e14" stroke-width="2"/>
+    `;
+}
 
-    // Render table
-    let th = '<th>Position</th>';
+function renderClassicTable(c) {
+    let th = '<th>Pos</th>';
     let tdD = '<td>Digit</td>';
     let tdW = '<td class="row-weight">Weight (×)</td>';
     let tdP = '<td class="row-prod">Product</td>';
 
-    digits.forEach((d, idx) => {
+    c.digits.forEach((d, idx) => {
         th += `<th>P${idx + 1}</th>`;
         tdD += `<td><strong>${d}</strong></td>`;
-        tdW += `<td class="row-weight">${weights[idx]}</td>`;
-        tdP += `<td class="row-prod">${products[idx]}</td>`;
+        tdW += `<td class="row-weight">${c.weights[idx]}</td>`;
+        tdP += `<td class="row-prod">${c.products[idx]}</td>`;
     });
 
     document.getElementById('math-header').innerHTML = th;
     document.getElementById('math-digits').innerHTML = tdD;
     document.getElementById('math-weights').innerHTML = tdW;
     document.getElementById('math-products').innerHTML = tdP;
+}
 
-    const next10 = Math.ceil(sum / 10) * 10;
-    document.getElementById('summary-formula').innerHTML = `
-        <strong>1. Sum of Products:</strong> ${products.join(' + ')} = <strong>${sum}</strong><br>
-        <strong>2. Next Multiple of 10:</strong> ${next10}<br>
-        <strong>3. Check Digit Calculation:</strong> ${next10} - ${sum} = <span style="color:var(--success);font-weight:800;font-size:13px;">${cd}</span>
-        ${raw.length !== currentExpectedLen ? `<br><span style="color:var(--primary);">Note: Current entered length (${raw.length}) differs from standard ${currentTypeName} length (${currentExpectedLen}).</span>` : ''}
-    `;
+// Walkthrough stepper controls
+function setStep(step) {
+    activeStep = step;
+    document.querySelectorAll('.step-pill').forEach(p => {
+        p.classList.toggle('active', parseInt(p.dataset.step, 10) === step);
+    });
+    if (step === 1 && lastCalc) focusedIndex = lastCalc.digits.length - 1;
+    renderAll();
+}
 
-    if (window.lucide) lucide.createIcons();
+function nextStep() {
+    setStep(activeStep >= 4 ? 0 : activeStep + 1);
+}
+
+function prevStep() {
+    setStep(activeStep <= 0 ? 4 : activeStep - 1);
+}
+
+function togglePlay() {
+    if (playTimer) {
+        stopPlay();
+        return;
+    }
+    const btn = document.getElementById('btn-play');
+    btn.classList.add('playing');
+    document.getElementById('play-label').textContent = 'Stop';
+    setStep(1);
+    let step = 1;
+    playTimer = setInterval(() => {
+        step++;
+        if (step > 4) {
+            stopPlay();
+            setStep(0);
+            return;
+        }
+        setStep(step);
+    }, 2800);
+}
+
+function stopPlay() {
+    if (playTimer) {
+        clearInterval(playTimer);
+        playTimer = null;
+    }
+    const btn = document.getElementById('btn-play');
+    if (btn) btn.classList.remove('playing');
+    const lbl = document.getElementById('play-label');
+    if (lbl) lbl.textContent = 'Walkthrough';
+}
+
+// Interactive Typo / Transposition Proof
+function simulateTypo(kind) {
+    if (!lastCalc || lastCalc.digits.length < 2) return;
+    const c = lastCalc;
+    const mutated = [...c.digits];
+    let indices = [];
+    let desc = '';
+
+    if (kind === 'single') {
+        const idx = Math.floor(c.digits.length / 2);
+        const orig = mutated[idx];
+        mutated[idx] = (orig + 1) % 10;
+        indices = [idx];
+        desc = `Changed P${idx + 1} from <strong>${orig}</strong> → <strong style="color:var(--danger);">${mutated[idx]}</strong>`;
+    } else {
+        // Pick an adjacent pair whose digits differ and don't differ by 5 (so swap is visibly caught!)
+        let idx = -1;
+        for (let i = 0; i < c.digits.length - 1; i++) {
+            const diff = Math.abs(c.digits[i] - c.digits[i + 1]);
+            if (diff !== 0 && diff !== 5) { idx = i; break; }
+        }
+        if (idx === -1) idx = 0;
+        const a = mutated[idx], b = mutated[idx + 1];
+        mutated[idx] = b;
+        mutated[idx + 1] = a;
+        indices = [idx, idx + 1];
+        desc = `Swapped P${idx + 1} &amp; P${idx + 2}: <strong>${a}${b}</strong> → <strong style="color:var(--danger);">${b}${a}</strong>`;
+    }
+
+    let newSum = 0;
+    for (let i = 0; i < mutated.length; i++) newSum += mutated[i] * c.weights[i];
+    const totalWithOriginalCD = newSum + c.cd;
+    const rem = totalWithOriginalCD % 10;
+
+    activeTypo = { kind, indices, mutatedDigits: mutated };
+    setStep(4);
+
+    const resEl = document.getElementById('typo-result');
+    if (rem !== 0) {
+        resEl.innerHTML = `
+            <span style="color:#fca5a5;font-weight:700;">✗ ERROR CAUGHT INSTANTLY!</span> ${desc}.<br>
+            New weighted sum (${newSum}) + original check digit (${c.cd}) = <strong>${totalWithOriginalCD}</strong> → <code>${totalWithOriginalCD} mod 10 = ${rem} ≠ 0</code>. Scanner rejects the corrupted code!`;
+    } else {
+        resEl.innerHTML = `
+            <span style="color:var(--primary);font-weight:700;">⚠ RARE BLIND SPOT FOUND!</span> ${desc}. Because |a − b| = 5, <code>5 × (3 − 1) = 10</code>, leaving mod 10 unchanged — the classic mathematical edge case of Modulo 10!`;
+    }
+    renderDigitTiles(c, currentMode === 'quiz' && !quizRevealed);
+}
+
+function clearTypo(silent) {
+    activeTypo = null;
+    if (!silent) {
+        const resEl = document.getElementById('typo-result');
+        if (resEl) {
+            resEl.textContent = 'Test how scanners catch human mistakes: click a simulation button above to alter a digit or swap two neighbors and watch the Modulo-10 checksum break instantly.';
+        }
+        if (lastCalc) renderAll();
+    }
+}
+
+// Practice Quiz Logic
+function buildQuizButtons() {
+    const wrap = document.getElementById('quiz-digits');
+    wrap.innerHTML = '';
+    for (let n = 0; n <= 9; n++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'quiz-num-btn';
+        b.textContent = n;
+        b.onclick = () => submitQuizGuess(n, b);
+        wrap.appendChild(b);
+    }
+    document.getElementById('quiz-feedback').innerHTML = '';
+}
+
+function submitQuizGuess(guess, btnEl) {
+    if (!lastCalc) return;
+    const fb = document.getElementById('quiz-feedback');
+    if (guess === lastCalc.cd) {
+        btnEl.classList.add('correct');
+        if (!quizRevealed) {
+            quizStreak++;
+            document.getElementById('quiz-streak').textContent = `🔥 Streak: ${quizStreak}`;
+        }
+        quizRevealed = true;
+        fb.innerHTML = `<span style="color:var(--success);font-weight:700;">✓ Spot on!</span> Weighted sum = <strong>${lastCalc.sum}</strong> → next multiple of 10 is <strong>${lastCalc.next10}</strong> → <strong>${lastCalc.next10} − ${lastCalc.sum} = ${lastCalc.cd}</strong>.`;
+        renderAll();
+    } else {
+        btnEl.classList.add('wrong');
+        quizStreak = 0;
+        document.getElementById('quiz-streak').textContent = 'Streak: 0';
+        fb.innerHTML = `<span style="color:#fca5a5;">✗ Not ${guess}.</span> Tip: click <strong>Hint</strong> to reveal the ×3 and ×1 bucket totals, then find the gap to the next 10.`;
+    }
+}
+
+function toggleQuizHint() {
+    quizHintShown = !quizHintShown;
+    renderAll();
+}
+
+function nextQuizRound() {
+    generateRandomSample();
 }
 
 function copyFullResult() {
-    const raw = document.getElementById('calc-input').value.replace(/\D/g, '');
-    const cd = document.getElementById('res-cd-val').textContent;
-    navigator.clipboard.writeText(raw + cd).then(() => {
-        alert('Code copied to clipboard: ' + raw + cd);
+    if (!lastCalc) return;
+    const full = lastCalc.raw + lastCalc.cd;
+    navigator.clipboard.writeText(full).then(() => {
+        const lbl = document.getElementById('copy-label');
+        const btn = document.getElementById('btn-copy');
+        lbl.textContent = 'Copied!';
+        btn.style.borderColor = 'var(--success)';
+        btn.style.color = 'var(--success)';
+        setTimeout(() => {
+            lbl.textContent = 'Copy Full Code';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+        }, 1600);
     });
 }
 
 function openCalculatedInLabelStudio() {
-    const raw = document.getElementById('calc-input').value.replace(/\D/g, '');
-    const cd = document.getElementById('res-cd-val').textContent;
-    const full = raw + cd;
-    if (full.length === 18) {
-        window.location.href = `/?sscc=${encodeURIComponent(full)}&label=1`;
-    } else {
-        window.location.href = `/?sscc=${encodeURIComponent(full)}`;
-    }
+    if (!lastCalc) return;
+    const full = lastCalc.raw + lastCalc.cd;
+    window.location.href = full.length === 18
+        ? `/?sscc=${encodeURIComponent(full)}&label=1`
+        : `/?sscc=${encodeURIComponent(full)}`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {

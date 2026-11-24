@@ -1,6 +1,7 @@
 <IfModule mod_headers.c>
     # Permite acesso à câmara para o scanner de código de barras GS1-128
     Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=(), payment=()"
+    Header merge Vary "User-Agent"
 
     # Evita cache de 30 dias nos ficheiros JS/HTML quando servidos atrás do Cloudflare Edge Proxy
     <FilesMatch "\.(html|js|json|xml|txt)$">
@@ -10,6 +11,23 @@
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Canonical 301 Redirects to https://ssccapi.com/ for direct origin hits (browsers & crawlers)
+    # Skipped ONLY for requests coming from the SSCCAPI Cloudflare Edge Proxy (zero redirect loop)
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^(?:index\.html)?$ https://ssccapi.com/ [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^calculator(?:\.html)?/?$ https://ssccapi.com/calculator [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^guide(?:\.html)?/?$ https://ssccapi.com/guide [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^(?:sscc-api-guide\.html|docs/?)$ https://ssccapi.com/docs [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^(.*)$ https://ssccapi.com/$1 [R=301,L,QSA]
 
     # Versioned JS asset path (bypasses Cloudflare Worker pathname cache cleanly)
     RewriteRule ^assets/v[0-9]+/(app|label|parser|scanner|init)\.js$ $1.js [L]

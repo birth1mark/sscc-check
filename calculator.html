@@ -128,7 +128,7 @@
             z-index: 100;
         }
         .header-inner {
-            max-width: 1160px;
+            max-width: 1120px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -179,20 +179,16 @@
 
         .container {
             width: 100%;
-            max-width: 1160px;
+            max-width: 1120px;
             margin: 0 auto;
-            padding: 24px 20px 56px;
+            padding: 24px 20px 48px;
         }
         .calc-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.48fr) minmax(0, 0.52fr);
+            display: flex;
+            flex-direction: column;
             gap: 22px;
-            align-items: start;
         }
         .calc-grid > * { min-width: 0; max-width: 100%; }
-        @media (max-width: 960px) {
-            .calc-grid { grid-template-columns: 1fr; }
-        }
 
         .card {
             background: var(--surface-card);
@@ -478,22 +474,23 @@
         }
 
         .tiles-scroll {
-            overflow-x: auto;
-            padding-bottom: 6px;
+            overflow: visible;
             margin-bottom: 14px;
         }
         .digit-tiles {
-            display: flex;
-            gap: 6px;
-            min-width: max-content;
-            padding: 4px 2px;
+            display: grid;
+            grid-template-columns: repeat(var(--tile-cols, 18), minmax(0, 1fr));
+            gap: 5px;
+            width: 100%;
+            padding: 4px 0;
         }
         .d-tile {
-            width: 52px;
+            min-width: 0;
+            width: 100%;
             background: #080a0f;
             border: 1.5px solid var(--border);
             border-radius: 9px;
-            padding: 6px 4px;
+            padding: 7px 2px;
             text-align: center;
             font-family: var(--font-mono);
             cursor: pointer;
@@ -516,7 +513,6 @@
             box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
         }
         .d-tile.cd-tile {
-            width: 60px;
             border-color: rgba(16, 185, 129, 0.65);
             background: rgba(16, 185, 129, 0.08);
             cursor: default;
@@ -529,20 +525,20 @@
         }
 
         .d-pos { font-size: 9px; color: var(--text-dim); margin-bottom: 2px; }
-        .d-num { font-size: 18px; font-weight: 800; color: #f8fafc; line-height: 1.15; }
+        .d-num { font-size: 17px; font-weight: 800; color: #f8fafc; line-height: 1.15; }
         .d-weight {
             display: inline-block;
             margin: 4px 0 3px;
-            padding: 1px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
         }
         .w3 .d-weight { background: rgba(245, 158, 11, 0.16); color: var(--primary); }
         .w1 .d-weight { background: rgba(56, 189, 248, 0.16); color: var(--cyan); }
         .cd-tile .d-weight { background: rgba(16, 185, 129, 0.2); color: var(--success); }
 
-        .d-prod { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+        .d-prod { font-size: 10.5px; font-weight: 700; color: var(--text-muted); }
         .w3 .d-prod { color: #fde68a; }
         .w1 .d-prod { color: #bae6fd; }
         .cd-tile .d-prod { color: var(--success); }
@@ -551,12 +547,25 @@
             height: 4px;
             background: rgba(255, 255, 255, 0.06);
             border-radius: 99px;
-            margin-top: 5px;
+            margin: 5px 4px 0;
             overflow: hidden;
         }
         .d-bar { height: 100%; border-radius: 99px; }
         .w3 .d-bar { background: var(--primary); }
         .w1 .d-bar { background: var(--cyan); }
+
+        @media (max-width: 980px) {
+            .digit-tiles {
+                grid-template-columns: repeat(var(--tile-cols-md, 9), minmax(0, 1fr));
+                gap: 6px;
+            }
+        }
+        @media (max-width: 580px) {
+            .digit-tiles {
+                grid-template-columns: repeat(var(--tile-cols-sm, 6), minmax(0, 1fr));
+                gap: 5px;
+            }
+        }
 
         /* Focused Digit Inspector */
         .digit-inspector {
@@ -744,13 +753,15 @@
         .math-table-wrap { overflow-x: auto; margin-top: 10px; }
         .math-table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
             font-family: var(--font-mono);
-            font-size: 11px;
+            font-size: 10.5px;
             text-align: center;
         }
-        .math-table th, .math-table td { padding: 5px 4px; border: 1px solid var(--border); }
-        .math-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); font-size: 10px; }
+        .math-table th, .math-table td { padding: 5px 2px; border: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; }
+        .math-table th:first-child, .math-table td:first-child { width: 72px; text-align: left; padding-left: 6px; }
+        .math-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); font-size: 9.5px; }
         .math-table .row-weight { color: var(--primary); font-weight: 700; }
         .math-table .row-prod { color: var(--cyan); font-weight: 700; }
 
@@ -801,30 +812,63 @@
             background: var(--surface-card);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 20px;
-            font-size: 12.8px;
+            padding: 22px 24px;
+            font-size: 13px;
             color: var(--text-muted);
             line-height: 1.7;
         }
+        .seo-cols {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+        .seo-cols > div { min-width: 0; }
+        @media (max-width: 860px) {
+            .seo-cols { grid-template-columns: 1fr; gap: 14px; }
+        }
         .seo-article h2 {
-            font-size: 14px;
+            font-size: 13.5px;
             color: var(--text-main);
-            margin: 16px 0 8px;
+            margin: 0 0 8px;
             font-family: var(--font-mono);
         }
-        .seo-article h2:first-child { margin-top: 0; }
         .seo-article p { margin-bottom: 10px; }
-        .seo-article ul { padding-left: 18px; margin-bottom: 12px; }
+        .seo-article ul { padding-left: 18px; margin-bottom: 10px; }
         .seo-article li { margin-bottom: 5px; }
         .tip-callout {
             background: rgba(245, 158, 11, 0.07);
             border-left: 3px solid var(--primary);
-            padding: 10px 12px;
+            padding: 10px 14px;
             border-radius: 0 8px 8px 0;
-            margin-top: 12px;
-            font-size: 12px;
+            margin-top: 14px;
+            font-size: 12.2px;
             color: #fde68a;
         }
+
+        .site-footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px 12px;
+            flex-wrap: wrap;
+            font-family: var(--font-mono);
+        }
+        .site-footer a {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1.4;
+            white-space: nowrap;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .site-footer a:hover { color: var(--primary); }
 
         @media (max-width: 640px) {
             .site-header { padding: 0.55rem 0.75rem; }
@@ -846,8 +890,8 @@
             .result-code-large { font-size: 16px; }
             .cd-pill { font-size: 18px; }
             .btn-copy-full { width: 100%; justify-content: center; }
-            .d-tile { width: 46px; }
-            .d-num { font-size: 16px; }
+            .d-num { font-size: 15px; }
+            .d-prod { font-size: 9.5px; }
         }
     </style>
     <script>
@@ -1091,27 +1135,44 @@
         </main>
 
         <article class="seo-article">
-            <h2>How to Learn GS1 Modulo 10 in 30 Seconds</h2>
-            <p>Every GS1 key (<strong>GTIN-8, GTIN-12, GTIN-13, GTIN-14, GLN-13, SSCC-18</strong>) ends with a single check digit calculated by the exact same universal rule — regardless of length.</p>
-
-            <h2>The 3-Step Mental Shortcut:</h2>
-            <ul>
-                <li><strong>1. Start from the Right:</strong> Label the rightmost payload digit <strong>×3</strong>, the next left <strong>×1</strong>, alternating <code>3, 1, 3, 1...</code> all the way to the start.</li>
-                <li><strong>2. Group &amp; Multiply:</strong> Add all <strong>×3</strong> digits together and multiply by 3 once; then add all <strong>×1</strong> digits.</li>
-                <li><strong>3. Round Up to 10:</strong> Ask <em>"how much do I need to add to reach the next number ending in 0?"</em> That gap (0–9) is your check digit!</li>
-            </ul>
-
-            <h2>Why Alternate 3 and 1?</h2>
-            <p>A simple sum catches single-digit typos, but <em>cannot</em> catch swapped neighbors (<code>47</code> vs <code>74</code> have the same sum!). Multiplying neighbors by different weights (<strong>3</strong> and <strong>1</strong>) catches <strong>100% of single-digit errors</strong> and <strong>~89% of adjacent transpositions</strong> (except pairs differing by 5, like <code>16</code>↔<code>61</code>, where <code>5×(3-1)=10</code>).</p>
-
-            <h2>Formula:</h2>
-            <p><code>CD = (10 − (Sum mod 10)) mod 10</code></p>
-
+            <div class="seo-cols">
+                <div>
+                    <h2>1. The 3-Step Mental Shortcut</h2>
+                    <ul>
+                        <li><strong>Start from the Right:</strong> Label the rightmost payload digit <strong>×3</strong>, the next left <strong>×1</strong>, alternating <code>3, 1, 3, 1...</code></li>
+                        <li><strong>Group &amp; Multiply:</strong> Sum all <strong>×3</strong> digits and multiply by 3 once; then add all <strong>×1</strong> digits.</li>
+                        <li><strong>Round Up to 10:</strong> The gap (0–9) to the next multiple of 10 is your check digit.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>2. Why Alternate 3 and 1?</h2>
+                    <p>A plain sum catches single-digit typos, but <em>cannot</em> catch swapped neighbors (<code>47</code> vs <code>74</code>). Alternating weights (<strong>3</strong> and <strong>1</strong>) catches <strong>100% of single-digit errors</strong> and <strong>~89% of adjacent transpositions</strong>.</p>
+                </div>
+                <div>
+                    <h2>3. Universal GS1 Formula</h2>
+                    <p>Every GS1 key (<strong>GTIN-8, 12, 13, 14, GLN-13 &amp; SSCC-18</strong>) uses the exact same equation:</p>
+                    <p><code>CD = (10 − (Sum mod 10)) mod 10</code></p>
+                </div>
+            </div>
             <div class="tip-callout">
-                <strong>Pro Tip:</strong> Because weights anchor from the <em>right</em>, an 18-digit SSCC (17 payload digits) starts with <strong>×3</strong> on position 1, whereas a 13-digit EAN (12 payload digits) starts with <strong>×1</strong> on position 1. Try switching the tabs on the left to watch the colors flip!
+                <strong>Pro Tip:</strong> Because weights anchor from the <em>right</em>, an 18-digit SSCC (17 payload digits) starts with <strong>×3</strong> on position 1, whereas a 13-digit EAN (12 payload digits) starts with <strong>×1</strong> on position 1. Switch the GS1 tabs above to watch the colors flip!
             </div>
         </article>
     </div>
+
+    <footer class="site-footer">
+        <a href="https://ssccapi.com/">ssccapi.com</a>
+        <span aria-hidden="true">•</span>
+        <a href="/guide">GS1 Guide</a>
+        <span aria-hidden="true">•</span>
+        <a href="/docs">REST API</a>
+        <span aria-hidden="true">•</span>
+        <a href="https://github.com/birth1mark/sscc-check" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span aria-hidden="true">•</span>
+        <a href="/llms.txt">/llms.txt</a>
+        <span aria-hidden="true">•</span>
+        <a href="https://pormenores.net/" target="_blank" rel="noopener noreferrer">pormenores.net</a>
+    </footer>
 </div>
 
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
@@ -1308,6 +1369,15 @@ function renderStepBanner(c, hideAnswer) {
 
 function renderDigitTiles(c, hideAnswer) {
     const wrap = document.getElementById('digit-tiles');
+    const totalTiles = c.digits.length + 1;
+    // Dynamically pick balanced column counts so zero horizontal scrollbar ever appears
+    const colsLg = Math.min(totalTiles, 18);
+    const colsMd = totalTiles <= 9 ? totalTiles : Math.ceil(totalTiles / 2);
+    const colsSm = totalTiles <= 6 ? totalTiles : (totalTiles <= 12 ? Math.ceil(totalTiles / 2) : 6);
+    wrap.style.setProperty('--tile-cols', colsLg);
+    wrap.style.setProperty('--tile-cols-md', colsMd);
+    wrap.style.setProperty('--tile-cols-sm', colsSm);
+
     const typoIndices = activeTypo ? activeTypo.indices : [];
     const shownDigits = activeTypo ? activeTypo.mutatedDigits : c.digits;
     let html = '';

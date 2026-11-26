@@ -5,3 +5,4 @@ Sitemap: https://ssccapi.com/sitemap.xml
 # AI Agent & LLM Context Documentation
 # https://ssccapi.com/llms.txt
 # https://ssccapi.com/llm.txt
+# https://ssccapi.com/openapi.yaml

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GS1 Check Digit Calculator &amp; Visual Modulo 10 Tutor · SSCCAPI</title>
-    <meta name="description" content="Interactive GS1 check digit calculator for GTIN-8, 12, 13, 14, GLN &amp; SSCC-18 with visual Modulo 10 walkthrough, number-line gauge, typo simulator &amp; quiz.">
-    <meta name="keywords" content="GS1 check digit calculator, interactive modulo 10 tutorial, GTIN check digit, EAN 13 check digit, UPC check digit, SSCC check digit, modulo 10 algorithm visual, GS1-128 calculator, barcode check digit">
+    <title>GS1 Check Digit Calculator (GTIN-14, EAN-13, UPC, GLN &amp; SSCC) · SSCCAPI</title>
+    <meta name="description" content="Free GS1 check digit calculator &amp; UPC-to-GTIN converter for GTIN-8, UPC-A (12), EAN-13, GTIN-14, GLN &amp; SSCC-18 with visual Modulo 10 walkthrough and quiz.">
+    <meta name="keywords" content="GS1 check digit calculator, GTIN-14 check digit calculator, UPC check digit calculator, UPC to GTIN converter, GTIN to UPC, GLN calculator, EAN-13 check digit, SSCC-18 check digit, modulo 10 calculator, barcode check digit">
     <meta name="author" content="SSCCAPI">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://ssccapi.com/calculator">
@@ -14,26 +14,27 @@
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SSCCAPI">
-    <meta property="og:title" content="SSCCAPI — Interactive GS1 Check Digit Calculator &amp; Visual Modulo 10 Tutor">
-    <meta property="og:description" content="Visual step-by-step Modulo 10 GS1 check digit calculator with animated walkthrough, number-line gauge, typo simulator, and practice quiz.">
+    <meta property="og:title" content="GS1 Check Digit Calculator (GTIN-14, EAN-13, UPC, GLN &amp; SSCC) · SSCCAPI">
+    <meta property="og:description" content="Free GS1 check digit calculator &amp; UPC-to-GTIN converter with visual step-by-step Modulo 10 walkthrough, number-line gauge, typo simulator, and quiz.">
     <meta property="og:url" content="https://ssccapi.com/calculator">
     <meta property="og:image" content="https://ssccapi.com/og-image.png">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Interactive GS1 Check Digit Calculator &amp; Visual Tutor">
-    <meta name="twitter:description" content="Calculate, visualize, and learn how GS1 Modulo 10 check digits work for GTIN, EAN, UPC, GLN, and SSCC.">
+    <meta name="twitter:url" content="https://ssccapi.com/calculator">
+    <meta name="twitter:title" content="GS1 Check Digit Calculator (GTIN-14, EAN-13, UPC, GLN &amp; SSCC)">
+    <meta name="twitter:description" content="Calculate, convert (UPC ↔ EAN-13 ↔ GTIN-14), and visualize GS1 Modulo 10 check digits for GTIN, UPC, GLN, and SSCC.">
     <meta name="twitter:image" content="https://ssccapi.com/og-image.png">
 
-    <!-- Schema.org WebApplication & HowTo -->
+    <!-- Schema.org WebApplication, HowTo & FAQPage -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "WebApplication",
-          "name": "Interactive GS1 Check Digit Calculator & Visual Modulo 10 Tutor",
+          "name": "GS1 Check Digit Calculator & UPC-to-GTIN Converter",
           "url": "https://ssccapi.com/calculator",
-          "description": "Calculate, verify, and learn official GS1 Modulo 10 check digits visually for GTIN-8, GTIN-12, GTIN-13, GTIN-14, GLN, and SSCC logistics codes.",
+          "description": "Calculate, verify, convert (UPC-A, EAN-13, GTIN-14), and learn official GS1 Modulo 10 check digits visually for GTIN-8, GTIN-12, GTIN-13, GTIN-14, GLN-13, and SSCC-18.",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "Any",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
@@ -41,7 +42,7 @@
         {
           "@type": "HowTo",
           "name": "How to Calculate a GS1 Check Digit",
-          "description": "Visual step-by-step explanation of the GS1 Modulo 10 check digit calculation.",
+          "description": "Visual step-by-step explanation of the GS1 Modulo 10 check digit calculation for GTIN, UPC, EAN, GLN, and SSCC.",
           "step": [
             {
               "@type": "HowToStep",
@@ -59,14 +60,59 @@
               "text": "Subtract the total sum from the nearest equal or higher multiple of 10: Check Digit = (10 - (Sum % 10)) % 10."
             }
           ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How do you calculate a GS1 check digit for GTIN, EAN, UPC, GLN, or SSCC?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Start from the rightmost digit before the check digit and assign alternating weights of 3 and 1 moving right to left. Sum all weighted products and find the distance to the next multiple of 10 using the formula Check Digit = (10 - (Sum mod 10)) mod 10."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do you convert a 12-digit UPC-A to EAN-13 or GTIN-14?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Prepend one leading zero (0) to a 12-digit UPC-A to form an EAN-13 / GTIN-13, or prepend two leading zeros (00) to form a base-unit GTIN-14. For carton or case-level GTIN-14 codes using packaging indicators 1 through 8, replace the first digit with the indicator (1-8) and recalculate the final Modulo 10 check digit."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does converting UPC-A to EAN-13 or GTIN-14 change the check digit?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Adding leading zeros (indicator 0) never changes the check digit because zero multiplied by any weight is zero. However, if you assign a non-zero GTIN-14 packaging indicator (1 to 8) for a case or master carton, the check digit changes and must be recalculated."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do you calculate a GLN-13 check digit?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A Global Location Number (GLN-13) uses the exact same 12-digit payload and Modulo 10 weighting as GTIN-13 / EAN-13. Take the first 12 digits, multiply alternating positions by 3 and 1 from right to left, sum the products, and subtract from the next multiple of 10."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can you convert a GTIN-14 or EAN-13 back to a 12-digit UPC-A?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, whenever an EAN-13 starts with 0 or a GTIN-14 starts with 00, stripping those leading zeros yields the exact 12-digit UPC-A with the same check digit. If a GTIN-14 starts with a packaging indicator 1 through 8 followed by 0, remove the first two digits and recalculate the check digit for the 11-digit UPC payload."
+              }
+            }
+          ]
         }
       ]
     }
     </script>
 
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0b0e14">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -845,6 +891,142 @@
             color: #fde68a;
         }
 
+        .converter-box {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+        .converter-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 10px 0 12px;
+        }
+        .conv-input {
+            flex: 1;
+            min-width: 190px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 13.5px;
+            padding: 8px 12px;
+            outline: none;
+        }
+        .conv-input:focus { border-color: var(--primary); }
+        .conv-select {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 8px 10px;
+            outline: none;
+        }
+        .conv-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+        @media (max-width: 720px) {
+            .conv-grid { grid-template-columns: 1fr; }
+        }
+        .conv-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .conv-card-label {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .conv-card-val {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            word-break: break-all;
+        }
+        .conv-card-val .cd-hl { color: var(--success); }
+        .conv-card-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .conv-card-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .conv-mini-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .conv-mini-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .ref-table-wrap {
+            overflow-x: auto;
+            margin-top: 14px;
+        }
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 11.8px;
+        }
+        .ref-table th, .ref-table td {
+            border-bottom: 1px solid var(--border);
+            padding: 7px 10px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .ref-table th {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .faq-list {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .faq-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+        .faq-item summary {
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 12.2px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .faq-item p {
+            margin: 8px 0 2px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+        }
+
         .site-footer {
             margin-top: 24px;
             padding-top: 16px;
@@ -1155,8 +1337,75 @@
                 </div>
             </div>
             <div class="tip-callout">
-                <strong>Pro Tip:</strong> Because weights anchor from the <em>right</em>, an 18-digit SSCC (17 payload digits) starts with <strong>×3</strong> on position 1, whereas a 13-digit EAN (12 payload digits) starts with <strong>×1</strong> on position 1. Switch the GS1 tabs above to watch the colors flip!
+                <strong>Pro Tip:</strong> Because weights anchor from the <em>right</em>, an 18-digit SSCC (17 payload digits) starts with <strong>×3</strong> on position 1, whereas a 13-digit EAN/GLN (12 payload digits) starts with <strong>×1</strong> on position 1. Switch the GS1 tabs above to watch the colors flip!
             </div>
+
+            <section class="converter-box" id="upc-gtin-converter" aria-labelledby="conv-heading">
+                <h2 id="conv-heading">4. UPC-A ↔ EAN-13 ↔ GTIN-14 Converter (Zero-Padding &amp; Case Indicator)</h2>
+                <p>Enter any <strong>UPC-A (12)</strong>, <strong>EAN-13 (13)</strong>, or <strong>GTIN-14 (14)</strong> code (with or without check digit) to convert between retail and logistics GTIN formats with automatic Modulo 10 recalculation.</p>
+                <div class="converter-controls">
+                    <input type="text" id="conv-input" class="conv-input" inputmode="numeric" value="012345678905" placeholder="Paste UPC-A, EAN-13, or GTIN-14..." oninput="updateGtinConverter()">
+                    <label for="conv-ind" style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);">GTIN-14 Indicator:</label>
+                    <select id="conv-ind" class="conv-select" onchange="updateGtinConverter()">
+                        <option value="0" selected>0 — Base unit (same CD)</option>
+                        <option value="1">1 — Case / Carton Level 1</option>
+                        <option value="2">2 — Case / Carton Level 2</option>
+                        <option value="3">3 — Case / Carton Level 3</option>
+                        <option value="4">4 — Case / Carton Level 4</option>
+                        <option value="5">5 — Case / Carton Level 5</option>
+                        <option value="6">6 — Case / Carton Level 6</option>
+                        <option value="7">7 — Case / Carton Level 7</option>
+                        <option value="8">8 — Case / Carton Level 8</option>
+                    </select>
+                </div>
+                <div class="conv-grid" id="conv-results"></div>
+
+                <div class="ref-table-wrap">
+                    <table class="ref-table" aria-label="GS1 Key Lengths and Check Digit Reference">
+                        <thead>
+                            <tr>
+                                <th>GS1 Key</th>
+                                <th>Total Digits</th>
+                                <th>Payload</th>
+                                <th>Position 1 Weight</th>
+                                <th>Primary Use</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>GTIN-8 (EAN-8)</td><td>8</td><td>7</td><td>×3</td><td>Small retail items</td></tr>
+                            <tr><td>GTIN-12 (UPC-A)</td><td>12</td><td>11</td><td>×3</td><td>North American retail POS</td></tr>
+                            <tr><td>GTIN-13 (EAN-13)</td><td>13</td><td>12</td><td>×1</td><td>Global retail POS</td></tr>
+                            <tr><td>GLN-13</td><td>13</td><td>12</td><td>×1</td><td>Warehouses, docks &amp; EDI parties</td></tr>
+                            <tr><td>GTIN-14 (ITF-14)</td><td>14</td><td>13</td><td>×3</td><td>Cases, cartons &amp; trade units</td></tr>
+                            <tr><td>SSCC-18</td><td>18</td><td>17</td><td>×3</td><td>Logistics pallets &amp; GS1-128 labels</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="faq-list" aria-labelledby="faq-heading">
+                <h2 id="faq-heading" style="margin-bottom:4px;">5. GS1 Check Digit &amp; GTIN Conversion FAQ</h2>
+                <details class="faq-item" open>
+                    <summary>How do you calculate a GS1 check digit for GTIN, EAN, UPC, GLN, or SSCC?</summary>
+                    <p>Start from the rightmost digit before the check digit and assign alternating weights of <strong>3</strong> and <strong>1</strong> moving right to left. Sum all weighted products and find the distance to the next multiple of 10 using <code>Check Digit = (10 − (Sum mod 10)) mod 10</code>.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>How do you convert a 12-digit UPC-A to EAN-13 or GTIN-14?</summary>
+                    <p>Prepend one leading zero (<code>0</code>) to a 12-digit UPC-A to form an <strong>EAN-13 / GTIN-13</strong>, or prepend two leading zeros (<code>00</code>) to form a base-unit <strong>GTIN-14</strong>. For carton or case-level GTIN-14 codes using packaging indicators <code>1</code> through <code>8</code>, replace the first digit with the indicator and recalculate the final Modulo 10 check digit.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Does converting UPC-A to EAN-13 or GTIN-14 change the check digit?</summary>
+                    <p>Adding leading zeros (indicator <code>0</code>) never changes the check digit because zero multiplied by any weight is zero. However, if you assign a non-zero GTIN-14 packaging indicator (<code>1</code> to <code>8</code>) for a case or master carton, the check digit changes and must be recalculated.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>How do you calculate a GLN-13 check digit?</summary>
+                    <p>A Global Location Number (<strong>GLN-13</strong>) uses the exact same 12-digit payload and Modulo 10 weighting as GTIN-13 / EAN-13. Take the first 12 digits, multiply alternating positions by 3 and 1 from right to left, sum the products, and subtract from the next multiple of 10.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Can you convert a GTIN-14 or EAN-13 back to a 12-digit UPC-A?</summary>
+                    <p>Yes — whenever an EAN-13 starts with <code>0</code> or a GTIN-14 starts with <code>00</code>, stripping those leading zeros yields the exact 12-digit UPC-A with the same check digit. If a GTIN-14 starts with a packaging indicator <code>1</code>–<code>8</code> followed by <code>0</code>, remove the first two digits and recalculate the check digit for the 11-digit UPC payload.</p>
+                </details>
+            </section>
         </article>
     </div>
 
@@ -1724,8 +1973,104 @@ function openCalculatedInLabelStudio() {
         : `/?sscc=${encodeURIComponent(full)}`;
 }
 
+function calcGs1CheckDigit(payload) {
+    let sum = 0;
+    const rev = payload.split('').reverse();
+    for (let i = 0; i < rev.length; i++) {
+        sum += parseInt(rev[i], 10) * (i % 2 === 0 ? 3 : 1);
+    }
+    return (10 - (sum % 10)) % 10;
+}
+
+function loadIntoVisualLab(type, payload) {
+    const btns = Array.from(document.querySelectorAll('.type-btn'));
+    const idxMap = { sscc: 0, gtin13: 1, gtin12: 2, gtin14: 3, gtin8: 4, gln: 5 };
+    const cfg = {
+        gtin12: [11, 'GTIN-12 / UPC-A'],
+        gtin13: [12, 'GTIN-13 / EAN-13'],
+        gtin14: [13, 'GTIN-14 (Cartons)']
+    }[type];
+    if (!cfg) return;
+    setType(btns[idxMap[type]], type, cfg[0], cfg[1], payload);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyConvCode(code, btn) {
+    navigator.clipboard.writeText(code).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1200);
+    });
+}
+
+function updateGtinConverter() {
+    const inp = document.getElementById('conv-input');
+    const indEl = document.getElementById('conv-ind');
+    const out = document.getElementById('conv-results');
+    if (!inp || !indEl || !out) return;
+
+    const digits = inp.value.replace(/\D/g, '');
+    const ind = indEl.value || '0';
+
+    // Normalize input into a 12-digit EAN-13 payload (without check digit)
+    let ean12 = null;
+    if (digits.length === 11) {
+        ean12 = '0' + digits;
+    } else if (digits.length === 12) {
+        // Could be full UPC-A (12) or EAN-13 payload (12); check UPC-A check digit first
+        const upcCd = calcGs1CheckDigit(digits.slice(0, 11));
+        ean12 = (parseInt(digits[11], 10) === upcCd) ? ('0' + digits.slice(0, 11)) : digits;
+    } else if (digits.length === 13) {
+        const eanCd = calcGs1CheckDigit(digits.slice(0, 12));
+        ean12 = (parseInt(digits[12], 10) === eanCd) ? digits.slice(0, 12) : digits.slice(1, 13);
+    } else if (digits.length === 14) {
+        ean12 = digits.slice(1, 13);
+    }
+
+    if (!ean12) {
+        out.innerHTML = `<div class="conv-card" style="grid-column:1/-1;"><div class="conv-card-meta">Enter 11–14 digits (UPC-A, EAN-13, or GTIN-14) to see instant zero-padded and carton-level conversions.</div></div>`;
+        return;
+    }
+
+    const eanCd = calcGs1CheckDigit(ean12);
+    const ean13 = ean12 + eanCd;
+
+    const gtin14Payload = ind + ean12;
+    const gtin14Cd = calcGs1CheckDigit(gtin14Payload);
+    const gtin14 = gtin14Payload + gtin14Cd;
+
+    const canBeUpc = ean12.startsWith('0');
+    const upcPayload = canBeUpc ? ean12.slice(1) : null;
+    const upcCd = canBeUpc ? calcGs1CheckDigit(upcPayload) : null;
+    const upc12 = canBeUpc ? (upcPayload + upcCd) : null;
+
+    const card = (title, payload, cd, meta, labType) => {
+        if (!payload) {
+            return `<div class="conv-card"><div class="conv-card-label">${title}</div><div class="conv-card-val" style="color:var(--text-dim);">Not a UPC-A range</div><div class="conv-card-meta">${meta}</div></div>`;
+        }
+        const full = payload + cd;
+        return `
+            <div class="conv-card">
+                <div class="conv-card-label">${title}</div>
+                <div class="conv-card-val">${payload}<span class="cd-hl">${cd}</span></div>
+                <div class="conv-card-meta">${meta}</div>
+                <div class="conv-card-actions">
+                    <button type="button" class="conv-mini-btn" onclick="copyConvCode('${full}', this)">Copy</button>
+                    <button type="button" class="conv-mini-btn" onclick="loadIntoVisualLab('${labType}', '${payload}')">Inspect ↑</button>
+                </div>
+            </div>`;
+    };
+
+    out.innerHTML = [
+        card('UPC-A / GTIN-12', upcPayload, upcCd, canBeUpc ? '12 digits · North American POS' : 'EAN prefix ≠ 0 (non-UPC country prefix)', 'gtin12'),
+        card('EAN-13 / GTIN-13', ean12, eanCd, '13 digits · Global retail barcode', 'gtin13'),
+        card(`GTIN-14 (Indicator ${ind})`, gtin14Payload, gtin14Cd, ind === '0' ? 'Base unit · check digit unchanged' : 'Case/carton · check digit recalculated', 'gtin14')
+    ].join('');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     calculate();
+    updateGtinConverter();
     if (window.lucide) lucide.createIcons();
 });
 </script>

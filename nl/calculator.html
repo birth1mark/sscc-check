@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GS1 Controlecijfer Berekenen (GTIN-14, EAN-13, UPC, GLN &amp; SSCC) · SSCCAPI</title>
+    <meta name="description" content="Gratis GS1 controlecijfer calculator &amp; UPC-naar-GTIN converter voor GTIN-8, UPC-A, EAN-13, GTIN-14, GLN-13 &amp; SSCC-18 met visuele Modulo 10 uitleg en quiz.">
+    <meta name="keywords" content="GS1 controlecijfer berekenen, EAN 13 controlecijfer calculator, GTIN 14 controlecijfer, SSCC 18 controlecijfer, GLN 13 berekenen, UPC naar GTIN converter, modulo 10 algoritme GS1, GS1-128 barcode">
+    <meta name="author" content="SSCCAPI">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://ssccapi.com/nl/calculator">
+    <link rel="alternate" hreflang="en" href="https://ssccapi.com/calculator">
+    <link rel="alternate" hreflang="pt" href="https://ssccapi.com/pt/calculadora">
+    <link rel="alternate" hreflang="es" href="https://ssccapi.com/es/calculadora">
+    <link rel="alternate" hreflang="fr" href="https://ssccapi.com/fr/calculateur">
+    <link rel="alternate" hreflang="de" href="https://ssccapi.com/de/rechner">
+    <link rel="alternate" hreflang="nl" href="https://ssccapi.com/nl/calculator">
+    <link rel="alternate" hreflang="x-default" href="https://ssccapi.com/calculator">
+    <link rel="alternate" type="text/plain" href="https://ssccapi.com/llms.txt" title="LLMs.txt AI Agent Documentation">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="nl_NL">
+    <meta property="og:site_name" content="SSCCAPI">
+    <meta property="og:title" content="GS1 Controlecijfer Berekenen (GTIN-14, EAN-13, UPC, GLN &amp; SSCC) · SSCCAPI">
+    <meta property="og:description" content="Bereken, controleer en leer het officiële GS1 Modulo 10-algoritme visueel voor GTIN, EAN-13, UPC-A, GLN en SSCC-18, inclusief UPC↔GTIN-14 converter.">
+    <meta property="og:url" content="https://ssccapi.com/nl/calculator">
+    <meta property="og:image" content="https://ssccapi.com/og-image.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://ssccapi.com/nl/calculator">
+    <meta name="twitter:title" content="GS1 Controlecijfer Berekenen (GTIN, EAN, UPC, GLN &amp; SSCC)">
+    <meta name="twitter:description" content="Bereken GS1 Modulo 10 controlecijfers stap voor stap en converteer UPC-A ↔ EAN-13 ↔ GTIN-14 direct.">
+    <meta name="twitter:image" content="https://ssccapi.com/og-image.png">
+
+    <!-- Schema.org WebApplication, HowTo & FAQPage -->
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "WebApplication",
+            "name": "GS1 Controlecijfer Calculator & UPC-naar-GTIN Converter",
+            "url": "https://ssccapi.com/nl/calculator",
+            "inLanguage": "nl",
+            "description": "Bereken, valideer, converteer (UPC-A, EAN-13, GTIN-14) en visualiseer officiële GS1 Modulo 10 controlecijfers voor GTIN-8, GTIN-12, GTIN-13, GTIN-14, GLN-13 en SSCC-18.",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Any",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
+            }
+        },
+        {
+            "@type": "HowTo",
+            "name": "Hoe bereken je een GS1 controlecijfer (Modulo 10)?",
+            "inLanguage": "nl",
+            "description": "Visuele stap-voor-stap uitleg van de officiële GS1 Modulo 10 controlecijferberekening voor GTIN, EAN-13, UPC-A, GLN en SSCC.",
+            "step": [
+                {
+                    "@type": "HowToStep",
+                    "name": "Wisselende weging van rechts naar links toekennen",
+                    "text": "Begin bij het meest rechtse basiscijfer (direct vóór het controlecijfer) en ken van rechts naar links afwisselend de weegfactoren 3 en 1 toe."
+                },
+                {
+                    "@type": "HowToStep",
+                    "name": "Vermenigvuldigen en optellen",
+                    "text": "Vermenigvuldig elk cijfer met zijn weegfactor (3 of 1) en tel alle uitkomsten op — of tel eerst alle ×3-cijfers op, vermenigvuldig dat subtotaal met 3 en tel de ×1-cijfers erbij op."
+                },
+                {
+                    "@type": "HowToStep",
+                    "name": "Verschil tot het volgende tienvoud bepalen",
+                    "text": "Trek de gewogen som af van het gelijke of eerstvolgende veelvoud van 10: Controlecijfer = (10 - (Som % 10)) % 10."
+                }
+            ]
+        },
+        {
+            "@type": "FAQPage",
+            "inLanguage": "nl",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "Hoe bereken je een GS1 controlecijfer voor GTIN, EAN-13, UPC, GLN of SSCC?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Begin bij het laatste cijfer direct vóór het controlecijfer en ken van rechts naar links afwisselend de weegfactoren 3 en 1 toe. Tel alle gewogen producten op en bereken het verschil tot het volgende tienvoud met CC = (10 - (Som mod 10)) mod 10."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Hoe zet je een 12-cijferige UPC-A om naar EAN-13 of GTIN-14?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Plaats één voorloopnul (0) vóór een 12-cijferige UPC-A om een EAN-13 / GTIN-13 te vormen, of twee voorloopnullen (00) voor een basiseenheid als GTIN-14. Voor omdozen met verpakkingsindicator 1 tot en met 8 plaats je die indicator vooraan en herbereken je het Modulo 10 controlecijfer."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Verandert het controlecijfer wanneer je UPC-A omzet naar EAN-13 of GTIN-14?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Voorloopnullen toevoegen (indicator 0) verandert het controlecijfer nooit, omdat nul maal elke weegfactor nul blijft. Ken je echter een GTIN-14 verpakkingsindicator van 1 tot en met 8 toe voor een omdoos, dan verandert de som en moet het controlecijfer worden herberekend."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Hoe bereken je het controlecijfer van een GLN-13?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Een Global Location Number (GLN-13) gebruikt exact dezelfde 12 basiscijfers en Modulo 10-weging als een EAN-13 / GTIN-13. Vermenigvuldig de eerste 12 cijfers van rechts naar links afwisselend met 3 en 1, tel alles op en trek af van het volgende veelvoud van 10."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Kun je een GTIN-14 of EAN-13 terugrekenen naar een 12-cijferige UPC-A?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Ja: zodra een EAN-13 begint met 0 of een GTIN-14 begint met 00, geeft het weglaten van die voorloopnullen de exacte 12-cijferige UPC-A met hetzelfde controlecijfer. Begint een GTIN-14 met een indicator 1 tot en met 8 gevolgd door 0, verwijder dan de eerste twee cijfers en herbereken het controlecijfer over de 11 UPC-basiscijfers."
+                    }
+                }
+            ]
+        }
+    ]
+}
+    </script>
+
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0b0e14">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg:            #0b0e14;
+            --surface:       #121722;
+            --surface-hover: #182030;
+            --surface-card:  #0f141f;
+            --border:        #222c3d;
+            --border-hover:  #f59e0b;
+            --text-main:     #f8fafc;
+            --text-muted:    #94a3b8;
+            --text-dim:      #64748b;
+            --primary:       #f59e0b;
+            --primary-hover: #fbbf24;
+            --cyan:          #38bdf8;
+            --success:       #10b981;
+            --danger:        #ef4444;
+            --purple:        #a855f7;
+            --font-mono:     'JetBrains Mono', monospace;
+            --font-sans:     'Plus Jakarta Sans', -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { overflow-x: clip; max-width: 100%; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+            background-size: 36px 36px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .site-header {
+            border-bottom: 1px solid var(--border);
+            padding: 0.72rem 1.25rem;
+            position: sticky;
+            top: 0;
+            background: rgba(11, 14, 20, 0.94);
+            backdrop-filter: blur(14px);
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 1120px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .brand {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: var(--text-main);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            white-space: nowrap;
+        }
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px var(--success);
+        }
+        .brand-sep { color: var(--text-dim); font-weight: 400; margin: 0 1px; }
+        .brand-sub { color: var(--primary); font-weight: 600; }
+
+        .header-nav { display: flex; align-items: center; gap: 0.4rem; }
+        .nav-pill {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.3rem 0.62rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            line-height: 1.2;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 24px 20px 48px;
+        }
+        .calc-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .calc-grid > * { min-width: 0; max-width: 100%; }
+
+        .card {
+            background: var(--surface-card);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        h1 {
+            font-family: var(--font-mono);
+            font-size: 1.22rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        h1 span { color: var(--primary); }
+        .tagline {
+            color: var(--text-muted);
+            font-size: 0.83rem;
+            margin-top: 3px;
+        }
+
+        /* Mode Switcher: Learn vs Practice Quiz */
+        .mode-switch {
+            display: inline-flex;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 3px;
+        }
+        .mode-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.18s;
+        }
+        .mode-tab.active {
+            background: rgba(245, 158, 11, 0.16);
+            color: var(--primary);
+        }
+
+        /* Type Selector Tabs */
+        .type-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .type-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            padding: 6px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .type-btn:hover { border-color: var(--primary); color: #fff; }
+        .type-btn.active {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .calc-input-box { margin-bottom: 14px; }
+        .calc-input-box label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+        .calc-input {
+            flex: 1;
+            min-width: 0;
+            background: #080a0f;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 14px;
+            color: #f8fafc;
+            font-family: var(--font-mono);
+            font-size: 18px;
+            letter-spacing: 0.08em;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .calc-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+        }
+        .btn-dice {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 8px;
+            padding: 0 12px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+        .btn-dice:hover { border-color: var(--cyan); color: var(--cyan); }
+
+        .result-panel {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 14px;
+            display: none;
+        }
+        .result-panel.show { display: block; }
+
+        .result-highlight {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .result-code-large {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 700;
+            color: #f8fafc;
+            word-break: break-all;
+            letter-spacing: 0.04em;
+        }
+        .cd-pill {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            color: var(--success);
+            font-family: var(--font-mono);
+            font-size: 22px;
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        /* Walkthrough Stepper Bar */
+        .walkthrough-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+        }
+        .step-pills {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .step-pill {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .step-pill:hover { border-color: var(--cyan); color: #fff; }
+        .step-pill.active {
+            background: rgba(56, 189, 248, 0.16);
+            border-color: var(--cyan);
+            color: var(--cyan);
+            font-weight: 700;
+        }
+        .walk-controls {
+            display: inline-flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .walk-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s;
+        }
+        .walk-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .walk-btn.playing {
+            background: rgba(245, 158, 11, 0.18);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Step Explanation Banner */
+        .step-explain {
+            background: rgba(56, 189, 248, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            border-radius: 10px;
+            padding: 11px 14px;
+            margin-bottom: 14px;
+            font-size: 12.5px;
+            color: #dbeafe;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .step-badge {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            font-weight: 800;
+            background: rgba(56, 189, 248, 0.18);
+            color: var(--cyan);
+            padding: 3px 8px;
+            border-radius: 5px;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        /* Visual Digit Tiles Strip */
+        .rtl-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .rtl-arrow {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tiles-scroll {
+            overflow: visible;
+            margin-bottom: 14px;
+        }
+        .digit-tiles {
+            display: grid;
+            grid-template-columns: repeat(var(--tile-cols, 18), minmax(0, 1fr));
+            gap: 5px;
+            width: 100%;
+            padding: 4px 0;
+        }
+        .d-tile {
+            min-width: 0;
+            width: 100%;
+            background: #080a0f;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            padding: 7px 2px;
+            text-align: center;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+            position: relative;
+            user-select: none;
+        }
+        .d-tile:hover, .d-tile.focused {
+            transform: translateY(-3px);
+            z-index: 2;
+        }
+        .d-tile.w3 { border-color: rgba(245, 158, 11, 0.38); }
+        .d-tile.w3:hover, .d-tile.w3.focused {
+            border-color: var(--primary);
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.28);
+        }
+        .d-tile.w1 { border-color: rgba(56, 189, 248, 0.35); }
+        .d-tile.w1:hover, .d-tile.w1.focused {
+            border-color: var(--cyan);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+        }
+        .d-tile.cd-tile {
+            border-color: rgba(16, 185, 129, 0.65);
+            background: rgba(16, 185, 129, 0.08);
+            cursor: default;
+        }
+        .d-tile.dimmed { opacity: 0.34; }
+        .d-tile.typo-hit {
+            border-color: var(--danger) !important;
+            background: rgba(239, 68, 68, 0.14) !important;
+            box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
+        }
+
+        .d-pos { font-size: 9px; color: var(--text-dim); margin-bottom: 2px; }
+        .d-num { font-size: 17px; font-weight: 800; color: #f8fafc; line-height: 1.15; }
+        .d-weight {
+            display: inline-block;
+            margin: 4px 0 3px;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 9.5px;
+            font-weight: 800;
+        }
+        .w3 .d-weight { background: rgba(245, 158, 11, 0.16); color: var(--primary); }
+        .w1 .d-weight { background: rgba(56, 189, 248, 0.16); color: var(--cyan); }
+        .cd-tile .d-weight { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+
+        .d-prod { font-size: 10.5px; font-weight: 700; color: var(--text-muted); }
+        .w3 .d-prod { color: #fde68a; }
+        .w1 .d-prod { color: #bae6fd; }
+        .cd-tile .d-prod { color: var(--success); }
+
+        .d-bar-wrap {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 99px;
+            margin: 5px 4px 0;
+            overflow: hidden;
+        }
+        .d-bar { height: 100%; border-radius: 99px; }
+        .w3 .d-bar { background: var(--primary); }
+        .w1 .d-bar { background: var(--cyan); }
+
+        @media (max-width: 980px) {
+            .digit-tiles {
+                grid-template-columns: repeat(var(--tile-cols-md, 9), minmax(0, 1fr));
+                gap: 6px;
+            }
+        }
+        @media (max-width: 580px) {
+            .digit-tiles {
+                grid-template-columns: repeat(var(--tile-cols-sm, 6), minmax(0, 1fr));
+                gap: 5px;
+            }
+        }
+
+        /* Focused Digit Inspector */
+        .digit-inspector {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+            margin-bottom: 14px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .digit-inspector strong { color: var(--text-main); }
+
+        /* Visual Weight Buckets (Step 2) */
+        .buckets-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        @media (max-width: 640px) {
+            .buckets-grid { grid-template-columns: 1fr; }
+        }
+        .bucket-card {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 13px;
+            min-width: 0;
+        }
+        .bucket-card.b3 { border-color: rgba(245, 158, 11, 0.35); }
+        .bucket-card.b1 { border-color: rgba(56, 189, 248, 0.35); }
+        .bucket-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .b3 .bucket-head { color: var(--primary); }
+        .b1 .bucket-head { color: var(--cyan); }
+        .bucket-eq {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            word-break: break-word;
+            line-height: 1.55;
+        }
+        .bucket-eq strong { color: var(--text-main); }
+
+        /* Modulo-10 SVG Number Line Gauge (Step 3) */
+        .gauge-card {
+            background: #080a0f;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+        .gauge-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .gauge-svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Typo / Error Detection Sandbox (Step 4) */
+        .typo-box {
+            background: rgba(168, 85, 247, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+        .typo-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .typo-title {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #d8b4fe;
+        }
+        .typo-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .typo-btn {
+            background: var(--bg);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #e9d5ff;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .typo-btn:hover { background: rgba(168, 85, 247, 0.18); }
+        .typo-result {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Practice Quiz Box */
+        .quiz-box {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .quiz-box.show { display: block; }
+        .quiz-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .quiz-digits {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .quiz-num-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            background: #080a0f;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .quiz-num-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .quiz-num-btn.correct { background: rgba(16, 185, 129, 0.25); border-color: var(--success); color: var(--success); }
+        .quiz-num-btn.wrong { background: rgba(239, 68, 68, 0.22); border-color: var(--danger); color: #fca5a5; }
+        .quiz-feedback {
+            margin-top: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            min-height: 20px;
+        }
+
+        /* Collapsible Classic Table */
+        details.classic-details {
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #080a0f;
+            padding: 8px 12px;
+        }
+        details.classic-details summary {
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .math-table-wrap { overflow-x: auto; margin-top: 10px; }
+        .math-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            text-align: center;
+        }
+        .math-table th, .math-table td { padding: 5px 2px; border: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; }
+        .math-table th:first-child, .math-table td:first-child { width: 72px; text-align: left; padding-left: 6px; }
+        .math-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); font-size: 9.5px; }
+        .math-table .row-weight { color: var(--primary); font-weight: 700; }
+        .math-table .row-prod { color: var(--cyan); font-weight: 700; }
+
+        .btn-copy-full {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .btn-copy-full:hover { border-color: var(--primary); color: var(--primary); }
+
+        .cta-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(56, 189, 248, 0.05) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-top: 18px;
+        }
+        .cta-box h3 { font-size: 13.5px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+        .cta-box p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+        .cta-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+        .cta-btn:hover { background: var(--primary-hover); }
+
+        .seo-article {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px 24px;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+        .seo-cols {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+        .seo-cols > div { min-width: 0; }
+        @media (max-width: 860px) {
+            .seo-cols { grid-template-columns: 1fr; gap: 14px; }
+        }
+        .seo-article h2 {
+            font-size: 13.5px;
+            color: var(--text-main);
+            margin: 0 0 8px;
+            font-family: var(--font-mono);
+        }
+        .seo-article p { margin-bottom: 10px; }
+        .seo-article ul { padding-left: 18px; margin-bottom: 10px; }
+        .seo-article li { margin-bottom: 5px; }
+        .tip-callout {
+            background: rgba(245, 158, 11, 0.07);
+            border-left: 3px solid var(--primary);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 14px;
+            font-size: 12.2px;
+            color: #fde68a;
+        }
+
+        .converter-box {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+        .converter-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 10px 0 12px;
+        }
+        .conv-input {
+            flex: 1;
+            min-width: 190px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 13.5px;
+            padding: 8px 12px;
+            outline: none;
+        }
+        .conv-input:focus { border-color: var(--primary); }
+        .conv-select {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 8px 10px;
+            outline: none;
+        }
+        .conv-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+        @media (max-width: 720px) {
+            .conv-grid { grid-template-columns: 1fr; }
+        }
+        .conv-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .conv-card-label {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .conv-card-val {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            word-break: break-all;
+        }
+        .conv-card-val .cd-hl { color: var(--success); }
+        .conv-card-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .conv-card-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .conv-mini-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 10.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .conv-mini-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .ref-table-wrap {
+            overflow-x: auto;
+            margin-top: 14px;
+        }
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 11.8px;
+        }
+        .ref-table th, .ref-table td {
+            border-bottom: 1px solid var(--border);
+            padding: 7px 10px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .ref-table th {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .faq-list {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .faq-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+        .faq-item summary {
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 12.2px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .faq-item p {
+            margin: 8px 0 2px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+        }
+
+        .site-footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px 12px;
+            flex-wrap: wrap;
+            font-family: var(--font-mono);
+        }
+        .site-footer a {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1.4;
+            white-space: nowrap;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .site-footer a:hover { color: var(--primary); }
+
+        @media (max-width: 640px) {
+            .site-header { padding: 0.55rem 0.75rem; }
+            .header-inner { flex-wrap: wrap; gap: 0.5rem; }
+            .brand { font-size: 0.88rem; }
+            .brand-sub, .brand-sep { display: none; }
+            .header-nav {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 0.35rem;
+                width: 100%;
+            }
+            .nav-pill { font-size: 0.7rem; padding: 0.38rem 0.3rem; text-align: center; }
+            .container { padding: 14px 10px 44px; }
+            .card, .seo-article { padding: 15px 12px; }
+            .calc-input { font-size: 15px; padding: 10px 11px; letter-spacing: 0.04em; }
+            .input-row { flex-direction: column; }
+            .btn-dice { justify-content: center; padding: 8px 12px; }
+            .result-code-large { font-size: 16px; }
+            .cd-pill { font-size: 18px; }
+            .btn-copy-full { width: 100%; justify-content: center; }
+            .d-num { font-size: 15px; }
+            .d-prod { font-size: 9.5px; }
+        }
+    
+        .header-right { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px;
+            gap: 2px;
+        }
+        .lang-pill {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.22rem 0.44rem;
+            border-radius: 4px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: all 0.15s ease;
+            line-height: 1.2;
+        }
+        .lang-pill:hover { color: var(--text-main); }
+        .lang-pill.active {
+            background: rgba(245, 158, 11, 0.16);
+            color: var(--primary);
+        }
+        @media (max-width: 640px) {
+            .header-right { width: 100%; justify-content: space-between; }
+            .lang-switch { order: -1; }
+        }
+    </style>
+    <script>
+    (function() {
+        var map = {
+            'index.html': '',
+            'calculator.html': 'calculator',
+            'pt/calculadora.html': 'pt/calculadora',
+            'es/calculadora.html': 'es/calculadora',
+            'fr/calculateur.html': 'fr/calculateur',
+            'de/rechner.html': 'de/rechner',
+            'nl/calculator.html': 'nl/calculator',
+            'guide.html': 'guide',
+            'sscc-api-guide.html': 'docs'
+        };
+        var clean = window.location.pathname.replace(/^\/(sscc-check|sscc)\//, '').replace(/^\//, '');
+        var nice = (clean in map) ? map[clean] : clean;
+        if (window.location.hostname.includes('github.io') || window.location.hostname.includes('pormenores.net')) {
+            window.location.replace('https://ssccapi.com/' + nice + window.location.search + window.location.hash);
+        } else if (clean in map && window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', '/' + nice + window.location.search + window.location.hash);
+        }
+    })();
+    </script>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+        <div class="brand">
+            <a href="/" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:0.45rem;" title="SSCCAPI Home">
+                <span class="brand-dot"></span>
+                <span>ssccapi.com</span>
+            </a>
+            <span class="brand-sep">/</span>
+            <span class="brand-sub">calculator</span>
+        </div>
+        <div class="header-right">
+            <div class="lang-switch" role="navigation" aria-label="Language">
+                <a href="/calculator" class="lang-pill" hreflang="en" title="English">EN</a>
+                <a href="/pt/calculadora" class="lang-pill" hreflang="pt" title="Português">PT</a>
+                <a href="/es/calculadora" class="lang-pill" hreflang="es" title="Español">ES</a>
+                <a href="/fr/calculateur" class="lang-pill" hreflang="fr" title="Français">FR</a>
+                <a href="/de/rechner" class="lang-pill" hreflang="de" title="Deutsch">DE</a>
+                <a href="/nl/calculator" class="lang-pill active" hreflang="nl" title="Nederlands" aria-current="page">NL</a>
+            </div>
+            <nav class="header-nav">
+                <a href="/" class="nav-pill">Studio</a>
+                <a href="/nl/calculator" class="nav-pill active">Calculator</a>
+                <a href="/guide" class="nav-pill">Gids</a>
+                <a href="/docs" class="nav-pill">API</a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="calc-grid">
+        <main class="card" style="margin-bottom:0;">
+            <div class="card-header">
+                <div>
+                    <h1>GS1 <span>CONTROLECIJFER</span> VISUEEL LAB</h1>
+                    <p class="tagline">Bereken, visualiseer en beheers het officiële GS1 Modulo 10-algoritme</p>
+                </div>
+                <div class="mode-switch" role="group" aria-label="Calculatormodus">
+                    <button type="button" class="mode-tab active" id="tab-learn" onclick="setMode('learn')">
+                        <i data-lucide="sparkles" style="width:13px;height:13px;"></i>
+                        <span>Visuele Uitleg</span>
+                    </button>
+                    <button type="button" class="mode-tab" id="tab-quiz" onclick="setMode('quiz')">
+                        <i data-lucide="graduation-cap" style="width:13px;height:13px;"></i>
+                        <span>Oefenquiz</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="type-tabs">
+                <button type="button" class="type-btn active" onclick="setType(this, 'sscc', 17, 'SSCC-18 (Pallets)', '38711234560000001')">SSCC-18</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gtin13', 12, 'GTIN-13 / EAN-13', '871123456789')">GTIN-13 (EAN)</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gtin12', 11, 'GTIN-12 / UPC-A', '01234567890')">GTIN-12 (UPC)</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gtin14', 13, 'GTIN-14 (Dozen)', '1871123456789')">GTIN-14</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gtin8', 7, 'GTIN-8 / EAN-8', '8711234')">GTIN-8</button>
+                <button type="button" class="type-btn" onclick="setType(this, 'gln', 12, 'GLN-13 (Locaties)', '871123400001')">GLN-13</button>
+            </div>
+
+            <div class="calc-input-box">
+                <label>
+                    <span id="type-label">SSCC-18 (Pallets) — zonder het laatste controlecijfer:</span>
+                    <span id="len-label" style="color:var(--primary);">17 cijfers</span>
+                </label>
+                <div class="input-row">
+                    <input type="text" id="calc-input" class="calc-input" inputmode="numeric" placeholder="Voer cijfers in..." value="38711234560000001" oninput="onUserInput()">
+                    <button type="button" class="btn-dice" onclick="generateRandomSample()" title="Genereer een willekeurige geldige reeks met de huidige GS1-lengte">
+                        <i data-lucide="shuffle" style="width:14px;height:14px;"></i>
+                        <span>Willekeurig</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="result-panel" class="result-panel show">
+                <!-- Result Banner -->
+                <div class="result-highlight">
+                    <div>
+                        <div style="font-size:10.5px;color:var(--text-muted);margin-bottom:3px;font-family:var(--font-mono);" id="res-label-top">GEVALIDEERDE VOLLEDIGE CODE:</div>
+                        <div id="res-full-code" class="result-code-large">38711234560000001</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <div style="text-align:right;">
+                            <div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;font-family:var(--font-mono);">CONTROLECIJFER:</div>
+                            <span id="res-cd-val" class="cd-pill">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <button type="button" class="btn-copy-full" onclick="openCalculatedInLabelStudio()" style="border-color:rgba(245,158,11,0.45);color:var(--primary);">
+                            <i data-lucide="barcode" style="width:13px;height:13px;"></i>
+                            <span>Barcode / Palletlabel maken</span>
+                        </button>
+                        <button type="button" class="btn-copy-full" id="btn-copy" onclick="copyFullResult()">
+                            <i data-lucide="copy" style="width:13px;height:13px;"></i>
+                            <span id="copy-label">Volledige code kopiëren</span>
+                        </button>
+                    </div>
+                    <span id="len-warning" style="font-family:var(--font-mono);font-size:11px;color:var(--primary);display:none;"></span>
+                </div>
+
+                <!-- Practice Quiz Panel -->
+                <div id="quiz-box" class="quiz-box">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                        <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--success);">🧠 Oefenuitdaging — Bereken zelf het controlecijfer!</span>
+                        <span id="quiz-streak" style="font-family:var(--font-mono);font-size:11px;color:var(--primary);font-weight:700;">Reeks: 0</span>
+                    </div>
+                    <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Gebruik de <strong>×3</strong>- (amber) en <strong>×1</strong>-tegels (cyaan) hieronder, bepaal de sprong naar het volgende tienvoud en klik op je antwoord:</p>
+                    <div class="quiz-row">
+                        <div class="quiz-digits" id="quiz-digits"></div>
+                        <button type="button" class="walk-btn" onclick="toggleQuizHint()">
+                            <i data-lucide="lightbulb" style="width:13px;height:13px;"></i>
+                            <span>Hint</span>
+                        </button>
+                        <button type="button" class="walk-btn" onclick="nextQuizRound()">
+                            <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
+                            <span>Nieuwe code</span>
+                        </button>
+                    </div>
+                    <div id="quiz-feedback" class="quiz-feedback"></div>
+                </div>
+
+                <!-- Walkthrough Step Controls -->
+                <div class="walkthrough-bar">
+                    <div class="step-pills">
+                        <button type="button" class="step-pill active" data-step="0" onclick="setStep(0)">Alle stappen</button>
+                        <button type="button" class="step-pill" data-step="1" onclick="setStep(1)">1. Weging (←)</button>
+                        <button type="button" class="step-pill" data-step="2" onclick="setStep(2)">2. ×3 / ×1 Groepen</button>
+                        <button type="button" class="step-pill" data-step="3" onclick="setStep(3)">3. Mod-10 Sprong</button>
+                        <button type="button" class="step-pill" data-step="4" onclick="setStep(4)">4. Foutdetectie</button>
+                    </div>
+                    <div class="walk-controls">
+                        <button type="button" class="walk-btn" onclick="prevStep()" title="Vorige stap">◀</button>
+                        <button type="button" class="walk-btn" id="btn-play" onclick="togglePlay()">
+                            <i data-lucide="play" style="width:12px;height:12px;"></i>
+                            <span id="play-label">Stappenplan</span>
+                        </button>
+                        <button type="button" class="walk-btn" onclick="nextStep()" title="Volgende stap">▶</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Step Narrative -->
+                <div class="step-explain" id="step-explain"></div>
+
+                <!-- Interactive Digit Tiles -->
+                <div class="rtl-banner">
+                    <span>Klik of beweeg over een cijfertegel om de exacte bijdrage te bekijken:</span>
+                    <span class="rtl-arrow">← Weging start ALTIJD rechts met ×3</span>
+                </div>
+                <div class="tiles-scroll">
+                    <div class="digit-tiles" id="digit-tiles"></div>
+                </div>
+
+                <!-- Live Digit Inspector -->
+                <div class="digit-inspector" id="digit-inspector"></div>
+
+                <!-- Step 2: ×3 vs ×1 Visual Buckets -->
+                <div class="buckets-grid" id="buckets-grid">
+                    <div class="bucket-card b3">
+                        <div class="bucket-head">
+                            <span>● ×3-WEEGGROEP (ONEVEN VANAF RECHTS)</span>
+                            <span id="b3-total">= 0</span>
+                        </div>
+                        <div class="bucket-eq" id="b3-eq"></div>
+                    </div>
+                    <div class="bucket-card b1">
+                        <div class="bucket-head">
+                            <span>● ×1-WEEGGROEP (EVEN VANAF RECHTS)</span>
+                            <span id="b1-total">= 0</span>
+                        </div>
+                        <div class="bucket-eq" id="b1-eq"></div>
+                    </div>
+                </div>
+
+                <!-- Step 3: SVG Modulo-10 Number-Line Gauge -->
+                <div class="gauge-card" id="gauge-card">
+                    <div class="gauge-head">
+                        <span style="color:var(--text-main);font-weight:700;">Visuele Modulo 10-sprong naar het volgende veelvoud van 10</span>
+                        <span id="gauge-equation" style="color:var(--success);font-weight:700;"></span>
+                    </div>
+                    <svg id="mod10-svg" class="gauge-svg" viewBox="0 0 680 112" role="img" aria-label="Modulo 10 getallenlijn met afstand van de gewogen som tot het volgende tienvoud"></svg>
+                </div>
+
+                <!-- Step 4: Interactive Error-Detection / Typo Simulator -->
+                <div class="typo-box" id="typo-box">
+                    <div class="typo-head">
+                        <span class="typo-title">🧪 Waarom controlecijfers onmisbaar zijn — Interactieve foutdetectietest</span>
+                        <div class="typo-actions">
+                            <button type="button" class="typo-btn" onclick="simulateTypo('single')">Simuleer 1 typefout</button>
+                            <button type="button" class="typo-btn" onclick="simulateTypo('swap')">Simuleer cijferwissel</button>
+                            <button type="button" class="typo-btn" onclick="clearTypo()" style="border-color:var(--border);color:var(--text-muted);">Herstellen</button>
+                        </div>
+                    </div>
+                    <div class="typo-result" id="typo-result">Zie hoe scanners menselijke fouten onderscheppen: klik hierboven om één cijfer te wijzigen of twee aangrenzende cijfers om te wisselen — de Modulo 10-controle slaat direct aan.</div>
+                </div>
+
+                <!-- Classic Compact Math Table -->
+                <details class="classic-details">
+                    <summary>Klassieke rekentabel tonen (P1..Pn)</summary>
+                    <div class="math-table-wrap">
+                        <table class="math-table">
+                            <thead><tr id="math-header"></tr></thead>
+                            <tbody>
+                                <tr id="math-digits"></tr>
+                                <tr id="math-weights"></tr>
+                                <tr id="math-products"></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </div>
+
+            <div class="cta-box">
+                <h3>Genereer GS1-128 & 2D QR-barcodes, Zebra ZPL of complete palletlabels</h3>
+                <p>Exporteer losse SSCC-barcodes (<code>SVG</code>, <code>300 DPI PNG</code>, <code>ZPL-II</code>) of volledige GS1-palletlabels (A5 / 4×6") in de Web Studio of via onze Cloud REST API (25 gratis labels inbegrepen · Pro-pakketten vanaf 5 €).</p>
+                <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+                    <a href="/#labels" class="cta-btn">
+                        <i data-lucide="printer" style="width:14px;height:14px;"></i>
+                        <span>Label- & Barcode Studio openen</span>
+                    </a>
+                    <a href="/docs" class="cta-btn" style="background:rgba(245,158,11,0.14);color:var(--primary);border:1px solid rgba(245,158,11,0.45);">
+                        <i data-lucide="terminal" style="width:14px;height:14px;"></i>
+                        <span>REST API & Swagger Sandbox</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <article class="seo-article">
+            <div class="seo-cols">
+                <div>
+                    <h2>1. De snelle 3-stappenmethode</h2>
+                    <ul><li><strong>Begin rechts:</strong> Geef het meest rechtse basiscijfer gewicht <strong>×3</strong>, het cijfer links daarvan <strong>×1</strong>, afwisselend <code>3, 1, 3, 1...</code></li><li><strong>Groeperen &amp; Vermenigvuldigen:</strong> Tel alle <strong>×3</strong>-cijfers op en vermenigvuldig dat subtotaal één keer met 3; tel daarna alle <strong>×1</strong>-cijfers op.</li><li><strong>Afronden op 10:</strong> Het verschil (0–9) tot het eerstvolgende tienvoud is je controlecijfer.</li></ul>
+                </div>
+                <div>
+                    <h2>2. Waarom afwisselend 3 en 1?</h2>
+                    <p>Een gewone optelling vangt losse typefouten af, maar <em>geen</em> omgewisselde buurcijfers (<code>47</code> vs. <code>74</code>). Afwisselende weging (<strong>3</strong> en <strong>1</strong>) detecteert <strong>100% van alle enkele cijferfouten</strong> en circa <strong>89% van alle aangrenzende verwisselingen</strong>.</p>
+                </div>
+                <div>
+                    <h2>3. Universele GS1-formule</h2>
+                    <p>Elke GS1-sleutel (<strong>GTIN-8, 12, 13, 14, GLN-13 &amp; SSCC-18</strong>) gebruikt exact dezelfde formule:</p><p><code>CC = (10 − (Som mod 10)) mod 10</code></p>
+                </div>
+            </div>
+            <div class="tip-callout"><strong>Praktijktip:</strong> Omdat de weging altijd vanaf <em>rechts</em> start, begint een 18-cijferige SSCC (17 basiscijfers) op positie P1 met <strong>×3</strong>, terwijl een 13-cijferige EAN of GLN (12 basiscijfers) op P1 met <strong>×1</strong> begint. Wissel hierboven van tab om de kleuren te zien omslaan!</div>
+
+            <section class="converter-box" id="upc-gtin-converter" aria-labelledby="conv-heading">
+                <h2 id="conv-heading">4. UPC-A ↔ EAN-13 ↔ GTIN-14 Converter (Voorloopnullen & Verpakkingsindicator)</h2>
+                <p>Voer een willekeurige <strong>UPC-A (12)</strong>, <strong>EAN-13 (13)</strong> of <strong>GTIN-14 (14)</strong> code in (met of zonder controlecijfer) om direct tussen retail- en logistieke GTIN-formaten te converteren met automatische Modulo 10-herberekening.</p>
+                <div class="converter-controls">
+                    <input type="text" id="conv-input" class="conv-input" inputmode="numeric" value="012345678905" placeholder="Plak een UPC-A, EAN-13 of GTIN-14 code..." oninput="updateGtinConverter()">
+                    <label for="conv-ind" style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);">GTIN-14 Indicator:</label>
+                    <select id="conv-ind" class="conv-select" onchange="updateGtinConverter()">
+                        <option value="0" selected>0 — Basiseenheid (zelfde CC)</option>
+                        <option value="1">1 — Doos / Verpakkingsniveau 1</option>
+                        <option value="2">2 — Doos / Verpakkingsniveau 2</option>
+                        <option value="3">3 — Doos / Verpakkingsniveau 3</option>
+                        <option value="4">4 — Doos / Verpakkingsniveau 4</option>
+                        <option value="5">5 — Doos / Verpakkingsniveau 5</option>
+                        <option value="6">6 — Doos / Verpakkingsniveau 6</option>
+                        <option value="7">7 — Doos / Verpakkingsniveau 7</option>
+                        <option value="8">8 — Doos / Verpakkingsniveau 8</option>
+                    </select>
+                </div>
+                <div class="conv-grid" id="conv-results"></div>
+
+                <div class="ref-table-wrap">
+                    <table class="ref-table" aria-label="Referentietabel met lengtes en weging van GS1-sleutels">
+                        <thead>
+                            <tr><th>GS1-sleutel</th><th>Totaal cijfers</th><th>Basiscijfers</th><th>Weging Pos. 1</th><th>Hoofdgebruik</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>GTIN-8 (EAN-8)</td><td>8</td><td>7</td><td>×3</td><td>Kleine retailartikelen</td></tr>
+                            <tr><td>GTIN-12 (UPC-A)</td><td>12</td><td>11</td><td>×3</td><td>Noord-Amerikaanse retail (POS)</td></tr>
+                            <tr><td>GTIN-13 (EAN-13)</td><td>13</td><td>12</td><td>×1</td><td>Wereldwijde retail (POS)</td></tr>
+                            <tr><td>GLN-13</td><td>13</td><td>12</td><td>×1</td><td>Magazijnen, docks & EDI-partijen</td></tr>
+                            <tr><td>GTIN-14 (ITF-14)</td><td>14</td><td>13</td><td>×3</td><td>Omdozen, kratten & handelseenheden</td></tr>
+                            <tr><td>SSCC-18</td><td>18</td><td>17</td><td>×3</td><td>Logistieke pallets & GS1-128-labels</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="faq-list" aria-labelledby="faq-heading">
+                <h2 id="faq-heading" style="margin-bottom:4px;">5. Veelgestelde vragen — GS1 Controlecijfer & GTIN-conversie</h2>
+                <details class="faq-item" open>
+                    <summary>Hoe bereken je een GS1 controlecijfer voor GTIN, EAN-13, UPC, GLN of SSCC?</summary>
+                    <p>Begin bij het laatste cijfer direct vóór het controlecijfer en ken van rechts naar links afwisselend de weegfactoren <strong>3</strong> en <strong>1</strong> toe. Tel alle gewogen producten op en bereken het verschil tot het volgende tienvoud met <code>CC = (10 − (Som mod 10)) mod 10</code>.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Hoe zet je een 12-cijferige UPC-A om naar EAN-13 of GTIN-14?</summary>
+                    <p>Plaats één voorloopnul (<code>0</code>) vóór een 12-cijferige UPC-A om een <strong>EAN-13 / GTIN-13</strong> te vormen, of twee voorloopnullen (<code>00</code>) voor een basiseenheid als <strong>GTIN-14</strong>. Voor omdozen met verpakkingsindicator <code>1</code> t/m <code>8</code> plaats je die indicator vooraan en herbereken je het Modulo 10 controlecijfer.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Verandert het controlecijfer wanneer je UPC-A omzet naar EAN-13 of GTIN-14?</summary>
+                    <p>Voorloopnullen toevoegen (indicator <code>0</code>) verandert het controlecijfer nooit, omdat nul maal elke weegfactor nul blijft. Ken je echter een GTIN-14 verpakkingsindicator van <code>1</code> t/m <code>8</code> toe voor een omdoos, dan verandert de som en moet het controlecijfer worden herberekend.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Hoe bereken je het controlecijfer van een GLN-13?</summary>
+                    <p>Een Global Location Number (<strong>GLN-13</strong>) gebruikt exact dezelfde 12 basiscijfers en Modulo 10-weging als een EAN-13 / GTIN-13. Vermenigvuldig de eerste 12 cijfers van rechts naar links afwisselend met 3 en 1, tel alles op en trek af van het volgende veelvoud van 10.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Kun je een GTIN-14 of EAN-13 terugrekenen naar een 12-cijferige UPC-A?</summary>
+                    <p>Ja: zodra een EAN-13 begint met <code>0</code> of een GTIN-14 begint met <code>00</code>, geeft het weglaten van die voorloopnullen de exacte 12-cijferige UPC-A met hetzelfde controlecijfer. Begint een GTIN-14 met een indicator <code>1</code>–<code>8</code> gevolgd door <code>0</code>, verwijder dan de eerste twee cijfers en herbereken het controlecijfer over de 11 UPC-basiscijfers.</p>
+                </details>
+            </section>
+        </article>
+    </div>
+
+    <footer class="site-footer">
+        <a href="https://ssccapi.com/">ssccapi.com</a>
+        <span aria-hidden="true">•</span>
+        <a href="/guide">GS1 Gids</a>
+        <span aria-hidden="true">•</span>
+        <a href="/docs">REST API</a>
+        <span aria-hidden="true">•</span>
+        <a href="https://github.com/birth1mark/sscc-check" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span aria-hidden="true">•</span>
+        <a href="/llms.txt">/llms.txt</a>
+        <span aria-hidden="true">•</span>
+        <a href="https://pormenores.net/" target="_blank" rel="noopener noreferrer">pormenores.net</a>
+    </footer>
+</div>
+
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script>
+const I18N = {"excl":"zonder het laatste controlecijfer:","digits":"cijfers","lenNote":"Let op: {len} cijfers ingevoerd (standaard basislengte voor {type} is {exp}).","badge0":"OVERZICHT","badge1":"STAP 1 / 4","badge2":"STAP 2 / 4","badge3":"STAP 3 / 4","badge4":"STAP 4 / 4","s0Quiz":"<strong>Quiz actief:</strong> De weging wisselt van rechts naar links tussen <strong>×3</strong> (amber) en <strong>×1</strong> (cyaan). Tel de producten op en bepaal hoeveel je nodig hebt tot het volgende tienvoud!","s0Show":"<strong>Volledig bewijs:</strong> Vermenigvuldig elk cijfer van rechts naar links afwisselend met <strong>×3</strong> en <strong>×1</strong> → som = <strong>{sum}</strong> → afstand tot het volgende tienvoud (<strong>{next10}</strong>) geeft controlecijfer <strong style=\"color:var(--success);\">{cd}</strong>.","s1":"<strong>Weging van rechts naar links (←):</strong> Start bij het laatste basiscijfer <strong>P{n}</strong> met <strong style=\"color:var(--primary);\">×3</strong> en wissel af met <strong style=\"color:var(--cyan);\">×1</strong>, <strong style=\"color:var(--primary);\">×3</strong>… Daarom werkt deze methode identiek voor GS1-codes van 8, 12, 13, 14 en 18 cijfers!","s2":"<strong>Snelle groepsmethode:</strong> Som van alle <strong style=\"color:var(--primary);\">×3-cijfers</strong> ({sum3d}) × 3 = <strong>{sum3t}</strong>, plus alle <strong style=\"color:var(--cyan);\">×1-cijfers</strong> = <strong>{sum1t}</strong> → Gewogen totaalsom = <strong>{sum}</strong>.","s3Quiz":"<strong>Modulo 10-sprong:</strong> Neem de gewogen som en bepaal het kleinste cijfer (0–9) waarmee je een veelvoud van 10 bereikt.","s3Show":"<strong>Sprong naar het volgende tienvoud:</strong> Vanaf <strong>{sum}</strong> is het dichtstbijzijnde hogere of gelijke tienvoud <strong>{next10}</strong>. Verschil: <code>{next10} − {sum} = </code><strong style=\"color:var(--success);\">{cd}</strong>{exact}","s3Exact":" (al een veelvoud van 10, dus het controlecijfer is 0!)","s4":"<strong>Valideren &amp; fouten vangen:</strong> Met controlecijfer <strong>{cd}</strong> (weging ×1) komt de volledige code uit op <strong>{next10}</strong> (<code>{next10} mod 10 = 0</code>). Test hieronder de paarse <strong>Foutdetectietest</strong> om een cijfer te wijzigen of twee buren te verwisselen!","tileTitle":"Positie P{p} (#{rtl} vanaf rechts): {d} × {w} = {prod}","cdTileTitle":"Definitief GS1 controlecijfer (weging ×1 bij volledige controle)","cdTileTop":"CHECK","cdTileShort":"CC","cdGuess":"raad","inspTip":"<span><strong>Tip:</strong> Beweeg over of tik op een cijfertegel hierboven om positie, weging &amp; aandeel in de som te bekijken.</span><span style=\"color:var(--cyan);\">Laatste basiscijfer P{p} = <strong>{d} × 3 = {prod}</strong></span>","inspFocus":"<span>Inspectie <strong>Positie P{p}</strong> (#{rtl} vanaf rechts → {parity} positie): cijfer <strong>{d}</strong> × gewicht <strong style=\"color:{col};\">{w}</strong> = <strong>{prod}</strong></span><span style=\"color:var(--text-dim);\">{right}</span>","odd":"oneven","even":"even","quizHintHidden":"Hint verborgen in quizmodus","shareSum":"{share}% van de gewogen som ({sum})","b3Hide":"Cijfers: ({list}) — tel ze op en vermenigvuldig met <strong>3</strong>","b1Hide":"Cijfers: ({list}) — tel ze direct op (<strong>×1</strong>)","gaugeQuizEq":"Los de quiz hierboven op om de Modulo 10-sprong te tonen!","gaugeQuizSvg":"Quizmodus — Getallenlijn verborgen tot je een antwoord kiest","gaugeEq":"{target} − {sum} = {cd}  (Controlecijfer)","gaugePlus":"+{cd} (Controlecijfer)","gaugeZero":"Al een tienvoud → CC = 0","gaugeSum":"Som={sum}","tblPos":"Pos","tblDig":"Cijfer","tblW":"Weging (×)","tblProd":"Product","play":"Stappenplan","stop":"Stop","typoChanged":"P{p} gewijzigd van <strong>{orig}</strong> → <strong style=\"color:var(--danger);\">{mut}</strong>","typoSwapped":"P{p1} &amp; P{p2} verwisseld: <strong>{a}{b}</strong> → <strong style=\"color:var(--danger);\">{b}{a}</strong>","typoCaught":"<span style=\"color:#fca5a5;font-weight:700;\">✗ FOUT DIRECT ONDERSCHEPT!</span> {desc}.<br>Nieuwe gewogen som ({newSum}) + oorspronkelijk controlecijfer ({cd}) = <strong>{tot}</strong> → <code>{tot} mod 10 = {rem} ≠ 0</code>. Scanner weigert de foutieve code!","typoBlind":"<span style=\"color:var(--primary);font-weight:700;\">⚠ ZELDZAAM RANDGEVAL GEVONDEN!</span> {desc}. Omdat |a − b| = 5 geldt <code>5 × (3 − 1) = 10</code>, waardoor mod 10 gelijk blijft — de bekende wiskundige uitzondering van Modulo 10!","typoDefault":"Zie hoe scanners menselijke fouten onderscheppen: klik hierboven om één cijfer te wijzigen of twee aangrenzende cijfers om te wisselen — de Modulo 10-controle slaat direct aan.","quizStreakLbl":"Reeks","quizWin":"<span style=\"color:var(--success);font-weight:700;\">✓ Precies goed!</span> Gewogen som = <strong>{sum}</strong> → volgend tienvoud is <strong>{next10}</strong> → <strong>{next10} − {sum} = {cd}</strong>.","quizLose":"<span style=\"color:#fca5a5;\">✗ Niet {guess}.</span> Tip: klik op <strong>Hint</strong> om de ×3- en ×1-subtotalen te tonen en bepaal het verschil tot het volgende tienvoud.","copyBtn":"Volledige code kopiëren","copied":"Gekopieerd!","convEmpty":"Voer 11–14 cijfers in (UPC-A, EAN-13 of GTIN-14) voor directe conversies.","convNotUpc":"Geen UPC-A-bereik","convUpcMeta":"12 cijfers · Retail Noord-Amerika","convNonUpcMeta":"EAN-prefix ≠ 0 (geen UPC-landprefix)","convEanMeta":"13 cijfers · Wereldwijde retailbarcode","convG14Title":"GTIN-14 (Indicator {ind})","convG14Same":"Basiseenheid · controlecijfer ongewijzigd","convG14Recalc":"Omdoos / verpakking · controlecijfer herberekend","convCopy":"Kopiëren","convInspect":"Inspecteer ↑","resLabelTop":"GEVALIDEERDE VOLLEDIGE CODE:","resLabelQuiz":"OEFENOPGAVE (VIND HET ?):","prefix":"871","typeLabels":{"gtin12":"GTIN-12 / UPC-A","gtin13":"GTIN-13 / EAN-13","gtin14":"GTIN-14 (Dozen)"}};
+function fmt(tpl, vars) {
+    return String(tpl).replace(/\{(\w+)\}/g, (_, k) => (k in vars ? vars[k] : ''));
+}
+
+let currentExpectedLen = 17;
+let currentTypeName = "SSCC-18 (Pallets)";
+let currentMode = 'learn';
+let activeStep = 0;
+let focusedIndex = null;
+let playTimer = null;
+let quizStreak = 0;
+let quizRevealed = false;
+let quizHintShown = false;
+let activeTypo = null;
+let lastCalc = null;
+
+function setMode(mode) {
+    currentMode = mode;
+    stopPlay();
+    clearTypo(true);
+    document.getElementById('tab-learn').classList.toggle('active', mode === 'learn');
+    document.getElementById('tab-quiz').classList.toggle('active', mode === 'quiz');
+    document.getElementById('quiz-box').classList.toggle('show', mode === 'quiz');
+    if (mode === 'quiz') {
+        quizRevealed = false;
+        quizHintShown = false;
+        buildQuizButtons();
+        if (!lastCalc) calculate();
+        renderAll();
+    } else {
+        quizRevealed = true;
+        renderAll();
+    }
+}
+
+function setType(btnEl, type, reqLen, typeName, sampleVal) {
+    currentExpectedLen = reqLen;
+    currentTypeName = typeName;
+    stopPlay();
+    clearTypo(true);
+    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+
+    document.getElementById('type-label').textContent = typeName + ' — ' + I18N.excl;
+    document.getElementById('len-label').textContent = reqLen + ' ' + I18N.digits;
+    document.getElementById('calc-input').value = sampleVal;
+    focusedIndex = null;
+    if (currentMode === 'quiz') {
+        quizRevealed = false;
+        quizHintShown = false;
+        buildQuizButtons();
+    }
+    calculate();
+}
+
+function generateRandomSample() {
+    stopPlay();
+    clearTypo(true);
+    let prefix = currentExpectedLen === 17 ? ('3' + I18N.prefix) : (currentExpectedLen === 13 ? ('1' + I18N.prefix) : I18N.prefix);
+    let out = prefix.slice(0, Math.min(prefix.length, currentExpectedLen));
+    while (out.length < currentExpectedLen) {
+        out += Math.floor(Math.random() * 10);
+    }
+    document.getElementById('calc-input').value = out;
+    focusedIndex = null;
+    if (currentMode === 'quiz') {
+        quizRevealed = false;
+        quizHintShown = false;
+        buildQuizButtons();
+    }
+    calculate();
+}
+
+function onUserInput() {
+    stopPlay();
+    clearTypo(true);
+    focusedIndex = null;
+    if (currentMode === 'quiz') {
+        quizRevealed = false;
+        quizHintShown = false;
+        buildQuizButtons();
+    }
+    calculate();
+}
+
+function calculate() {
+    const raw = document.getElementById('calc-input').value.replace(/\D/g, '');
+    const panel = document.getElementById('result-panel');
+    if (!raw) {
+        panel.classList.remove('show');
+        lastCalc = null;
+        return;
+    }
+    panel.classList.add('show');
+
+    const digits = raw.split('').map(c => parseInt(c, 10));
+    const n = digits.length;
+    const weights = [];
+    const products = [];
+    let sum = 0;
+    const w3Digits = [];
+    const w1Digits = [];
+
+    for (let i = 0; i < n; i++) {
+        const rtlIdx = n - 1 - i;
+        const w = (rtlIdx % 2 === 0) ? 3 : 1;
+        const p = digits[i] * w;
+        weights.push(w);
+        products.push(p);
+        sum += p;
+        if (w === 3) w3Digits.push({ idx: i, d: digits[i], p });
+        else w1Digits.push({ idx: i, d: digits[i], p });
+    }
+
+    const sum3Digits = w3Digits.reduce((a, b) => a + b.d, 0);
+    const sum3Total = sum3Digits * 3;
+    const sum1Total = w1Digits.reduce((a, b) => a + b.d, 0);
+    const cd = (10 - (sum % 10)) % 10;
+    const next10 = Math.ceil(sum / 10) * 10;
+    const maxProd = Math.max(1, ...products);
+
+    lastCalc = { raw, digits, weights, products, sum, w3Digits, w1Digits, sum3Digits, sum3Total, sum1Total, cd, next10, maxProd };
+    renderAll();
+}
+
+function renderAll() {
+    if (!lastCalc) return;
+    const c = lastCalc;
+    const hideAnswer = (currentMode === 'quiz' && !quizRevealed);
+
+    document.getElementById('res-label-top').textContent = hideAnswer ? I18N.resLabelQuiz : I18N.resLabelTop;
+    document.getElementById('res-full-code').innerHTML = hideAnswer
+        ? c.raw + '<span style="color:var(--primary);font-weight:800;">?</span>'
+        : c.raw + '<span style="color:var(--success);font-weight:800;">' + c.cd + '</span>';
+    document.getElementById('res-cd-val').textContent = hideAnswer ? '?' : c.cd;
+    document.getElementById('res-cd-val').style.color = hideAnswer ? 'var(--primary)' : 'var(--success)';
+
+    const warnEl = document.getElementById('len-warning');
+    if (c.raw.length !== currentExpectedLen) {
+        warnEl.style.display = 'inline';
+        warnEl.textContent = fmt(I18N.lenNote, { len: c.raw.length, type: currentTypeName, exp: currentExpectedLen });
+    } else {
+        warnEl.style.display = 'none';
+    }
+
+    renderStepBanner(c, hideAnswer);
+    renderDigitTiles(c, hideAnswer);
+    renderDigitInspector(c);
+    renderBuckets(c, hideAnswer);
+    renderGauge(c, hideAnswer);
+    renderClassicTable(c);
+
+    document.getElementById('buckets-grid').style.opacity = (activeStep === 0 || activeStep === 2) ? '1' : '0.45';
+    document.getElementById('gauge-card').style.opacity = (activeStep === 0 || activeStep === 3) ? '1' : '0.45';
+    document.getElementById('typo-box').style.opacity = (activeStep === 0 || activeStep === 4) ? '1' : '0.5';
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function renderStepBanner(c, hideAnswer) {
+    const el = document.getElementById('step-explain');
+    const stepTexts = {
+        0: {
+            badge: I18N.badge0,
+            html: hideAnswer ? I18N.s0Quiz : fmt(I18N.s0Show, { sum: c.sum, next10: c.next10, cd: c.cd })
+        },
+        1: {
+            badge: I18N.badge1,
+            html: fmt(I18N.s1, { n: c.digits.length })
+        },
+        2: {
+            badge: I18N.badge2,
+            html: fmt(I18N.s2, { sum3d: c.sum3Digits, sum3t: c.sum3Total, sum1t: c.sum1Total, sum: c.sum })
+        },
+        3: {
+            badge: I18N.badge3,
+            html: hideAnswer ? I18N.s3Quiz : fmt(I18N.s3Show, { sum: c.sum, next10: c.next10, cd: c.cd, exact: c.cd === 0 ? I18N.s3Exact : '.' })
+        },
+        4: {
+            badge: I18N.badge4,
+            html: fmt(I18N.s4, { cd: hideAnswer ? '?' : c.cd, next10: c.next10 })
+        }
+    };
+    const s = stepTexts[activeStep] || stepTexts[0];
+    el.innerHTML = '<span class="step-badge">' + s.badge + '</span><div>' + s.html + '</div>';
+}
+
+function renderDigitTiles(c, hideAnswer) {
+    const wrap = document.getElementById('digit-tiles');
+    const totalTiles = c.digits.length + 1;
+    const colsLg = Math.min(totalTiles, 18);
+    const colsMd = totalTiles <= 9 ? totalTiles : Math.ceil(totalTiles / 2);
+    const colsSm = totalTiles <= 6 ? totalTiles : (totalTiles <= 12 ? Math.ceil(totalTiles / 2) : 6);
+    wrap.style.setProperty('--tile-cols', colsLg);
+    wrap.style.setProperty('--tile-cols-md', colsMd);
+    wrap.style.setProperty('--tile-cols-sm', colsSm);
+
+    const typoIndices = activeTypo ? activeTypo.indices : [];
+    const shownDigits = activeTypo ? activeTypo.mutatedDigits : c.digits;
+    let html = '';
+
+    for (let i = 0; i < shownDigits.length; i++) {
+        const d = shownDigits[i];
+        const w = c.weights[i];
+        const p = d * w;
+        const barPct = Math.round((p / 27) * 100);
+        const isFocused = (focusedIndex === i);
+        const isTypo = typoIndices.includes(i);
+        const cls = 'd-tile ' + (w === 3 ? 'w3' : 'w1') + (isFocused ? ' focused' : '') + (isTypo ? ' typo-hit' : '');
+        const rtlPos = c.digits.length - i;
+        const title = fmt(I18N.tileTitle, { p: i + 1, rtl: rtlPos, d, w, prod: p });
+
+        html += '<div class="' + cls + '" onclick="focusDigit(' + i + ')" onmouseenter="focusDigit(' + i + ')" title="' + title + '">' +
+            '<div class="d-pos">P' + (i + 1) + '</div>' +
+            '<div class="d-num">' + d + '</div>' +
+            '<div class="d-weight">×' + w + '</div>' +
+            '<div class="d-prod">' + (hideAnswer && !quizHintShown ? '·' : '=' + p) + '</div>' +
+            '<div class="d-bar-wrap"><div class="d-bar" style="width:' + (hideAnswer && !quizHintShown ? 0 : barPct) + '%;"></div></div>' +
+            '</div>';
+    }
+
+    html += '<div class="d-tile cd-tile" title="' + I18N.cdTileTitle + '">' +
+        '<div class="d-pos" style="color:var(--success);">' + I18N.cdTileTop + '</div>' +
+        '<div class="d-num" style="color:' + (hideAnswer ? 'var(--primary)' : 'var(--success)') + ';">' + (hideAnswer ? '?' : c.cd) + '</div>' +
+        '<div class="d-weight">' + I18N.cdTileShort + '</div>' +
+        '<div class="d-prod">' + (hideAnswer ? I18N.cdGuess : 'mod 10') + '</div>' +
+        '<div class="d-bar-wrap"><div class="d-bar" style="width:100%;background:var(--success);"></div></div>' +
+        '</div>';
+
+    wrap.innerHTML = html;
+}
+
+function focusDigit(idx) {
+    focusedIndex = idx;
+    if (!lastCalc) return;
+    document.querySelectorAll('.d-tile').forEach((el, i) => {
+        el.classList.toggle('focused', i === idx);
+    });
+    renderDigitInspector(lastCalc);
+}
+
+function renderDigitInspector(c) {
+    const el = document.getElementById('digit-inspector');
+    const hideAnswer = (currentMode === 'quiz' && !quizRevealed && !quizHintShown);
+    if (focusedIndex === null || focusedIndex >= c.digits.length) {
+        const lastIdx = c.digits.length - 1;
+        el.innerHTML = fmt(I18N.inspTip, { p: lastIdx + 1, d: c.digits[lastIdx], prod: hideAnswer ? '?' : c.products[lastIdx] });
+        return;
+    }
+    const i = focusedIndex;
+    const d = activeTypo ? activeTypo.mutatedDigits[i] : c.digits[i];
+    const w = c.weights[i];
+    const p = d * w;
+    const rtl = c.digits.length - i;
+    const share = c.sum > 0 ? ((p / c.sum) * 100).toFixed(1) : '0.0';
+    el.innerHTML = fmt(I18N.inspFocus, {
+        p: i + 1,
+        rtl,
+        parity: rtl % 2 === 1 ? I18N.odd : I18N.even,
+        d,
+        col: w === 3 ? 'var(--primary)' : 'var(--cyan)',
+        w,
+        prod: hideAnswer ? '?' : p,
+        right: hideAnswer ? I18N.quizHintHidden : fmt(I18N.shareSum, { share, sum: c.sum })
+    });
+}
+
+function renderBuckets(c, hideAnswer) {
+    const showMath = !hideAnswer || quizHintShown;
+    document.getElementById('b3-total').textContent = showMath ? '= ' + c.sum3Total : '= ?';
+    document.getElementById('b1-total').textContent = showMath ? '= ' + c.sum1Total : '= ?';
+
+    const d3List = c.w3Digits.map(x => x.d).join(' + ');
+    const d1List = c.w1Digits.map(x => x.d).join(' + ');
+
+    document.getElementById('b3-eq').innerHTML = showMath
+        ? '(' + d3List + ') = <strong>' + c.sum3Digits + '</strong> → <strong>' + c.sum3Digits + ' × 3 = ' + c.sum3Total + '</strong>'
+        : fmt(I18N.b3Hide, { list: d3List });
+
+    document.getElementById('b1-eq').innerHTML = showMath
+        ? '(' + (d1List || '0') + ') × 1 = <strong>' + c.sum1Total + '</strong>'
+        : fmt(I18N.b1Hide, { list: d1List || '0' });
+}
+
+function renderGauge(c, hideAnswer) {
+    const svg = document.getElementById('mod10-svg');
+    const eq = document.getElementById('gauge-equation');
+
+    if (hideAnswer) {
+        eq.textContent = I18N.gaugeQuizEq;
+        svg.innerHTML = '<rect x="10" y="20" width="660" height="72" rx="10" fill="#0f141f" stroke="#222c3d" stroke-dasharray="5 5"/>' +
+            '<text x="340" y="61" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="13">' + I18N.gaugeQuizSvg + '</text>';
+        return;
+    }
+
+    const base10 = Math.floor(c.sum / 10) * 10;
+    const top10 = base10 + 10;
+    const isExact = (c.sum % 10 === 0);
+    const target = isExact ? c.sum : top10;
+    eq.textContent = fmt(I18N.gaugeEq, { target, sum: c.sum, cd: c.cd });
+
+    const padL = 44, padR = 44, lineY = 74;
+    const span = 680 - padL - padR;
+    const xOf = offset => padL + (offset / 10) * span;
+    const sumOffset = c.sum - base10;
+    const sumX = xOf(sumOffset);
+    const targetX = xOf(isExact ? 0 : 10);
+
+    let ticks = '';
+    for (let k = 0; k <= 10; k++) {
+        const val = base10 + k;
+        const x = xOf(k);
+        const isTen = (k === 0 || k === 10);
+        const isSum = (k === sumOffset);
+        ticks += '<line x1="' + x + '" y1="' + (lineY - (isTen ? 11 : 6)) + '" x2="' + x + '" y2="' + (lineY + (isTen ? 11 : 6)) + '" stroke="' + (isTen ? '#10b981' : '#334155') + '" stroke-width="' + (isTen ? 2.5 : 1.5) + '"/>' +
+            '<text x="' + x + '" y="' + (lineY + 27) + '" text-anchor="middle" fill="' + (isSum ? '#38bdf8' : (isTen ? '#10b981' : '#64748b')) + '" font-family="JetBrains Mono, monospace" font-size="' + (isTen || isSum ? 12 : 10.5) + '" font-weight="' + (isTen || isSum ? 700 : 500) + '">' + val + '</text>';
+    }
+
+    let arc = '';
+    if (!isExact) {
+        const midX = (sumX + targetX) / 2;
+        arc = '<path d="M ' + sumX + ' ' + (lineY - 10) + ' Q ' + midX + ' 12 ' + targetX + ' ' + (lineY - 12) + '" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="6 4"/>' +
+            '<polygon points="' + targetX + ',' + (lineY - 8) + ' ' + (targetX - 8) + ',' + (lineY - 18) + ' ' + (targetX + 3) + ',' + (lineY - 18) + '" fill="#10b981"/>' +
+            '<rect x="' + (midX - 64) + '" y="8" width="128" height="24" rx="6" fill="rgba(16,185,129,0.18)" stroke="#10b981"/>' +
+            '<text x="' + midX + '" y="24" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono, monospace" font-size="11.5" font-weight="800">' + fmt(I18N.gaugePlus, { cd: c.cd }) + '</text>';
+    } else {
+        arc = '<rect x="' + (sumX - 10) + '" y="10" width="235" height="26" rx="6" fill="rgba(16,185,129,0.18)" stroke="#10b981"/>' +
+            '<text x="' + (sumX + 107) + '" y="27" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono, monospace" font-size="11.5" font-weight="800">' + I18N.gaugeZero + '</text>';
+    }
+
+    svg.innerHTML = '<line x1="' + padL + '" y1="' + lineY + '" x2="' + (680 - padR) + '" y2="' + lineY + '" stroke="#222c3d" stroke-width="3" stroke-linecap="round"/>' +
+        (!isExact ? '<line x1="' + sumX + '" y1="' + lineY + '" x2="' + targetX + '" y2="' + lineY + '" stroke="#10b981" stroke-width="4"/>' : '') +
+        ticks + arc +
+        '<circle cx="' + sumX + '" cy="' + lineY + '" r="7" fill="#38bdf8" stroke="#0b0e14" stroke-width="2.5"/>' +
+        '<text x="' + sumX + '" y="' + (lineY - 18) + '" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">' + fmt(I18N.gaugeSum, { sum: c.sum }) + '</text>' +
+        '<circle cx="' + targetX + '" cy="' + lineY + '" r="' + (isExact ? 4 : 7) + '" fill="#10b981" stroke="#0b0e14" stroke-width="2"/>';
+}
+
+function renderClassicTable(c) {
+    let th = '<th>' + I18N.tblPos + '</th>';
+    let tdD = '<td>' + I18N.tblDig + '</td>';
+    let tdW = '<td class="row-weight">' + I18N.tblW + '</td>';
+    let tdP = '<td class="row-prod">' + I18N.tblProd + '</td>';
+
+    c.digits.forEach((d, idx) => {
+        th += '<th>P' + (idx + 1) + '</th>';
+        tdD += '<td><strong>' + d + '</strong></td>';
+        tdW += '<td class="row-weight">' + c.weights[idx] + '</td>';
+        tdP += '<td class="row-prod">' + c.products[idx] + '</td>';
+    });
+
+    document.getElementById('math-header').innerHTML = th;
+    document.getElementById('math-digits').innerHTML = tdD;
+    document.getElementById('math-weights').innerHTML = tdW;
+    document.getElementById('math-products').innerHTML = tdP;
+}
+
+function setStep(step) {
+    activeStep = step;
+    document.querySelectorAll('.step-pill').forEach(p => {
+        p.classList.toggle('active', parseInt(p.dataset.step, 10) === step);
+    });
+    if (step === 1 && lastCalc) focusedIndex = lastCalc.digits.length - 1;
+    renderAll();
+}
+
+function nextStep() { setStep(activeStep >= 4 ? 0 : activeStep + 1); }
+function prevStep() { setStep(activeStep <= 0 ? 4 : activeStep - 1); }
+
+function togglePlay() {
+    if (playTimer) { stopPlay(); return; }
+    const btn = document.getElementById('btn-play');
+    btn.classList.add('playing');
+    document.getElementById('play-label').textContent = I18N.stop;
+    setStep(1);
+    let step = 1;
+    playTimer = setInterval(() => {
+        step++;
+        if (step > 4) { stopPlay(); setStep(0); return; }
+        setStep(step);
+    }, 2800);
+}
+
+function stopPlay() {
+    if (playTimer) { clearInterval(playTimer); playTimer = null; }
+    const btn = document.getElementById('btn-play');
+    if (btn) btn.classList.remove('playing');
+    const lbl = document.getElementById('play-label');
+    if (lbl) lbl.textContent = I18N.play;
+}
+
+function simulateTypo(kind) {
+    if (!lastCalc || lastCalc.digits.length < 2) return;
+    const c = lastCalc;
+    const mutated = [...c.digits];
+    let indices = [];
+    let desc = '';
+
+    if (kind === 'single') {
+        const idx = Math.floor(c.digits.length / 2);
+        const orig = mutated[idx];
+        mutated[idx] = (orig + 1) % 10;
+        indices = [idx];
+        desc = fmt(I18N.typoChanged, { p: idx + 1, orig, mut: mutated[idx] });
+    } else {
+        let idx = -1;
+        for (let i = 0; i < c.digits.length - 1; i++) {
+            const diff = Math.abs(c.digits[i] - c.digits[i + 1]);
+            if (diff !== 0 && diff !== 5) { idx = i; break; }
+        }
+        if (idx === -1) idx = 0;
+        const a = mutated[idx], b = mutated[idx + 1];
+        mutated[idx] = b;
+        mutated[idx + 1] = a;
+        indices = [idx, idx + 1];
+        desc = fmt(I18N.typoSwapped, { p1: idx + 1, p2: idx + 2, a, b });
+    }
+
+    let newSum = 0;
+    for (let i = 0; i < mutated.length; i++) newSum += mutated[i] * c.weights[i];
+    const totalWithOriginalCD = newSum + c.cd;
+    const rem = totalWithOriginalCD % 10;
+
+    activeTypo = { kind, indices, mutatedDigits: mutated };
+    setStep(4);
+
+    const resEl = document.getElementById('typo-result');
+    resEl.innerHTML = rem !== 0
+        ? fmt(I18N.typoCaught, { desc, newSum, cd: c.cd, tot: totalWithOriginalCD, rem })
+        : fmt(I18N.typoBlind, { desc });
+    renderDigitTiles(c, currentMode === 'quiz' && !quizRevealed);
+}
+
+function clearTypo(silent) {
+    activeTypo = null;
+    if (!silent) {
+        const resEl = document.getElementById('typo-result');
+        if (resEl) resEl.textContent = I18N.typoDefault;
+        if (lastCalc) renderAll();
+    }
+}
+
+function buildQuizButtons() {
+    const wrap = document.getElementById('quiz-digits');
+    wrap.innerHTML = '';
+    for (let n = 0; n <= 9; n++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'quiz-num-btn';
+        b.textContent = n;
+        b.onclick = () => submitQuizGuess(n, b);
+        wrap.appendChild(b);
+    }
+    document.getElementById('quiz-feedback').innerHTML = '';
+}
+
+function submitQuizGuess(guess, btnEl) {
+    if (!lastCalc) return;
+    const fb = document.getElementById('quiz-feedback');
+    if (guess === lastCalc.cd) {
+        btnEl.classList.add('correct');
+        if (!quizRevealed) {
+            quizStreak++;
+            document.getElementById('quiz-streak').textContent = '🔥 ' + I18N.quizStreakLbl + ': ' + quizStreak;
+        }
+        quizRevealed = true;
+        fb.innerHTML = fmt(I18N.quizWin, { sum: lastCalc.sum, next10: lastCalc.next10, cd: lastCalc.cd });
+        renderAll();
+    } else {
+        btnEl.classList.add('wrong');
+        quizStreak = 0;
+        document.getElementById('quiz-streak').textContent = I18N.quizStreakLbl + ': 0';
+        fb.innerHTML = fmt(I18N.quizLose, { guess });
+    }
+}
+
+function toggleQuizHint() { quizHintShown = !quizHintShown; renderAll(); }
+function nextQuizRound() { generateRandomSample(); }
+
+function copyFullResult() {
+    if (!lastCalc) return;
+    const full = lastCalc.raw + lastCalc.cd;
+    navigator.clipboard.writeText(full).then(() => {
+        const lbl = document.getElementById('copy-label');
+        const btn = document.getElementById('btn-copy');
+        lbl.textContent = I18N.copied;
+        btn.style.borderColor = 'var(--success)';
+        btn.style.color = 'var(--success)';
+        setTimeout(() => {
+            lbl.textContent = I18N.copyBtn;
+            btn.style.borderColor = '';
+            btn.style.color = '';
+        }, 1600);
+    });
+}
+
+function openCalculatedInLabelStudio() {
+    if (!lastCalc) return;
+    const full = lastCalc.raw + lastCalc.cd;
+    window.location.href = full.length === 18
+        ? '/?sscc=' + encodeURIComponent(full) + '&label=1'
+        : '/?sscc=' + encodeURIComponent(full);
+}
+
+function calcGs1CheckDigit(payload) {
+    let sum = 0;
+    const rev = payload.split('').reverse();
+    for (let i = 0; i < rev.length; i++) {
+        sum += parseInt(rev[i], 10) * (i % 2 === 0 ? 3 : 1);
+    }
+    return (10 - (sum % 10)) % 10;
+}
+
+function loadIntoVisualLab(type, payload) {
+    const btns = Array.from(document.querySelectorAll('.type-btn'));
+    const idxMap = { sscc: 0, gtin13: 1, gtin12: 2, gtin14: 3, gtin8: 4, gln: 5 };
+    const lenMap = { gtin12: 11, gtin13: 12, gtin14: 13 };
+    if (!lenMap[type]) return;
+    setType(btns[idxMap[type]], type, lenMap[type], I18N.typeLabels[type], payload);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyConvCode(code, btn) {
+    navigator.clipboard.writeText(code).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = I18N.copied;
+        setTimeout(() => { btn.textContent = orig; }, 1200);
+    });
+}
+
+function updateGtinConverter() {
+    const inp = document.getElementById('conv-input');
+    const indEl = document.getElementById('conv-ind');
+    const out = document.getElementById('conv-results');
+    if (!inp || !indEl || !out) return;
+
+    const digits = inp.value.replace(/\D/g, '');
+    const ind = indEl.value || '0';
+
+    let ean12 = null;
+    if (digits.length === 11) {
+        ean12 = '0' + digits;
+    } else if (digits.length === 12) {
+        const upcCd = calcGs1CheckDigit(digits.slice(0, 11));
+        ean12 = (parseInt(digits[11], 10) === upcCd) ? ('0' + digits.slice(0, 11)) : digits;
+    } else if (digits.length === 13) {
+        const eanCd = calcGs1CheckDigit(digits.slice(0, 12));
+        ean12 = (parseInt(digits[12], 10) === eanCd) ? digits.slice(0, 12) : digits.slice(1, 13);
+    } else if (digits.length === 14) {
+        ean12 = digits.slice(1, 13);
+    }
+
+    if (!ean12) {
+        out.innerHTML = '<div class="conv-card" style="grid-column:1/-1;"><div class="conv-card-meta">' + I18N.convEmpty + '</div></div>';
+        return;
+    }
+
+    const eanCd = calcGs1CheckDigit(ean12);
+    const gtin14Payload = ind + ean12;
+    const gtin14Cd = calcGs1CheckDigit(gtin14Payload);
+    const canBeUpc = ean12.startsWith('0');
+    const upcPayload = canBeUpc ? ean12.slice(1) : null;
+    const upcCd = canBeUpc ? calcGs1CheckDigit(upcPayload) : null;
+
+    const card = (title, payload, cd, meta, labType) => {
+        if (!payload) {
+            return '<div class="conv-card"><div class="conv-card-label">' + title + '</div><div class="conv-card-val" style="color:var(--text-dim);">' + I18N.convNotUpc + '</div><div class="conv-card-meta">' + meta + '</div></div>';
+        }
+        const full = payload + cd;
+        return '<div class="conv-card">' +
+            '<div class="conv-card-label">' + title + '</div>' +
+            '<div class="conv-card-val">' + payload + '<span class="cd-hl">' + cd + '</span></div>' +
+            '<div class="conv-card-meta">' + meta + '</div>' +
+            '<div class="conv-card-actions">' +
+            '<button type="button" class="conv-mini-btn" onclick="copyConvCode(\'' + full + '\', this)">' + I18N.convCopy + '</button>' +
+            '<button type="button" class="conv-mini-btn" onclick="loadIntoVisualLab(\'' + labType + '\', \'' + payload + '\')">' + I18N.convInspect + '</button>' +
+            '</div></div>';
+    };
+
+    out.innerHTML = [
+        card('UPC-A / GTIN-12', upcPayload, upcCd, canBeUpc ? I18N.convUpcMeta : I18N.convNonUpcMeta, 'gtin12'),
+        card('EAN-13 / GTIN-13', ean12, eanCd, I18N.convEanMeta, 'gtin13'),
+        card(fmt(I18N.convG14Title, { ind }), gtin14Payload, gtin14Cd, ind === '0' ? I18N.convG14Same : I18N.convG14Recalc, 'gtin14')
+    ].join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    updateGtinConverter();
+    if (window.lucide) lucide.createIcons();
+});
+</script>
+
+</body>
+</html>

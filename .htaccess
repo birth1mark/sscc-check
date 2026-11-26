@@ -30,6 +30,12 @@
     RewriteRule ^fr/calculateur(?:\.html)?/?$ https://ssccapi.com/fr/calculateur [R=301,L,QSA]
 
     RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^de/rechner(?:\.html)?/?$ https://ssccapi.com/de/rechner [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^nl/calculator(?:\.html)?/?$ https://ssccapi.com/nl/calculator [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
     RewriteRule ^guide(?:\.html)?/?$ https://ssccapi.com/guide [R=301,L,QSA]
 
     RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
@@ -46,6 +52,8 @@
     RewriteRule ^pt/calculadora/?$ pt/calculadora.html [L]
     RewriteRule ^es/calculadora/?$ es/calculadora.html [L]
     RewriteRule ^fr/calculateur/?$ fr/calculateur.html [L]
+    RewriteRule ^de/rechner/?$ de/rechner.html [L]
+    RewriteRule ^nl/calculator/?$ nl/calculator.html [L]
     RewriteRule ^guide/?$ guide.html [L]
     RewriteRule ^docs/?$ sscc-api-guide.html [L]
 

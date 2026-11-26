@@ -21,6 +21,15 @@
     RewriteRule ^calculator(?:\.html)?/?$ https://ssccapi.com/calculator [R=301,L,QSA]
 
     RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^pt/calculadora(?:\.html)?/?$ https://ssccapi.com/pt/calculadora [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^es/calculadora(?:\.html)?/?$ https://ssccapi.com/es/calculadora [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
+    RewriteRule ^fr/calculateur(?:\.html)?/?$ https://ssccapi.com/fr/calculateur [R=301,L,QSA]
+
+    RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
     RewriteRule ^guide(?:\.html)?/?$ https://ssccapi.com/guide [R=301,L,QSA]
 
     RewriteCond %{HTTP_USER_AGENT} !^SSCCAPI-Edge-Proxy [NC]
@@ -34,6 +43,9 @@
 
     # Nice URLs (internal rewrites — zero redirect loops with Cloudflare Edge Proxy)
     RewriteRule ^calculator/?$ calculator.html [L]
+    RewriteRule ^pt/calculadora/?$ pt/calculadora.html [L]
+    RewriteRule ^es/calculadora/?$ es/calculadora.html [L]
+    RewriteRule ^fr/calculateur/?$ fr/calculateur.html [L]
     RewriteRule ^guide/?$ guide.html [L]
     RewriteRule ^docs/?$ sscc-api-guide.html [L]
 
